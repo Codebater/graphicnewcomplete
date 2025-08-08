@@ -191,7 +191,7 @@ export default function Contact() {
                 <div className="row gx-0">
                   <div className="col-12 col-xl-5 mxd-grid-item no-margin">
                     <div className="mxd-block__name">
-                      <h2 className="reveal-type anim-uni-in-up">Welcome to our office</h2>
+                      <h2 className="reveal-type anim-uni-in-up">We operate remotely , where ever we have a good connection</h2>
                     </div>
                   </div>
                   <div className="col-12 col-xl-6 mxd-grid-item no-margin">
