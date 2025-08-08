@@ -183,7 +183,7 @@ const Footer = () => {
             {/* links */}
             <div className="footer-blocks__links anim-uni-in-up">
               <p className="t-xsmall t-muted">
-                <a className="no-effect" href="https://1.envato.market/EKA9WD" target="_blank" rel="noopener noreferrer">graphic_art</a>
+                <a className="no-effect" href="" target="_blank" rel="noopener noreferrer">graphiq_art</a>
                 <i className="ph-bold ph-copyright"></i>
                 2025
               </p>
