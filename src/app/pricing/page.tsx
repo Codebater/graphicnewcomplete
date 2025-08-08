@@ -123,43 +123,55 @@ export default function Pricing() {
                             <ul className="mxd-check-list">
                               <li className="anim-uni-in-up">
                                 <i className="ph ph-check"></i>
-                                <span>Basic Website Design</span>
+                                <span>Ongoing creative direction</span>
                               </li>
                               <li className="anim-uni-in-up">
                                 <i className="ph ph-check"></i>
-                                <span>Responsive Mobile Design</span>
+                                <span>Monthly mood boards & creative briefs</span>
                               </li>
                               <li className="anim-uni-in-up">
                                 <i className="ph ph-check"></i>
-                                <span>Basic Brand Guidelines</span>
+                                <span>High-end design support</span>
                               </li>
                               <li className="anim-uni-in-up">
                                 <i className="ph ph-check"></i>
-                                <span>Simple UI/UX Design</span>
+                                <span>Website design updates / UI/UX refinement</span>
                               </li>
                               <li className="anim-uni-in-up">
                                 <i className="ph ph-check"></i>
-                                <span>SEO Foundation</span>
+                                <span>Content & campaign ideation</span>
                               </li>
                               <li className="anim-uni-in-up">
                                 <i className="ph ph-check"></i>
-                                <span>Basic Performance Optimization</span>
+                                <span>Tagline and slogan development</span>
                               </li>
                               <li className="anim-uni-in-up">
                                 <i className="ph ph-check"></i>
-                                <span>Content Management System</span>
+                                <span>Brand guidelines maintenance</span>
                               </li>
                               <li className="anim-uni-in-up">
                                 <i className="ph ph-check"></i>
-                                <span>1 Round of Revisions</span>
+                                <span>Priority consulting access</span>
                               </li>
                               <li className="anim-uni-in-up">
                                 <i className="ph ph-check"></i>
-                                <span>Email Support</span>
+                                <span>Weekly strategy calls / creative reviews</span>
                               </li>
                               <li className="anim-uni-in-up">
                                 <i className="ph ph-check"></i>
-                                <span>Monthly Analytics Report</span>
+                                <span>Direct Slack/WhatsApp channel</span>
+                              </li>
+                              <li className="anim-uni-in-up">
+                                <i className="ph ph-check"></i>
+                                <span>Performance & impact tracking</span>
+                              </li>
+                              <li className="anim-uni-in-up">
+                                <i className="ph ph-check"></i>
+                                <span>Monthly analytics report</span>
+                              </li>
+                              <li className="anim-uni-in-up">
+                                <i className="ph ph-check"></i>
+                                <span>Exclusive access to creative network</span>
                               </li>
                             </ul>
                           </div>
