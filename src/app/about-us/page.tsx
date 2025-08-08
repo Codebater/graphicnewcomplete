@@ -285,11 +285,9 @@ export default function AboutUs() {
           </div>
         </div>
 
-        {/* Section - Awards & Publications List */}
-        <div className="mxd-section overflow-hidden padding-pre-grid mobile-grid-s">
+        {/* <div className="mxd-section overflow-hidden padding-pre-grid mobile-grid-s">
           <div className="mxd-container grid-container">
 
-            {/* Block - Section Title */}
             <div className="mxd-block">
               <div className="mxd-section-title">
                 <div className="container-fluid p-0">
@@ -313,11 +311,9 @@ export default function AboutUs() {
               </div>
             </div>
 
-            {/* Block - Awards List */}
             <div className="mxd-block">
               <div className="mxd-awards-list hover-reveal">
                 
-                {/* Award Items */}
                 {[
                   {
                     title: "Some article on Medium",
@@ -393,7 +389,7 @@ export default function AboutUs() {
             </div>
 
           </div>
-        </div>
+        </div> */}
 
         {/* Section - Marquee Images Two Lines */}
         <div className="mxd-section padding-default mobile-title">
