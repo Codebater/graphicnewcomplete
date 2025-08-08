@@ -71,7 +71,7 @@ export default function Header() {
               {/* data bottom line */}
               <div className="mxd-menu__data menu-fade-in">
                 <p className="t-xsmall">
-                  <a className="no-effect" href="https://1.envato.market/EKA9WD" target="_blank">graphiq.art</a>
+                  <a className="no-effect" href="" target="_blank">graphiq.art</a>
                 </p>
                 <p className="t-xsmall">
                   <i className="ph ph-copyright"></i>
