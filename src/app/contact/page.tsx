@@ -181,69 +181,46 @@ export default function Contact() {
           </div>
         </div>
 
-        {/* Section - Text Block */}
+        {/* Section - About Our Team */}
         <div className="mxd-section padding-default">
           <div className="mxd-container grid-container">
           
-            {/* Block - Office Locations */}
+            {/* Block - About Our Team */}
             <div className="mxd-block">
               <div className="container-fluid px-0">
                 <div className="row gx-0">
                   <div className="col-12 col-xl-5 mxd-grid-item no-margin">
                     <div className="mxd-block__name">
-                      <h2 className="reveal-type anim-uni-in-up">We operate remotely , where ever we have a good connection</h2>
+                      <h2 className="reveal-type anim-uni-in-up">Our Work</h2>
                     </div>
                   </div>
                   <div className="col-12 col-xl-6 mxd-grid-item no-margin">
                     <div className="mxd-block__content">
                       <div className="mxd-block__paragraph">
                         <p className="t-large t-bright anim-uni-in-up">
-                          Inspiring ideas, creative insights, and the latest in design and tech. Fueling innovation for your digital journey.
+                          We are a roaming team of designers and consultants, blending creativity, strategy, and technology to craft meaningful digital experiences. Whether we&apos;re working from a seaside café in Portugal or a mountain lodge in Japan, we bring fresh perspectives and global inspiration to every project.
+                        </p>
+                        <p className="anim-uni-in-up">
+                          From brand identities and user-focused websites to consulting that streamlines your digital presence, we help ambitious businesses grow — no matter where they are.
                         </p>
                         <div className="mxd-paragraph__lists">
                           <div className="container-fluid p-0">
                             <div className="row g-0">
                               
-                              {/* New York Office */}
-                              <div className="col-12 col-md-6 col-xl-5 mxd-paragraph__lists-item">
+                              {/* Contact Information */}
+                              <div className="col-12 col-md-8 col-xl-10 mxd-paragraph__lists-item">
                                 <div className="mxd-paragraph__lists-title">
-                                  <p className="t-large t-bright t-caption anim-uni-in-up">New York</p>
+                                  <p className="t-large t-bright t-caption anim-uni-in-up">Reach Us Anywhere</p>
                                 </div>
                                 <ul>
                                   <li className="anim-uni-in-up">
-                                    <a className="anim-uni-in-up" href="https://goo.gl/maps/nWXKpGaDPuyH6gxRA" target="_blank" rel="noopener noreferrer">
-                                      11 West 53 Street,<br/>New York, NY<br/>10019
-                                    </a>
-                                  </li>
-                                </ul>
-                                <ul>
-                                  <li className="anim-uni-in-up">
-                                    <a href="tel:+12127089400">+1 212-708-9400</a>
+                                    <strong>Email:</strong> <a href="mailto:hello@graphiq.art?subject=Message%20from%20your%20site">hello@graphiq.art</a>
                                   </li>
                                   <li className="anim-uni-in-up">
-                                    <a href="mailto:hello@graphiq.art?subject=Message%20from%20your%20site">hello@graphiq.art</a>
-                                  </li>
-                                </ul>
-                              </div>
-
-                              {/* Oakland Office */}
-                              <div className="col-12 col-md-6 col-xl-5 mxd-paragraph__lists-item">
-                                <div className="mxd-paragraph__lists-title">
-                                  <p className="t-large t-bright t-caption anim-uni-in-up">Oakland</p>
-                                </div>
-                                <ul>
-                                  <li className="anim-uni-in-up">
-                                    <a href="https://goo.gl/maps/xap5o3MZBuC6DFHz8" target="_blank" rel="noopener noreferrer">
-                                      3400 Broadway,<br/>Oakland, CA<br/>94611
-                                    </a>
-                                  </li>
-                                </ul>
-                                <ul>
-                                  <li className="anim-uni-in-up">
-                                    <a href="tel:+15104570211">+1 510-457-0211</a>
+                                    <strong>Phone:</strong> to come
                                   </li>
                                   <li className="anim-uni-in-up">
-                                    <a href="mailto:hello@graphiq.art?subject=Message%20from%20your%20site">hello@graphiq.art</a>
+                                    <strong>Where we are today:</strong> Somewhere inspiring 🌍
                                   </li>
                                 </ul>
                               </div>
