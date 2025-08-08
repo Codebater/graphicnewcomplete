@@ -69,16 +69,7 @@ const Footer = () => {
               </ul>
             </div>
             {/* links */}
-            <div className="footer-blocks__links anim-uni-in-up">
-              <Link className="btn btn-line-xsmall btn-muted slide-right anim-no-delay" href="/privacy">
-                <span className="btn-caption">Privacy Policy</span>
-                <i className="ph ph-arrow-right"></i>
-              </Link>
-              <Link className="btn btn-line-xsmall btn-muted slide-right anim-no-delay" href="/terms">
-                <span className="btn-caption">Terms & conditions</span>
-                <i className="ph ph-arrow-right"></i>
-              </Link>
-            </div>
+           
           </div>
         </div>
 
