@@ -2,6 +2,7 @@
 
 import { useEffect } from 'react';
 import { usePathname } from 'next/navigation';
+import { submitFormDataToFormspree, getErrorMessage } from '@/lib/formspree';
 
 declare global {
   interface Window {
@@ -526,11 +527,16 @@ export default function AppInitializer() {
       }
 
       // Contact Form
-      $("#contact-form").off("submit").on("submit", function(this: any, e: Event) {
+      $("#contact-form").off("submit").on("submit", async function(this: any, e: Event) {
         e.preventDefault();
         const th = $(this);
-        // Simulate form submission
-        setTimeout(() => {
+        
+        try {
+          // Get form data and submit to Formspree
+          const formData = new FormData(this);
+          await submitFormDataToFormspree(formData);
+          
+          // Show success UI
           $('.contact').find('.form').addClass('is-hidden');
           $('.contact').find('.form__reply').addClass('is-visible');
           setTimeout(function() {
@@ -538,7 +544,11 @@ export default function AppInitializer() {
             $('.contact').find('.form').delay(300).removeClass('is-hidden');
             th.trigger("reset");
           }, 5000);
-        }, 1000);
+        } catch (error) {
+          console.error('Contact form submission error:', error);
+          alert(getErrorMessage());
+        }
+        
         return false;
       });
 

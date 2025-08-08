@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { submitToFormspree, getSuccessMessage, getErrorMessage } from '@/lib/formspree';
 
 interface FormData {
   service: string;
@@ -112,11 +113,42 @@ export default function StepForm() {
     setIsSubmitting(true);
     
     try {
-      // Simulate form submission (replace with actual API call)
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      // Submit to Formspree using utility function
+      await submitToFormspree(
+        {
+          service: formData.service,
+          date: formData.date,
+          time: formData.time,
+          name: formData.name,
+          company: formData.company,
+          email: formData.email,
+          phone: formData.phone,
+          message: formData.message,
+          budget: formData.budget,
+        },
+        {
+          subject: `New consultation request from ${formData.name}`,
+          replyTo: formData.email,
+        }
+      );
+
       setShowSuccess(true);
+      // Reset form data
+      setFormData({
+        service: '',
+        date: '',
+        time: '',
+        name: '',
+        company: '',
+        email: '',
+        phone: '',
+        message: '',
+        budget: ''
+      });
+      setCurrentStep(1); // Reset to first step
     } catch (error) {
       console.error('Form submission error:', error);
+      alert(getErrorMessage());
     } finally {
       setIsSubmitting(false);
     }

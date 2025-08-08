@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { submitFormDataToFormspree, getSuccessMessage, getErrorMessage } from '@/lib/formspree';
 
 export default function ContactClient() {
   const [formData, setFormData] = useState({
@@ -23,8 +24,8 @@ export default function ContactClient() {
       setIsSubmitting(true);
       
       try {
-        // Simulate form submission (replace with actual API call)
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        // Submit to Formspree using utility function
+        await submitFormDataToFormspree(formData);
         
         // Show success message
         setShowSuccess(true);
@@ -37,6 +38,7 @@ export default function ContactClient() {
         
       } catch (error) {
         console.error('Form submission error:', error);
+        alert(getErrorMessage());
       } finally {
         setIsSubmitting(false);
       }
