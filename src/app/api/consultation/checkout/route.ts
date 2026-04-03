@@ -85,7 +85,11 @@ export async function POST(req: Request) {
 
     return NextResponse.json({ url: session.url });
   } catch (e) {
-    console.error('consultation checkout:', e);
+    const mongoCode =
+      e && typeof e === 'object' && e !== null && 'code' in e
+        ? String((e as { code: unknown }).code)
+        : '';
+    console.error('consultation checkout failed', mongoCode ? { mongoCode } : {}, e);
     const raw = e instanceof Error ? e.message : String(e);
     const lower = raw.toLowerCase();
     const isMongoAuth =
