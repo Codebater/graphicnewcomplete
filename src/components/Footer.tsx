@@ -1,26 +1,6 @@
-'use client';
-
 import Link from 'next/link';
-import { useState } from 'react';
 
 const Footer = () => {
-  const [email, setEmail] = useState('');
-  const [isSubscribed, setIsSubscribed] = useState(false);
-  const [error, setError] = useState(false);
-
-  const handleSubscribe = async (e: React.FormEvent) => {
-    e.preventDefault();
-    // Simulate subscription logic
-    try {
-      setIsSubscribed(true);
-      setError(false);
-      setEmail('');
-    } catch (err) {
-      setError(true);
-      setIsSubscribed(false);
-    }
-  };
-
   return (
     <footer id="mxd-footer" className="mxd-footer">
       {/* Footer Block - Info Columns Start */}
@@ -111,36 +91,6 @@ const Footer = () => {
             <span>GRAPHIQ STUDIO LLC</span>
           </p>
         </div>
-          {/* inner card */}
-          <div className="footer-blocks__card fill-card notify">
-            {/* card title */}
-            <div className="footer-blocks__title anim-uni-in-up">
-              <p className="footer-blocks__title-m">Subscribe to our insights:</p>
-            </div>
-            {/* subscribe form container */}
-            <div className="form-container anim-uni-in-up">
-              {/* reply messages */}
-              <div className={`form__reply subscription-ok ${isSubscribed ? 'visible' : ''}`}>
-                <span className="reply__text">Done! Thanks for subscribing.</span>
-              </div>
-              <div className={`form__reply subscription-error ${error ? 'visible' : ''}`}>
-                <span className="reply__text">Oops! Something went wrong. Please try again later.</span>
-              </div>
-              {/* subscribe form */}
-              <form className="form notify-form form-light" onSubmit={handleSubscribe}>
-                <input 
-                  type="email" 
-                  placeholder="Your Email" 
-                  required 
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                />
-                <button className="btn btn-form btn-absolute-right btn-muted slide-right-up anim-no-delay" type="submit">
-                  <i className="ph ph-arrow-up-right"></i>
-                </button>
-              </form>
-            </div>
-          </div>
         </div>
 
         {/* single column */}
