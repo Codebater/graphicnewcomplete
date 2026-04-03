@@ -86,7 +86,21 @@ export async function POST(req: Request) {
     return NextResponse.json({ url: session.url });
   } catch (e) {
     console.error('consultation checkout:', e);
-    const message = e instanceof Error ? e.message : 'Server error';
-    return NextResponse.json({ error: message }, { status: 500 });
+    const raw = e instanceof Error ? e.message : String(e);
+    const lower = raw.toLowerCase();
+    const isMongoAuth =
+      lower.includes('bad auth') ||
+      lower.includes('authentication failed') ||
+      (lower.includes('mongo') && lower.includes('auth'));
+    let clientMessage = 'Something went wrong starting checkout. Please try again.';
+    if (isMongoAuth) {
+      clientMessage =
+        'Checkout is temporarily unavailable. Please try again later or email hello@graphiq.art.';
+    } else if (raw.includes('STRIPE_SECRET_KEY') || raw.includes('Missing STRIPE')) {
+      clientMessage = 'Checkout is temporarily unavailable. Please try again later.';
+    } else if (raw.length < 100 && !lower.includes('mongodb')) {
+      clientMessage = raw;
+    }
+    return NextResponse.json({ error: clientMessage }, { status: 500 });
   }
 }
