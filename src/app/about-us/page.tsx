@@ -5,14 +5,14 @@ import Footer from '@/components/Footer';
 import AboutUsClient from '@/components/AboutUsClient';
 
 export const metadata = {
-  title: 'About Us - Graphiq.art - Digital Agency & Creative Studio',
-  description: 'Learn about Graphiq.art - a creative digital agency specializing in innovative design and cutting-edge development. Meet our team of creative leaders and discover our values.',
+  title: 'About Us - GRAPHIC.STUDIO LLC - Digital Agency & Creative Studio',
+  description: 'Learn about GRAPHIC.STUDIO LLC - a creative digital agency specializing in innovative design and cutting-edge development. Meet our team of creative leaders and discover our values.',
   keywords: 'about us, creative agency, digital design, web development, team, values, innovation',
   openGraph: {
-    title: 'About Us - Graphiq.art',
-    description: 'Learn about Graphiq.art - a creative digital agency specializing in innovative design and cutting-edge development.',
+    title: 'About Us - GRAPHIC.STUDIO LLC',
+    description: 'Learn about GRAPHIC.STUDIO LLC - a creative digital agency specializing in innovative design and cutting-edge development.',
     url: '/about-us',
-    siteName: 'Graphiq.art',
+    siteName: 'GRAPHIC.STUDIO LLC',
     type: 'website',
   },
 };
@@ -170,7 +170,7 @@ export default function AboutUs() {
                               <div className="col-12">
                                 <div className="mxd-section-title__descr">
                                   <p className="anim-uni-in-up">
-                                    graphiq.art began as a passion project between two friends, a couple of random gigs, and one simple belief—that work should never feel like a chore. What started as &apos;just some ticks&apos; on a to-do list quickly grew into a dedicated crew of creators who put their heart, style, and soul into everything they do.
+                                    GRAPHIC.STUDIO LLC began as a passion project between two friends, a couple of random gigs, and one simple belief—that work should never feel like a chore. What started as &apos;just some ticks&apos; on a to-do list quickly grew into a dedicated crew of creators who put their heart, style, and soul into everything they do.
                                   </p>
                                 </div>
                               </div>

@@ -15,8 +15,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Graphic.Art creative web design agency",
-  description: "Graphic.Art creative web design agency",
+  title: "GRAPHIC.STUDIO LLC creative web design agency",
+  description: "GRAPHIC.STUDIO LLC creative web design agency",
 };
 
 export default function RootLayout({

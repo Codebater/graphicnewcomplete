@@ -4,14 +4,14 @@ import Footer from '@/components/Footer';
 import DynamicPortfolio from '@/components/DynamicPortfolio';
 
 export const metadata = {
-  title: 'Portfolio - Graphiq.art - Our Creative Projects',
+  title: 'Portfolio - GRAPHIC.STUDIO LLC - Our Creative Projects',
   description: 'Explore our portfolio of creative projects, innovative designs, and digital solutions. Discover how we bring ideas to life through cutting-edge design and development.',
   keywords: 'portfolio, creative projects, design work, web development, digital solutions, case studies',
   openGraph: {
-    title: 'Portfolio - Graphiq.art',
+    title: 'Portfolio - GRAPHIC.STUDIO LLC',
     description: 'Explore our portfolio of creative projects, innovative designs, and digital solutions.',
     url: '/portfolio',
-    siteName: 'Graphiq.art',
+    siteName: 'GRAPHIC.STUDIO LLC',
     type: 'website',
   },
 };

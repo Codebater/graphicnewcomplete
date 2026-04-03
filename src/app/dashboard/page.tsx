@@ -3,7 +3,7 @@ import { AuthProvider } from '@/components/AuthProvider';
 import ProtectedRoute from '@/components/ProtectedRoute';
 
 export const metadata = {
-  title: 'Dashboard | Graphiq.Art',
+  title: 'Dashboard | GRAPHIC.STUDIO LLC',
   description: 'Manage your projects and portfolio',
 };
 

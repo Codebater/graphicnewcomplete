@@ -6,14 +6,14 @@ import StepForm from '@/components/StepForm';
 import '@/styles/step-form.css';
 
 export const metadata = {
-  title: 'Contact - Graphiq.art - Let\'s Talk About Your Project',
-  description: 'Get in touch with Graphiq.art for your next creative project. We\'re here to answer your questions and bring your ideas to life. Contact us today!',
+  title: 'Contact - GRAPHIC.STUDIO LLC - Let\'s Talk About Your Project',
+  description: 'Get in touch with GRAPHIC.STUDIO LLC for your next creative project. We\'re here to answer your questions and bring your ideas to life. Contact us today!',
   keywords: 'contact, get in touch, creative agency contact, project inquiry, design consultation, web development contact',
   openGraph: {
-    title: 'Contact - Graphiq.art',
-    description: 'Get in touch with Graphiq.art for your next creative project. We\'re here to answer your questions and bring your ideas to life.',
+    title: 'Contact - GRAPHIC.STUDIO LLC',
+    description: 'Get in touch with GRAPHIC.STUDIO LLC for your next creative project. We\'re here to answer your questions and bring your ideas to life.',
     url: '/contact',
-    siteName: 'Graphiq.art',
+    siteName: 'GRAPHIC.STUDIO LLC',
     type: 'website',
   },
 };
@@ -74,7 +74,7 @@ export default function Contact() {
                           Let&apos;s schedule<br/>a consultation!
                         </h1>
                         <Link className="btn btn-line-headline slide-right-up anim-no-delay" href="mailto:hello@graphiq.art?subject=Message%20from%20your%20site">
-                          <span className="btn-caption">hello@graphiq.art</span>
+                          <span className="btn-caption">HELLO@GRAPHIQ.ART</span>
                           <i className="ph-bold ph-arrow-up-right"></i>
                         </Link>
                         <p className="inner-headline__text t-large t-bright loading__item">
@@ -214,7 +214,7 @@ export default function Contact() {
                                 </div>
                                 <ul>
                                   <li className="anim-uni-in-up">
-                                    <strong>Email:</strong> <a href="mailto:hello@graphiq.art?subject=Message%20from%20your%20site">hello@graphiq.art</a>
+                                    <strong>Email:</strong> <a href="mailto:hello@graphiq.art?subject=Message%20from%20your%20site">HELLO@GRAPHIQ.ART</a>
                                   </li>
                                   <li className="anim-uni-in-up">
                                     <strong>Phone:</strong> to come

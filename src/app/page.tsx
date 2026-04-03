@@ -56,7 +56,7 @@ export default function Home() {
                         {/* Marquee Items */}
                         {[...Array(3)].map((_, i) => (
                           <div key={i} className="marquee__item one-line item-regular text">
-                            <p className="marquee__text">Graphiq.art — Visual. Digital. Remarkable</p>
+                            <p className="marquee__text">GRAPHIC.STUDIO LLC — Visual. Digital. Remarkable</p>
                             <div className="marquee__image">
                               <svg className="mxd-pulse" version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80" fill="currentColor">
                                 <path fill="currentColor" d="M78.4,38.4c0,0-11.8,0-15.8,0c-1.6,0-4.8-0.2-7.1-0.8c-2.3-0.6-4.3-0.8-6.3-2.4c-2-1.2-3.5-3.2-4.7-4.8

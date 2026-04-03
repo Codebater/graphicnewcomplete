@@ -5,14 +5,14 @@ import Footer from '@/components/Footer';
 import PricingClient from '@/components/PricingClient';
 
 export const metadata = {
-  title: 'Pricing - Graphiq.art - Creative Solutions Made Simple',
+  title: 'Pricing - GRAPHIC.STUDIO LLC - Creative Solutions Made Simple',
   description: 'Explore our pricing packages for creative digital solutions. From starter packages for small businesses to custom enterprise solutions, we have a package that fits your needs.',
   keywords: 'pricing, packages, web design pricing, digital agency pricing, creative solutions, starter package, professional package',
   openGraph: {
-    title: 'Pricing - Graphiq.art',
+    title: 'Pricing - GRAPHIC.STUDIO LLC',
     description: 'Explore our pricing packages for creative digital solutions. From starter packages to custom enterprise solutions.',
     url: '/pricing',
-    siteName: 'Graphiq.art',
+    siteName: 'GRAPHIC.STUDIO LLC',
     type: 'website',
   },
 };

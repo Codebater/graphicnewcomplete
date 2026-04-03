@@ -27,7 +27,7 @@ const Footer = () => {
       <div className="mxd-footer__text-wrap">
         <div className="fullwidth-text__tl-trigger"></div>
         <div className="mxd-footer__fullwidth-text anim-top-to-bottom">
-          <h1 className="footerh1">graphiq.art</h1>
+          <h1 className="footerh1">GRAPHIC.STUDIO LLC</h1>
         </div>
       </div>
       {/* Footer Block - Fullwidth Text End */}
@@ -87,7 +87,7 @@ const Footer = () => {
                   c0,0,0-3.1,0-4.1c0-0.4,0.2-1.7,0.2-1.7c0.1-0.6,0.2-1.1,0.6-1.6c0.3-0.4,0.7-0.8,1.1-1.1c0.5-0.3,1-0.5,1.6-0.6
                   c0,0,1.3-0.1,1.8-0.2c1,0,4,0,4,0c0.2,0,0.4-0.2,0.4-0.4C20,9.8,19.8,9.6,19.6,9.6L19.6,9.6z"/>
               </svg>
-              <a href="mailto:hello@graphiq.art">hello@graphiq.art</a>
+              <a href="mailto:hello@graphiq.art">HELLO@GRAPHIQ.ART</a>
             </p>
           </div>
           {/* inner card */}
@@ -117,7 +117,7 @@ const Footer = () => {
                 c0,0,0-3.1,0-4.1c0-0.4,0.2-1.7,0.2-1.7c0.1-0.6,0.2-1.1,0.6-1.6c0.3-0.4,0.7-0.8,1.1-1.1c0.5-0.3,1-0.5,1.6-0.6
                 c0,0,1.3-0.1,1.8-0.2c1,0,4,0,4,0c0.2,0,0.4-0.2,0.4-0.4C20,9.8,19.8,9.6,19.6,9.6L19.6,9.6z"/>
             </svg>
-            <span>Graphiq Studio LLC</span>
+            <span>GRAPHIQ STUDIO LLC</span>
           </p>
         </div>
           {/* inner card */}
@@ -189,7 +189,7 @@ const Footer = () => {
             {/* links */}
             <div className="footer-blocks__links anim-uni-in-up">
               <p className="t-xsmall t-muted">
-                <a className="no-effect" href="" target="_blank" rel="noopener noreferrer">graphiq_art</a>
+                <a className="no-effect" href="" target="_blank" rel="noopener noreferrer">GRAPHIQ_ART</a>
                 <i className="ph-bold ph-copyright"></i>
                 2025
               </p>
