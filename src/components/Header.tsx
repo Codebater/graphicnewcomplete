@@ -71,7 +71,7 @@ export default function Header() {
               {/* data bottom line */}
               <div className="mxd-menu__data menu-fade-in">
                 <p className="t-xsmall">
-                  <a className="no-effect" href="" target="_blank">graphic.studio</a>
+                  <a className="no-effect" href="" target="_blank">graphic.studio LLC</a>
                 </p>
                 <p className="t-xsmall">
                   <i className="ph ph-copyright"></i>
@@ -93,7 +93,7 @@ export default function Header() {
               <Image className="emoji-display" id="emoji-display" src="/emojis/1.png" alt="Emoji" width={40} height={40} />
             </div>
             {/* logo text */}
-            <span className="mxd-logo__text">graphic.<br/>studio</span>
+            <span className="mxd-logo__text">graphic.<br/>studio LLC</span>
           </Link>
         </div>
         
