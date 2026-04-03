@@ -2,18 +2,18 @@ import Image from 'next/image';
 import Link from 'next/link';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-import StepForm from '@/components/StepForm';
+import ContactConsultationFlow from '@/components/ContactConsultationFlow';
 import '@/styles/step-form.css';
 
 export const metadata = {
-  title: 'Contact - GRAPHIC.STUDIO LLC - Let\'s Talk About Your Project',
-  description: 'Get in touch with GRAPHIC.STUDIO LLC for your next creative project. We\'re here to answer your questions and bring your ideas to life. Contact us today!',
+  title: 'Contact - GRAPHIQ STUDIO LLC - Let\'s Talk About Your Project',
+  description: 'Get in touch with GRAPHIQ STUDIO LLC for your next creative project. We\'re here to answer your questions and bring your ideas to life. Contact us today!',
   keywords: 'contact, get in touch, creative agency contact, project inquiry, design consultation, web development contact',
   openGraph: {
-    title: 'Contact - GRAPHIC.STUDIO LLC',
-    description: 'Get in touch with GRAPHIC.STUDIO LLC for your next creative project. We\'re here to answer your questions and bring your ideas to life.',
+    title: 'Contact - GRAPHIQ STUDIO LLC',
+    description: 'Get in touch with GRAPHIQ STUDIO LLC for your next creative project. We\'re here to answer your questions and bring your ideas to life.',
     url: '/contact',
-    siteName: 'GRAPHIC.STUDIO LLC',
+    siteName: 'GRAPHIQ STUDIO LLC',
     type: 'website',
   },
 };
@@ -101,7 +101,7 @@ export default function Contact() {
                   <div className="col-12 col-xl-10">
                     <div className="mxd-block__content contact">
                       <div className="mxd-block__inner-form loading__fade">
-                        <StepForm />
+                        <ContactConsultationFlow />
                       </div>
                     </div>
                   </div>

@@ -1,7 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { submitToFormspree, getSuccessMessage, getErrorMessage } from '@/lib/formspree';
+import { useState } from 'react';
 
 interface FormData {
   service: string;
@@ -72,7 +71,6 @@ export default function StepForm() {
     budget: ''
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [showSuccess, setShowSuccess] = useState(false);
 
   // Generate available dates (next 30 days, excluding weekends)
   const getAvailableDates = () => {
@@ -111,44 +109,38 @@ export default function StepForm() {
 
   const handleSubmit = async () => {
     setIsSubmitting(true);
-    
+
     try {
-      // Submit to Formspree using utility function
-      await submitToFormspree(
-        {
+      const res = await fetch('/api/consultation/checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
           service: formData.service,
           date: formData.date,
           time: formData.time,
           name: formData.name,
-          company: formData.company,
+          company: formData.company || '',
           email: formData.email,
-          phone: formData.phone,
+          phone: formData.phone || '',
           message: formData.message,
-          budget: formData.budget,
-        },
-        {
-          subject: `New consultation request from ${formData.name}`,
-          replyTo: formData.email,
-        }
-      );
-
-      setShowSuccess(true);
-      // Reset form data
-      setFormData({
-        service: '',
-        date: '',
-        time: '',
-        name: '',
-        company: '',
-        email: '',
-        phone: '',
-        message: '',
-        budget: ''
+          budget: formData.budget || '',
+        }),
       });
-      setCurrentStep(1); // Reset to first step
+      const data = (await res.json()) as { url?: string; error?: string };
+      if (!res.ok) {
+        throw new Error(data.error || 'Could not start checkout');
+      }
+      if (!data.url) {
+        throw new Error('No checkout URL returned');
+      }
+      window.location.assign(data.url);
     } catch (error) {
-      console.error('Form submission error:', error);
-      alert(getErrorMessage());
+      console.error('Checkout error:', error);
+      alert(
+        error instanceof Error
+          ? error.message
+          : 'Could not start payment. Check your connection and try again.'
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -175,53 +167,6 @@ export default function StepForm() {
         return true;
     }
   };
-
-  if (showSuccess) {
-    return (
-      <div className="step-form-success text-center">
-        <div className="success-icon">
-          <i className="ph-fill ph-check-circle" style={{ fontSize: '4rem', color: '#22c55e' }}></i>
-        </div>
-        <h3 className="success-title">Booking Confirmed!</h3>
-        <p className="success-message">
-          Thank you for scheduling a {services.find(s => s.id === formData.service)?.title} session.
-          <br />
-          We&apos;ll send you a confirmation email shortly with meeting details.
-        </p>
-        <div className="booking-details">
-          <div className="detail-item">
-            <strong>Date:</strong> {formatDate(new Date(formData.date))}
-          </div>
-          <div className="detail-item">
-            <strong>Time:</strong> {formData.time}
-          </div>
-          <div className="detail-item">
-            <strong>Duration:</strong> {services.find(s => s.id === formData.service)?.duration}
-          </div>
-        </div>
-        <button 
-          className="btn btn-default btn-large"
-          onClick={() => {
-            setShowSuccess(false);
-            setCurrentStep(1);
-            setFormData({
-              service: '',
-              date: '',
-              time: '',
-              name: '',
-              company: '',
-              email: '',
-              phone: '',
-              message: '',
-              budget: ''
-            });
-          }}
-        >
-          Book Another Meeting
-        </button>
-      </div>
-    );
-  }
 
   return (
     <div className="step-form-container">
@@ -394,7 +339,23 @@ export default function StepForm() {
           <div className="step step-confirmation">
             <h2 className="step-title">Confirm your booking</h2>
             <p className="step-subtitle">Please review your meeting details before confirming.</p>
-            
+
+            <div
+              className="detail-section mb-3"
+              style={{
+                padding: '1rem 1.25rem',
+                borderRadius: '8px',
+                border: '1px solid rgba(255,255,255,0.12)',
+                background: 'rgba(255,255,255,0.03)',
+              }}
+            >
+              <p className="t-bright mb-0">
+                A <strong>$300</strong> consultation fee is required to submit this request. You will be
+                redirected to secure Stripe checkout. After payment, you will receive a confirmation from{' '}
+                <strong>updates@graphiq.art</strong>.
+              </p>
+            </div>
+
             <div className="confirmation-details">
               <div className="detail-section">
                 <h3>Service</h3>
@@ -471,11 +432,11 @@ export default function StepForm() {
             {isSubmitting ? (
               <>
                 <i className="ph ph-spinner ph-spin"></i>
-                Confirming...
+                Redirecting to checkout…
               </>
             ) : (
               <>
-                Confirm Booking
+                Pay $300 &amp; complete booking
                 <i className="ph ph-check"></i>
               </>
             )}

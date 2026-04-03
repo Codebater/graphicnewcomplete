@@ -5,14 +5,14 @@ import Footer from '@/components/Footer';
 import AboutUsClient from '@/components/AboutUsClient';
 
 export const metadata = {
-  title: 'About Us - GRAPHIC.STUDIO LLC - Digital Agency & Creative Studio',
-  description: 'Learn about GRAPHIC.STUDIO LLC - a creative digital agency specializing in innovative design and cutting-edge development. Meet our team of creative leaders and discover our values.',
+  title: 'About Us - GRAPHIQ STUDIO LLC - Digital Agency & Creative Studio',
+  description: 'Learn about GRAPHIQ STUDIO LLC - a creative digital agency specializing in innovative design and cutting-edge development. Meet our team of creative leaders and discover our values.',
   keywords: 'about us, creative agency, digital design, web development, team, values, innovation',
   openGraph: {
-    title: 'About Us - GRAPHIC.STUDIO LLC',
-    description: 'Learn about GRAPHIC.STUDIO LLC - a creative digital agency specializing in innovative design and cutting-edge development.',
+    title: 'About Us - GRAPHIQ STUDIO LLC',
+    description: 'Learn about GRAPHIQ STUDIO LLC - a creative digital agency specializing in innovative design and cutting-edge development.',
     url: '/about-us',
-    siteName: 'GRAPHIC.STUDIO LLC',
+    siteName: 'GRAPHIQ STUDIO LLC',
     type: 'website',
   },
 };
@@ -170,7 +170,7 @@ export default function AboutUs() {
                               <div className="col-12">
                                 <div className="mxd-section-title__descr">
                                   <p className="anim-uni-in-up">
-                                    GRAPHIC.STUDIO LLC began as a passion project between two friends, a couple of random gigs, and one simple belief—that work should never feel like a chore. What started as &apos;just some ticks&apos; on a to-do list quickly grew into a dedicated crew of creators who put their heart, style, and soul into everything they do.
+                                    GRAPHIQ STUDIO LLC began as a passion project between two friends, a couple of random gigs, and one simple belief—that work should never feel like a chore. What started as &apos;just some ticks&apos; on a to-do list quickly grew into a dedicated crew of creators who put their heart, style, and soul into everything they do.
                                   </p>
                                 </div>
                               </div>

@@ -54,7 +54,7 @@ const getProjectData = async (id: string) => {
         id: project._id.toString(),
         title: project.title,
         description: project.description,
-        client: project.client || 'GRAPHIC.STUDIO LLC',
+        client: project.client || 'GRAPHIQ STUDIO LLC',
         services: project.services || 'Creative Development',
         industries: project.industries || 'Digital',
         date: project.date || new Date(project.createdAt).toLocaleDateString('en-US', { month: 'long', year: 'numeric' }),
@@ -225,14 +225,14 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   const project = await getProjectData(id);
   
   return {
-    title: `${project.title} - Project Details - GRAPHIC.STUDIO LLC`,
+    title: `${project.title} - Project Details - GRAPHIQ STUDIO LLC`,
     description: project.description,
     keywords: project.tags.join(', '),
     openGraph: {
       title: `${project.title} - Project Details`,
       description: project.description,
       url: `/project-details/${id}`,
-      siteName: 'GRAPHIC.STUDIO LLC',
+      siteName: 'GRAPHIQ STUDIO LLC',
       type: 'website',
     },
   };
