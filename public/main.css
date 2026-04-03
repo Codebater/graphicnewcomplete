@@ -567,22 +567,22 @@ a {
   text-shadow: none;
 }
 
-/* Scrollbars: visible; thumb uses neutral grays, not accent (no lime bar). */
-::-webkit-scrollbar {
+/* One document scrollbar only: style the viewport (html), not every scrollable node (avoids double bars). */
+html::-webkit-scrollbar {
   width: 6px;
   background: var(--base-shade);
 }
 
-::-webkit-scrollbar-track {
+html::-webkit-scrollbar-track {
   background-color: var(--base-shade);
 }
 
-::-webkit-scrollbar-thumb {
+html::-webkit-scrollbar-thumb {
   background-color: var(--t-muted);
   border-radius: var(--_radius-s);
 }
 
-::-webkit-scrollbar-thumb:hover {
+html::-webkit-scrollbar-thumb:hover {
   background-color: var(--t-muted-extra);
 }
 
@@ -590,6 +590,7 @@ html {
   width: 100%;
   height: 100%;
   overflow-x: hidden;
+  overflow-y: auto;
   scrollbar-width: thin;
   scrollbar-color: var(--t-muted) var(--base-shade);
   font-family: sans-serif;
@@ -603,12 +604,21 @@ body {
   width: 100%;
   min-width: 360px;
   overflow-x: hidden !important;
+  overflow-y: visible;
+  scrollbar-width: none;
   font: normal 400 var(--_size)/1.6 var(--_font-default);
   text-rendering: optimizeLegibility;
   background-color: var(--base);
   color: var(--t-medium);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+/* Suppress a second scrollbar on body if the browser still paints one */
+body::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
 }
 
 section {
