@@ -23,15 +23,6 @@ const Footer = () => {
 
   return (
     <footer id="mxd-footer" className="mxd-footer">
-      {/* Footer Block - Fullwidth Text Start */}
-      <div className="mxd-footer__text-wrap">
-        <div className="fullwidth-text__tl-trigger"></div>
-        <div className="mxd-footer__fullwidth-text anim-top-to-bottom">
-          <h1 className="footerh1">GRAPHIC.STUDIO LLC</h1>
-        </div>
-      </div>
-      {/* Footer Block - Fullwidth Text End */}
-
       {/* Footer Block - Info Columns Start */}
       <div className="mxd-footer__footer-blocks">
         {/* single column */}
