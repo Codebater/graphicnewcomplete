@@ -6522,11 +6522,18 @@ form textarea:required:valid {
   width: 100%;
   max-width: 1920px;
   margin: 0 auto;
+  margin-top: 5rem;
   padding-bottom: 3rem;
 }
 @media only screen and (min-width: 768px) {
   .mxd-footer {
+    margin-top: 8rem;
     padding-bottom: 6rem;
+  }
+}
+@media only screen and (min-width: 1200px) {
+  .mxd-footer {
+    margin-top: 10rem;
   }
 }
 
@@ -6773,10 +6780,11 @@ form textarea:required:valid {
           flex-direction: column;
   gap: 3rem;
   width: 100%;
-  padding: 3rem;
+  padding: 4.2rem 3.8rem;
   background-color: var(--base-tint);
   -moz-border-radius: var(--_radius-m);
        border-radius: var(--_radius-m);
+  box-sizing: border-box;
 }
 .footer-blocks__card.fullheight-card {
   height: 100%;
@@ -6797,7 +6805,7 @@ form textarea:required:valid {
 }
 @media only screen and (min-width: 768px) {
   .footer-blocks__card {
-    padding: 5rem;
+    padding: 6rem 5.5rem;
   }
 }
 .footer-blocks__block {
