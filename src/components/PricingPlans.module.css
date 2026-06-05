@@ -1,0 +1,209 @@
+.wrap {
+  width: 100%;
+}
+
+/* Post-checkout banner */
+.notice {
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  padding: 1.6rem 2rem;
+  border-radius: 1.4rem;
+  margin-bottom: 3.2rem;
+  font-size: 1.5rem;
+  line-height: 1.4;
+}
+.notice i {
+  font-size: 2rem;
+  flex: 0 0 auto;
+}
+.noticeOk {
+  background: rgba(var(--accent-rgb), 0.14);
+  color: var(--base-opp);
+  border: 1px solid var(--accent);
+}
+.noticeWarn {
+  background: var(--base-tint);
+  color: var(--base-opp);
+  border: 1px solid var(--base-shade);
+}
+.noticeClose {
+  margin-left: auto;
+  background: none;
+  border: none;
+  color: inherit;
+  cursor: pointer;
+  font-size: 1.8rem;
+  line-height: 1;
+  opacity: 0.6;
+  transition: opacity 0.2s ease;
+}
+.noticeClose:hover {
+  opacity: 1;
+}
+
+/* Grid */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2.4rem;
+}
+
+/* Card */
+.card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 3.2rem 2.8rem;
+  background: var(--base-tint);
+  border: 1px solid var(--base-shade);
+  border-radius: 2.4rem;
+  transition: border-color 0.35s ease, transform 0.35s ease, box-shadow 0.35s ease;
+}
+.card:hover {
+  border-color: var(--accent);
+  transform: translateY(-4px);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.18);
+}
+
+/* Hosting / SEO segmented toggle (retainer card) */
+.toggle {
+  display: inline-flex;
+  gap: 0.4rem;
+  padding: 0.4rem;
+  margin-bottom: 2.4rem;
+  background: var(--base-shade);
+  border-radius: 1rem;
+}
+.toggleBtn {
+  border: none;
+  background: none;
+  padding: 0.7rem 1.6rem;
+  border-radius: 0.7rem;
+  font-family: var(--_font-default, "Funnel Sans", sans-serif);
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: var(--t-muted);
+  cursor: pointer;
+  transition: background-color 0.25s ease, color 0.25s ease;
+}
+.toggleBtn:hover {
+  color: var(--base-opp);
+}
+.toggleBtnActive,
+.toggleBtnActive:hover {
+  background: var(--base-opp);
+  color: var(--base);
+}
+
+.top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 2.4rem;
+}
+.iconBox {
+  width: 6.4rem;
+  height: 6.4rem;
+  border-radius: 1.6rem;
+  background: var(--base-shade);
+  display: grid;
+  place-items: center;
+  font-size: 3rem;
+  color: var(--base-opp);
+}
+.num {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-family: var(--_font-default, "Funnel Sans", sans-serif);
+  font-size: 1.4rem;
+  color: var(--t-muted);
+}
+.dot {
+  width: 0.7rem;
+  height: 0.7rem;
+  border-radius: 50%;
+  background: var(--accent);
+}
+
+.head {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+.badge {
+  align-self: flex-start;
+  font-family: var(--_font-default, "Funnel Sans", sans-serif);
+  font-size: 1.1rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--base);
+  background: var(--accent);
+  padding: 0.3rem 0.9rem;
+  border-radius: 0.6rem;
+}
+.title {
+  margin: 0;
+  font-family: var(--_font-accent, "Funnel Display", sans-serif);
+  font-size: 2.4rem;
+  line-height: 1.15;
+  color: var(--base-opp);
+}
+.desc {
+  margin: 1.2rem 0 2.4rem;
+  font-family: var(--_font-default, "Funnel Sans", sans-serif);
+  font-size: 1.5rem;
+  line-height: 1.5;
+  color: var(--t-muted);
+}
+
+.features {
+  margin: 0 0 2.4rem;
+}
+
+/* Footer pinned to bottom */
+.footer {
+  margin-top: auto;
+  padding-top: 2.4rem;
+  border-top: 1px solid var(--base-shade);
+}
+.priceRow {
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+  margin-bottom: 1.6rem;
+}
+.price {
+  font-family: var(--_font-accent, "Funnel Display", sans-serif);
+  font-size: 2.6rem;
+  font-weight: 800;
+  color: var(--base-opp);
+}
+.period {
+  font-family: var(--_font-default, "Funnel Sans", sans-serif);
+  font-size: 1.4rem;
+  color: var(--t-muted);
+}
+.error {
+  margin: 1rem 0 0;
+  font-size: 1.3rem;
+  line-height: 1.4;
+  color: #e5484d;
+}
+
+/* Responsive — match theme breakpoints */
+@media (max-width: 1199px) {
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (max-width: 767px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+  .card {
+    padding: 2.8rem 2.4rem;
+  }
+}

@@ -117,6 +117,12 @@ export default function AppInitializer() {
             hideLoader();
           }
           pageAppearance();
+          // Recalculate ScrollTrigger positions now that every image has loaded.
+          // Pinned/stacking sections (e.g. the card stack) measure their height
+          // up front; before images load that height is wrong, so on mobile the
+          // section scrolls without stacking until a later resize forces a
+          // refresh. Refreshing here makes it stack correctly from the start.
+          requestAnimationFrame(() => ScrollTrigger.refresh());
         });
       } else {
         // Fallback if imagesLoaded is not available
@@ -125,6 +131,7 @@ export default function AppInitializer() {
             hideLoader();
           }
           pageAppearance();
+          requestAnimationFrame(() => ScrollTrigger.refresh());
         }, 1000);
       }
 
@@ -713,8 +720,8 @@ export default function AppInitializer() {
             start: "top 99%",
             end: "top 24%",
             scrub: {
-              scrub: true, 
-              ease: "none" 
+              scrub: true,
+              ease: "none"
             },
           },
         });
@@ -956,8 +963,8 @@ export default function AppInitializer() {
             start: "top 82%",
             end: "top 14%",
             scrub: {
-              scrub: true, 
-              ease: "power4.inOut" 
+              scrub: true,
+              ease: "power4.inOut"
             },
           },
         });
@@ -978,8 +985,8 @@ export default function AppInitializer() {
             start: "top 82%",
             end: "top 14%",
             scrub: {
-              scrub: true, 
-              ease: "power4.inOut" 
+              scrub: true,
+              ease: "power4.inOut"
             },
           },
         });

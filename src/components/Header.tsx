@@ -1,5 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
+import RotatingCaption from '@/components/RotatingCaption';
 
 export default function Header() {
   return (
@@ -25,7 +26,7 @@ export default function Header() {
             <div className="mxd-menu__inner">
               {/* left side */}
               <div className="mxd-menu__left">
-                <p className="mxd-menu__caption menu-fade-in">🚀Warning we cause sale spikes</p>
+                <p className="mxd-menu__caption menu-fade-in"><RotatingCaption /></p>
                 <div className="main-menu">
                   <nav className="main-menu__content">
                     <ul id="main-menu" className="main-menu__accordion">

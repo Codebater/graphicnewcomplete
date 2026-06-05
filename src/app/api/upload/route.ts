@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { writeFile } from 'fs/promises';
-import { join } from 'path';
+import { put } from '@vercel/blob';
+
+export const runtime = 'nodejs';
 
 export async function POST(request: NextRequest) {
   try {
@@ -14,6 +15,20 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Uploads go to Vercel Blob (persistent cloud storage). Writing to the
+    // local filesystem does NOT work on Vercel — serverless functions run on a
+    // read-only filesystem, which is why disk-based uploads failed in production.
+    if (!process.env.BLOB_READ_WRITE_TOKEN) {
+      return NextResponse.json(
+        {
+          success: false,
+          error:
+            'Image storage is not configured. Create a Blob store in Vercel (Storage → Blob) and connect it to this project, then redeploy. For local dev, set BLOB_READ_WRITE_TOKEN in .env.local.',
+        },
+        { status: 500 }
+      );
+    }
+
     const uploadedFiles = [];
 
     for (const file of files) {
@@ -21,65 +36,34 @@ export async function POST(request: NextRequest) {
         continue;
       }
 
-      const bytes = await file.arrayBuffer();
-      const buffer = Buffer.from(bytes);
-
-      // Generate unique filename
+      // Unique, collision-safe object key
       const timestamp = Date.now();
       const randomString = Math.random().toString(36).substring(2, 15);
-      const extension = file.name.split('.').pop();
-      const filename = `${timestamp}-${randomString}.${extension}`;
+      const extension = file.name.includes('.') ? file.name.split('.').pop() : 'bin';
+      const pathname = `uploads/${timestamp}-${randomString}.${extension}`;
 
-      // Save to public/uploads directory
-      const uploadDir = join(process.cwd(), 'public', 'uploads');
-      const filepath = join(uploadDir, filename);
+      const blob = await put(pathname, file, {
+        access: 'public',
+        contentType: file.type || undefined,
+        addRandomSuffix: false,
+      });
 
-      try {
-        await writeFile(filepath, buffer);
-        
-        // Return the public URL
-        const publicUrl = `/uploads/${filename}`;
-        uploadedFiles.push({
-          filename: file.name,
-          url: publicUrl,
-          size: file.size,
-          type: file.type
-        });
-      } catch (writeError) {
-        console.error('Error writing file:', writeError);
-        // Create uploads directory if it doesn't exist
-        const { mkdir } = await import('fs/promises');
-        try {
-          await mkdir(uploadDir, { recursive: true });
-          await writeFile(filepath, buffer);
-          
-          const publicUrl = `/uploads/${filename}`;
-          uploadedFiles.push({
-            filename: file.name,
-            url: publicUrl,
-            size: file.size,
-            type: file.type
-          });
-        } catch (retryError) {
-          console.error('Error creating directory or writing file:', retryError);
-          return NextResponse.json(
-            { success: false, error: 'Failed to save file' },
-            { status: 500 }
-          );
-        }
-      }
+      uploadedFiles.push({
+        filename: file.name,
+        url: blob.url, // permanent public CDN URL
+        size: file.size,
+        type: file.type,
+      });
     }
 
     return NextResponse.json({
       success: true,
       data: uploadedFiles,
-      message: `${uploadedFiles.length} file(s) uploaded successfully`
+      message: `${uploadedFiles.length} file(s) uploaded successfully`,
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error uploading files:', error);
-    return NextResponse.json(
-      { success: false, error: 'Failed to upload files' },
-      { status: 500 }
-    );
+    const message = error instanceof Error ? error.message : 'Failed to upload files';
+    return NextResponse.json({ success: false, error: message }, { status: 500 });
   }
 }

@@ -3,6 +3,7 @@ import Link from 'next/link';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import AboutUsClient from '@/components/AboutUsClient';
+import FreelancersList from '@/components/FreelancersList';
 
 export const metadata = {
   title: 'About Us - GRAPHIQ STUDIO LLC - Digital Agency & Creative Studio',
@@ -83,106 +84,48 @@ export default function AboutUs() {
           </div>
         </div>
 
-        {/* Section - Team Leaders */}
+        {/* Section - Freelancers We Work With */}
         <div className="mxd-section padding-pre-grid">
           <div className="mxd-container grid-container">
 
-            {/* Block - Team Leaders */}
-            <div className="mxd-block">
-              <div className="mxd-team-cards">
-                <div className="container-fluid p-0">
-                  <div className="row g-0 flex-column-reverse flex-xl-row">
-      
-                    {/* Team Cards */}
-                    <div className="col-12 col-xl-8">
-                      <div className="container-fluid p-0">
-                        <div className="row g-0">
-                          
-                          {/* Roberto Card */}
-                          <div className="col-12 col-md-6 mxd-team-cards__item mxd-grid-item no-margin-desktop animate-card-3">
-                            <div className="mxd-team-cards__media anim-uni-in-up">
-                              <div className="mxd-team-cards__photo">
-                                <Image 
-                                  src="/porthomeimages/robert.jpg" 
-                                  alt="Roberto Aka Mike - Founder, SEO"
-                                  width={400}
-                                  height={500}
-                                  className="object-cover"
-                                />
-                              </div>
-                              <div className="mxd-team-cards__socials">
-                                <a className="btn btn-anim tag tag-default tag-permanent" href="https://www.linkedin.com/" target="_blank" rel="noopener noreferrer">
-                                  <span className="btn-caption">Linkedin</span>
-                                </a>
-                                <a className="btn btn-anim tag tag-default tag-permanent" href="https://www.behance.net/" target="_blank" rel="noopener noreferrer">
-                                  <span className="btn-caption">Behance</span>
-                                </a>
-                              </div>
-                            </div>
-                            <div className="mxd-team-cards__info">
-                              <p className="mxd-team-cards__name t-large t-bright t-caption">Roberto Aka Mike</p>
-                              <p className="mxd-team-cards__position t-small t-medium t-140">Founder, SEO</p>
-                            </div>
-                          </div>
-
-                          {/* Asad Card */}
-                          <div className="col-12 col-md-6 mxd-team-cards__item mxd-grid-item no-margin-desktop animate-card-3">
-                            <div className="mxd-team-cards__media anim-uni-in-up">
-                              <div className="mxd-team-cards__photo">
-                                <Image 
-                                  src="/porthomeimages/asadllah.jpg" 
-                                  alt="Asad Aka Pharoah - Developer"
-                                  width={400}
-                                  height={500}
-                                  className="object-cover"
-                                />
-                              </div>
-                              <div className="mxd-team-cards__socials">
-                                <a className="btn btn-anim tag tag-default tag-permanent" href="https://www.linkedin.com/" target="_blank" rel="noopener noreferrer">
-                                  <span className="btn-caption">Linkedin</span>
-                                </a>
-                                <a className="btn btn-anim tag tag-default tag-permanent" href="https://www.figma.com/community" target="_blank" rel="noopener noreferrer">
-                                  <span className="btn-caption">Figma Community</span>
-                                </a>
-                              </div>
-                            </div>
-                            <div className="mxd-team-cards__info">
-                              <p className="mxd-team-cards__name t-large t-bright t-caption">Asad Aka Pharoah</p>
-                              <p className="mxd-team-cards__position t-small t-medium t-140">Developer</p>
-                            </div>
-                          </div>
-
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Section Title */}
-                    <div className="col-12 col-xl-4 mxd-team-cards__item mxd-grid-item no-margin animate-card-3">
-                      <div className="mxd-team-cards__h2-block right-block">
-                        <div className="mxd-section-title pre-grid">
-                          <div className="container-fluid p-0">
-                            <div className="row g-0">
-                              <div className="col-12">
-                                <div className="mxd-section-title__title">
-                                  <h2 className="reveal-type">Creative leaders</h2>
-                                </div>
-                              </div>
-                              <div className="col-12">
-                                <div className="mxd-section-title__descr">
-                                  <p className="anim-uni-in-up">
-                                    GRAPHIQ STUDIO LLC began as a passion project between two friends, a couple of random gigs, and one simple belief—that work should never feel like a chore. What started as &apos;just some ticks&apos; on a to-do list quickly grew into a dedicated crew of creators who put their heart, style, and soul into everything they do.
-                                  </p>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
+            {/* Intro Text */}
+            <div className="mxd-block" style={{ marginBottom: '3.5rem' }}>
+              <div className="container-fluid p-0">
+                <div className="row g-0">
+                  <div className="col-12 col-xl-10 mxd-grid-item no-margin">
+                    <p className="t-bright t-large reveal-type anim-uni-in-up">
+                      GRAPHIQ STUDIO LLC began as a passion project between two friends, a couple of random gigs, and one simple belief—that work should never feel like a chore. What started as &apos;just some ticks&apos; on a to-do list quickly grew into a dedicated crew of creators who put their heart, style, and soul into everything they do.
+                    </p>
                   </div>
                 </div>
               </div>
+            </div>
+
+            {/* Section Title */}
+            <div className="mxd-block">
+              <div className="mxd-section-title pre-grid">
+                <div className="container-fluid p-0">
+                  <div className="row g-0">
+                    <div className="col-12 col-xl-8 mxd-grid-item no-margin">
+                      <div className="mxd-section-title__title">
+                        <h2 className="reveal-type">The best freelancers</h2>
+                      </div>
+                    </div>
+                    <div className="col-12 col-xl-4 mxd-grid-item no-margin">
+                      <div className="mxd-section-title__descr">
+                        <p className="anim-uni-in-up">
+                          We don&apos;t do average. GRAPHIQ STUDIO LLC works hand in hand with a hand-picked circle of freelancers—people who put their heart, style, and soul into everything they touch.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Block - Freelancers Interactive List */}
+            <div className="mxd-block loading__fade">
+              <FreelancersList />
             </div>
 
           </div>

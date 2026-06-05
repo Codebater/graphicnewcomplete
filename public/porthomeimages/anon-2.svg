@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="400" height="500" viewBox="0 0 400 500" fill="none">
+  <rect width="400" height="500" fill="#DDF160"/>
+  <g fill="#161616" fill-opacity="0.9">
+    <circle cx="200" cy="200" r="70"/>
+    <path d="M200 290c-78 0-130 52-130 120v90h260v-90c0-68-52-120-130-120z"/>
+  </g>
+  <g fill="#161616">
+    <circle cx="300" cy="120" r="46"/>
+  </g>
+  <text x="300" y="138" font-family="Funnel Display, sans-serif" font-size="56" font-weight="800" fill="#DDF160" text-anchor="middle">?</text>
+</svg>

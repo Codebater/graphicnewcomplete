@@ -217,7 +217,7 @@ export default function Contact() {
                                     <strong>Email:</strong> <a href="mailto:hello@graphiq.art?subject=Message%20from%20your%20site">HELLO@GRAPHIQ.ART</a>
                                   </li>
                                   <li className="anim-uni-in-up">
-                                    <strong>Phone:</strong> to come
+                                    <strong>Phone:</strong> <a href="tel:+12132322227">+1 213-232-2227</a>
                                   </li>
                                   <li className="anim-uni-in-up">
                                     <strong>Where we are today:</strong> Somewhere inspiring 🌍
