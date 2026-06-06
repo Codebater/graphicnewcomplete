@@ -3,8 +3,47 @@ import Link from 'next/link';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import Statistics from '@/components/Statistics';
+import connectDB from '@/lib/mongodb';
+import Project from '@/models/Project';
 
-export default function Home() {
+// Re-render the home page at most once a minute so newly published projects
+// appear in the hero "sampled work" tiles automatically (ISR).
+export const revalidate = 60;
+
+type ShowcaseItem = { _id: string; title: string; featuredImage?: string };
+
+// Hero tile layout slots — preserves the original design positions.
+const HERO_SLOTS = [
+  { wrapClass: 'mxd-hero-02-image__portrait portrait-01', inner: 'type-01', w: 300, h: 400, row: 1 },
+  { wrapClass: 'mxd-hero-02-image__landscape landscape-01', inner: 'type-03', w: 400, h: 300, row: 1 },
+  { wrapClass: 'mxd-hero-02-image__portrait portrait-02', inner: 'type-01', w: 300, h: 400, row: 1 },
+  { wrapClass: 'mxd-hero-02-image__landscape landscape-02', inner: 'type-03', w: 400, h: 300, row: 2 },
+];
+
+async function getShowcaseProjects(): Promise<ShowcaseItem[]> {
+  try {
+    await connectDB();
+    const projects = await Project.find({ isPublished: true })
+      .sort({ sortOrder: 1, createdAt: -1 })
+      .limit(4)
+      .lean();
+    return (JSON.parse(JSON.stringify(projects)) as Array<{ _id: string; title: string; featuredImage?: string }>)
+      .map((p) => ({ _id: String(p._id), title: p.title, featuredImage: p.featuredImage }))
+      .filter((p) => !!p.featuredImage);
+  } catch (e) {
+    console.error('Home showcase fetch failed:', e);
+    return [];
+  }
+}
+
+export default async function Home() {
+  const showcase = await getShowcaseProjects();
+  const heroTiles = HERO_SLOTS.map((slot, i) => ({ ...slot, project: showcase[i] })).filter(
+    (t) => !!t.project
+  );
+  const heroRow1 = heroTiles.filter((t) => t.row === 1);
+  const heroRow2 = heroTiles.filter((t) => t.row === 2);
+
   return (
     <>
       {/* Loader */}
@@ -148,49 +187,34 @@ export default function Home() {
               <div className="mxd-hero-02-scroll__wrap">
                 <div className="mxd-hero-02-scroll__images">
                   <div className="mxd-hero-02-images__row mxd-hero-02-images__row-01">
-                    <Link className="mxd-hero-02-image__portrait portrait-01" href="/project-details/68953ea8b90958ab219c3ac5">
-                      <div className="mxd-hero-02-image__inner type-01 anim-uni-in-up">
-                        <Image src="/porthomeimages/port3.png" alt="Hero Image" width={300} height={400} />
-                        <div className="mxd-preview-hover">
-                          <i className="mxd-preview-hover__icon icon-small">
-                            <Image src="/img/icons/icon-eye.svg" alt="Eye Icon" width={20} height={20} />
-                          </i>
+                    {heroRow1.map((t) => (
+                      <Link key={t.project!._id} className={t.wrapClass} href={`/project-details/${t.project!._id}`}>
+                        <div className={`mxd-hero-02-image__inner ${t.inner} anim-uni-in-up`}>
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img src={t.project!.featuredImage} alt={t.project!.title} width={t.w} height={t.h} />
+                          <div className="mxd-preview-hover">
+                            <i className="mxd-preview-hover__icon icon-small">
+                              <Image src="/img/icons/icon-eye.svg" alt="Eye Icon" width={20} height={20} />
+                            </i>
+                          </div>
                         </div>
-                      </div>
-                    </Link>
-                    <Link className="mxd-hero-02-image__landscape landscape-01" href="/project-details/68953ea8b90958ab219c3ac5">
-                      <div className="mxd-hero-02-image__inner type-03 anim-uni-in-up">
-                        <Image src="/porthomeimages/port1.png" alt="Hero Image" width={400} height={300} />
-                        <div className="mxd-preview-hover">
-                          <i className="mxd-preview-hover__icon icon-small">
-                            <Image src="/img/icons/icon-eye.svg" alt="Eye Icon" width={20} height={20} />
-                          </i>
-                        </div>
-                      </div>
-                    </Link>
-                    <Link className="mxd-hero-02-image__portrait portrait-02" href="/project-details/68953ea8b90958ab219c3ac5">
-                      <div className="mxd-hero-02-image__inner type-01 anim-uni-in-up">
-                        <Image src="/porthomeimages/port4.png" alt="Hero Image" width={300} height={400} />
-                        <div className="mxd-preview-hover">
-                          <i className="mxd-preview-hover__icon icon-small">
-                            <Image src="/img/icons/icon-eye.svg" alt="Eye Icon" width={20} height={20} />
-                          </i>
-                        </div>
-                      </div>
-                    </Link>
+                      </Link>
+                    ))}
                   </div>
                   <div className="mxd-hero-02-images__row mxd-hero-02-images__row-02">
-                    <Link className="mxd-hero-02-image__landscape landscape-02" href="/project-details/689542c5b90958ab219c3b89">
-                      <div className="mxd-hero-02-image__inner type-03 anim-uni-in-up">
-                        <Image src="/uploads/1754612421476-i59vwkge9s.png" alt="Hero Image" width={400} height={300} />
-                        <div className="mxd-preview-hover">
-                          <i className="mxd-preview-hover__icon icon-small">
-                            <Image src="/img/icons/icon-eye.svg" alt="Eye Icon" width={20} height={20} />
-                          </i>
+                    {heroRow2.map((t) => (
+                      <Link key={t.project!._id} className={t.wrapClass} href={`/project-details/${t.project!._id}`}>
+                        <div className={`mxd-hero-02-image__inner ${t.inner} anim-uni-in-up`}>
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img src={t.project!.featuredImage} alt={t.project!.title} width={t.w} height={t.h} />
+                          <div className="mxd-preview-hover">
+                            <i className="mxd-preview-hover__icon icon-small">
+                              <Image src="/img/icons/icon-eye.svg" alt="Eye Icon" width={20} height={20} />
+                            </i>
+                          </div>
                         </div>
-                      </div>
-                    </Link>
-                    
+                      </Link>
+                    ))}
                   </div>
                 </div>
               </div>
