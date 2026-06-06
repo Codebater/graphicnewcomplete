@@ -1318,12 +1318,15 @@ export default function AppInitializer() {
       });
 
       // Emoji Logo Rotation
+      // Absolute paths (leading slash) so the rotating logo resolves from the
+      // site root on any route — on nested routes like /project-details/<id>
+      // relative paths resolved to /project-details/emojis/*.png and 404'd.
       const emojis = [
-        'emojis/1.png',
-        'emojis/2.png', 
-        'emojis/3.png',
-        'emojis/4.png',
-        'emojis/5.png'
+        '/emojis/1.png',
+        '/emojis/2.png',
+        '/emojis/3.png',
+        '/emojis/4.png',
+        '/emojis/5.png'
       ];
       
       let currentEmojiIndex = 0;
