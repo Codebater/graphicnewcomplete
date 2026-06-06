@@ -37,22 +37,22 @@ const ProjectSchema: Schema = new Schema({
     type: String,
     required: true,
     trim: true,
-    maxlength: 1000
+    maxlength: 5000
   },
   client: {
     type: String,
     trim: true,
-    maxlength: 100
+    maxlength: 200
   },
   services: {
     type: String,
     trim: true,
-    maxlength: 200
+    maxlength: 500
   },
   industries: {
     type: String,
     trim: true,
-    maxlength: 200
+    maxlength: 500
   },
   date: {
     type: String,
@@ -78,24 +78,24 @@ const ProjectSchema: Schema = new Schema({
     content: {
       type: String,
       trim: true,
-      maxlength: 2000
+      maxlength: 5000
     }
   },
   solution: {
     title: {
       type: String,
       trim: true,
-      maxlength: 100
+      maxlength: 200
     },
     content: {
       type: String,
       trim: true,
-      maxlength: 2000
+      maxlength: 5000
     },
     additionalContent: {
       type: String,
       trim: true,
-      maxlength: 2000
+      maxlength: 5000
     }
   },
   featuredImage: {
