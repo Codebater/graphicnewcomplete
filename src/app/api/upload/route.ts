@@ -46,6 +46,10 @@ export async function POST(request: NextRequest) {
         access: 'public',
         contentType: file.type || undefined,
         addRandomSuffix: false,
+        // Pass the token explicitly. Inside a Vercel deployment the SDK can
+        // otherwise auto-resolve a different (here: old private) connected
+        // store via OIDC; forcing the env token pins it to our public store.
+        token: process.env.BLOB_READ_WRITE_TOKEN,
       });
 
       uploadedFiles.push({
