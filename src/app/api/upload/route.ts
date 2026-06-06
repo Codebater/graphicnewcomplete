@@ -15,16 +15,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Diagnostic (safe: logs presence/prefix and env-var NAMES only — never the
-    // secret value). Helps confirm whether BLOB_READ_WRITE_TOKEN reaches the fn.
-    const _tok = process.env.BLOB_READ_WRITE_TOKEN;
-    console.error(
-      '[upload-diagnostic] BLOB token present:', !!_tok,
-      '| prefix:', _tok ? _tok.slice(0, 14) : 'NONE',
-      '| blob-related env keys:',
-      Object.keys(process.env).filter((k) => /BLOB|VERCEL_BLOB/i.test(k)).join(',') || 'none'
-    );
-
     // Uploads go to Vercel Blob (persistent cloud storage). Writing to the
     // local filesystem does NOT work on Vercel — serverless functions run on a
     // read-only filesystem, which is why disk-based uploads failed in production.
