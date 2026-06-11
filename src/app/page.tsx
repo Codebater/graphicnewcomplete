@@ -180,50 +180,8 @@ export default async function Home() {
               </div>
             </div>
             
-            <div className="mxd-pinned-fullscreen__scroll">
-              <div className="mxd-hero-02-scroll__wrap">
-                <div className="mxd-hero-02-scroll__images">
-                  <div className="mxd-hero-02-images__row mxd-hero-02-images__row-01">
-                    {projects.slice(0, 3).map((p, i) => (
-                      <Link
-                        key={p.id}
-                        className={[
-                          'mxd-hero-02-image__portrait portrait-01',
-                          'mxd-hero-02-image__landscape landscape-01',
-                          'mxd-hero-02-image__portrait portrait-02',
-                        ][i]}
-                        href={`/project-details/${p.id}`}
-                      >
-                        <div className={`mxd-hero-02-image__inner ${i === 1 ? 'type-03' : 'type-01'} anim-uni-in-up`}>
-                          {/* eslint-disable-next-line @next/next/no-img-element */}
-                          <img src={p.image} alt={p.title} />
-                          <div className="mxd-preview-hover">
-                            <i className="mxd-preview-hover__icon icon-small">
-                              <Image src="/img/icons/icon-eye.svg" alt="Eye Icon" width={20} height={20} />
-                            </i>
-                          </div>
-                        </div>
-                      </Link>
-                    ))}
-                  </div>
-                  <div className="mxd-hero-02-images__row mxd-hero-02-images__row-02">
-                    {projects.slice(3, 4).map((p) => (
-                      <Link key={p.id} className="mxd-hero-02-image__landscape landscape-02" href={`/project-details/${p.id}`}>
-                        <div className="mxd-hero-02-image__inner type-03 anim-uni-in-up">
-                          {/* eslint-disable-next-line @next/next/no-img-element */}
-                          <img src={p.image} alt={p.title} />
-                          <div className="mxd-preview-hover">
-                            <i className="mxd-preview-hover__icon icon-small">
-                              <Image src="/img/icons/icon-eye.svg" alt="Eye Icon" width={20} height={20} />
-                            </i>
-                          </div>
-                        </div>
-                      </Link>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </div>
+            {/* Hero is an intro-only fullscreen section now — projects are shown
+                once, in the "Selected work" list section below. */}
             <div className="mxd-pinned-fullscreen__tl-trigger"></div>
           </div>
         </div>
