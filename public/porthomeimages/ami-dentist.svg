@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="900" viewBox="0 0 1200 900" fill="none">
+  <rect width="1200" height="900" fill="#0E5A63"/>
+  <rect width="1200" height="900" fill="url(#g)"/>
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1200" y2="900" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#13727D"/>
+      <stop offset="1" stop-color="#0A444B"/>
+    </linearGradient>
+  </defs>
+  <!-- tooth mark -->
+  <path d="M600 250c-70 0-120 40-120 110 0 60 25 90 35 160 8 56 18 130 40 130 26 0 20-90 45-90s19 90 45 90c22 0 32-74 40-130 10-70 35-100 35-160 0-70-50-110-120-110z" fill="#FFFFFF" fill-opacity="0.92"/>
+  <text x="600" y="640" font-family="Funnel Display, Arial, sans-serif" font-size="92" font-weight="800" fill="#FFFFFF" text-anchor="middle" letter-spacing="2">AMI DENTIST</text>
+  <text x="600" y="700" font-family="Funnel Sans, Arial, sans-serif" font-size="34" fill="#Bfeef0" text-anchor="middle" letter-spacing="6">DENTAL PRACTICE — PLACEHOLDER</text>
+</svg>

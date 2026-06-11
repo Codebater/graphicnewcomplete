@@ -19,6 +19,7 @@ export interface IProject extends Document {
     additionalContent?: string;
   };
   featuredImage?: string;
+  featuredVideo?: string;
   galleryImages?: string[];
   isPublished: boolean;
   sortOrder: number;
@@ -99,6 +100,10 @@ const ProjectSchema: Schema = new Schema({
     }
   },
   featuredImage: {
+    type: String,
+    trim: true
+  },
+  featuredVideo: {
     type: String,
     trim: true
   },

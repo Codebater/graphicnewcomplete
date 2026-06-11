@@ -5,44 +5,41 @@ import Footer from '@/components/Footer';
 import Statistics from '@/components/Statistics';
 import connectDB from '@/lib/mongodb';
 import Project from '@/models/Project';
+import ProjectsList, { ProjectListItem } from '@/components/ProjectsList';
 
 // Re-render the home page at most once a minute so newly published projects
-// appear in the hero "sampled work" tiles automatically (ISR).
+// appear in the work list automatically (ISR).
 export const revalidate = 60;
 
-type ShowcaseItem = { _id: string; title: string; featuredImage?: string };
-
-// Hero tile layout slots — preserves the original design positions.
-const HERO_SLOTS = [
-  { wrapClass: 'mxd-hero-02-image__portrait portrait-01', inner: 'type-01', w: 300, h: 400, row: 1 },
-  { wrapClass: 'mxd-hero-02-image__landscape landscape-01', inner: 'type-03', w: 400, h: 300, row: 1 },
-  { wrapClass: 'mxd-hero-02-image__portrait portrait-02', inner: 'type-01', w: 300, h: 400, row: 1 },
-  { wrapClass: 'mxd-hero-02-image__landscape landscape-02', inner: 'type-03', w: 400, h: 300, row: 2 },
-];
-
-async function getShowcaseProjects(): Promise<ShowcaseItem[]> {
+async function getProjects(): Promise<ProjectListItem[]> {
   try {
     await connectDB();
     const projects = await Project.find({ isPublished: true })
       .sort({ sortOrder: 1, createdAt: -1 })
-      .limit(4)
+      .limit(12)
       .lean();
-    return (JSON.parse(JSON.stringify(projects)) as Array<{ _id: string; title: string; featuredImage?: string }>)
-      .map((p) => ({ _id: String(p._id), title: p.title, featuredImage: p.featuredImage }))
-      .filter((p) => !!p.featuredImage);
+    return (JSON.parse(JSON.stringify(projects)) as Array<{
+      _id: string;
+      title: string;
+      services?: string;
+      client?: string;
+      featuredImage?: string;
+      featuredVideo?: string;
+    }>).map((p) => ({
+      id: String(p._id),
+      title: p.title,
+      subtitle: p.services || p.client || '',
+      image: p.featuredImage,
+      video: p.featuredVideo,
+    }));
   } catch (e) {
-    console.error('Home showcase fetch failed:', e);
+    console.error('Home projects fetch failed:', e);
     return [];
   }
 }
 
 export default async function Home() {
-  const showcase = await getShowcaseProjects();
-  const heroTiles = HERO_SLOTS.map((slot, i) => ({ ...slot, project: showcase[i] })).filter(
-    (t) => !!t.project
-  );
-  const heroRow1 = heroTiles.filter((t) => t.row === 1);
-  const heroRow2 = heroTiles.filter((t) => t.row === 2);
+  const projects = await getProjects();
 
   return (
     <>
@@ -187,11 +184,19 @@ export default async function Home() {
               <div className="mxd-hero-02-scroll__wrap">
                 <div className="mxd-hero-02-scroll__images">
                   <div className="mxd-hero-02-images__row mxd-hero-02-images__row-01">
-                    {heroRow1.map((t) => (
-                      <Link key={t.project!._id} className={t.wrapClass} href={`/project-details/${t.project!._id}`}>
-                        <div className={`mxd-hero-02-image__inner ${t.inner} anim-uni-in-up`}>
+                    {projects.slice(0, 3).map((p, i) => (
+                      <Link
+                        key={p.id}
+                        className={[
+                          'mxd-hero-02-image__portrait portrait-01',
+                          'mxd-hero-02-image__landscape landscape-01',
+                          'mxd-hero-02-image__portrait portrait-02',
+                        ][i]}
+                        href={`/project-details/${p.id}`}
+                      >
+                        <div className={`mxd-hero-02-image__inner ${i === 1 ? 'type-03' : 'type-01'} anim-uni-in-up`}>
                           {/* eslint-disable-next-line @next/next/no-img-element */}
-                          <img src={t.project!.featuredImage} alt={t.project!.title} width={t.w} height={t.h} />
+                          <img src={p.image} alt={p.title} />
                           <div className="mxd-preview-hover">
                             <i className="mxd-preview-hover__icon icon-small">
                               <Image src="/img/icons/icon-eye.svg" alt="Eye Icon" width={20} height={20} />
@@ -202,11 +207,11 @@ export default async function Home() {
                     ))}
                   </div>
                   <div className="mxd-hero-02-images__row mxd-hero-02-images__row-02">
-                    {heroRow2.map((t) => (
-                      <Link key={t.project!._id} className={t.wrapClass} href={`/project-details/${t.project!._id}`}>
-                        <div className={`mxd-hero-02-image__inner ${t.inner} anim-uni-in-up`}>
+                    {projects.slice(3, 4).map((p) => (
+                      <Link key={p.id} className="mxd-hero-02-image__landscape landscape-02" href={`/project-details/${p.id}`}>
+                        <div className="mxd-hero-02-image__inner type-03 anim-uni-in-up">
                           {/* eslint-disable-next-line @next/next/no-img-element */}
-                          <img src={t.project!.featuredImage} alt={t.project!.title} width={t.w} height={t.h} />
+                          <img src={p.image} alt={p.title} />
                           <div className="mxd-preview-hover">
                             <i className="mxd-preview-hover__icon icon-small">
                               <Image src="/img/icons/icon-eye.svg" alt="Eye Icon" width={20} height={20} />
@@ -220,6 +225,26 @@ export default async function Home() {
               </div>
             </div>
             <div className="mxd-pinned-fullscreen__tl-trigger"></div>
+          </div>
+        </div>
+
+        {/* Selected Work — project list with hover reveal */}
+        <div className="mxd-section padding-pre-grid">
+          <div className="mxd-container grid-container">
+            <div className="mxd-block">
+              <div className="mxd-section-title pre-grid">
+                <div className="container-fluid p-0">
+                  <div className="row g-0">
+                    <div className="col-12 col-xl-8 mxd-grid-item no-margin">
+                      <div className="mxd-section-title__title">
+                        <h2 className="reveal-type">Selected work</h2>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <ProjectsList projects={projects} />
+            </div>
           </div>
         </div>
 
