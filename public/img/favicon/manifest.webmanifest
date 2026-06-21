@@ -1,11 +1,11 @@
 {
-  "name": "Rayo - Digital Agency & Personal Portfolio HTML Template",
-  "short_name": "Rayo",
+  "name": "GRAPHIQ STUDIO LLC — Creative Web Design Agency",
+  "short_name": "GRAPHIQ",
   "icons": [
     { "src": "/img/favicon/android-icon-192.png", "type": "image/png", "sizes": "192x192" },
     { "src": "/img/favicon/android-icon-512.png", "type": "image/png", "sizes": "512x512" }
   ],
-  "theme_color": "#efefef",
-  "background_color": "#efefef",
+  "theme_color": "#161616",
+  "background_color": "#161616",
   "display": "standalone"
 }
