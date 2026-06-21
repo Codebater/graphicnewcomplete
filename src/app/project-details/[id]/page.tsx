@@ -3,71 +3,74 @@ import Link from 'next/link';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 
-import connectDB from '@/lib/mongodb';
-import Project from '@/models/Project';
+import { supabase } from '@/lib/supabase';
 
-// Get project data from MongoDB
+// Get project data from Supabase
 const getProjectData = async (id: string) => {
   try {
-    await connectDB();
-    
-    // Try to fetch from database first
-    const project = await Project.findById(id).lean() as any;
-    
+    const { data: project, error } = await supabase
+      .from('projects')
+      .select('*')
+      .eq('id', id)
+      .maybeSingle();
+    if (error) throw error;
+
     if (project) {
-      // Fetch adjacent projects for navigation
+      // Adjacent projects for navigation (by creation time)
       let prevProject = null;
       let nextProject = null;
-      
       try {
-        // Get previous project (older)
-        const prevProjectData = await Project.findOne({
-          createdAt: { $lt: project.createdAt },
-          isPublished: true
-        }).sort({ createdAt: -1 }).lean() as any;
-        
-        if (prevProjectData) {
-          prevProject = {
-            id: prevProjectData._id.toString(),
-            title: prevProjectData.title
-          };
-        }
-        
-        // Get next project (newer)
-        const nextProjectData = await Project.findOne({
-          createdAt: { $gt: project.createdAt },
-          isPublished: true
-        }).sort({ createdAt: 1 }).lean() as any;
-        
-        if (nextProjectData) {
-          nextProject = {
-            id: nextProjectData._id.toString(),
-            title: nextProjectData.title
-          };
-        }
-      } catch (error) {
-        console.error('Error fetching adjacent projects:', error);
+        const { data: prev } = await supabase
+          .from('projects')
+          .select('id, title')
+          .lt('created_at', project.created_at)
+          .eq('is_published', true)
+          .order('created_at', { ascending: false })
+          .limit(1)
+          .maybeSingle();
+        if (prev) prevProject = { id: prev.id, title: prev.title };
+
+        const { data: next } = await supabase
+          .from('projects')
+          .select('id, title')
+          .gt('created_at', project.created_at)
+          .eq('is_published', true)
+          .order('created_at', { ascending: true })
+          .limit(1)
+          .maybeSingle();
+        if (next) nextProject = { id: next.id, title: next.title };
+      } catch (e) {
+        console.error('Error fetching adjacent projects:', e);
       }
-      
-      // Transform database project to match expected format
+
+      const challenge = (project.challenge || {}) as Record<string, string>;
+      const solution = (project.solution || {}) as Record<string, string>;
+      const tags = (project.tags && project.tags.length ? project.tags : ['Design', 'Development']);
+      const gallery = project.gallery_images && project.gallery_images.length ? project.gallery_images : [
+        'https://dummyimage.com/1400x1000/2d2d2d/838383',
+        'https://dummyimage.com/1200x1200/4d4d4d/838383',
+        'https://dummyimage.com/1400x1000/2d2d2d/838383',
+        'https://dummyimage.com/1200x1200/4d4d4d/838383',
+      ];
+
       return {
-        id: project._id.toString(),
+        id: project.id,
         title: project.title,
         description: project.description,
         client: project.client || 'GRAPHIQ STUDIO LLC',
         services: project.services || 'Creative Development',
         industries: project.industries || 'Digital',
-        date: project.date || new Date(project.createdAt).toLocaleDateString('en-US', { month: 'long', year: 'numeric' }),
-        tags: project.tags || ['Design', 'Development'],
+        date: project.date || new Date(project.created_at).toLocaleDateString('en-US', { month: 'long', year: 'numeric' }),
+        tags,
         challenge: {
-          title: project.challenge?.title || 'Challenge',
-          subtitle: project.challenge?.subtitle || 'Creative challenges require innovative solutions.',
-          content: project.challenge?.content || 'This project presented unique challenges that required creative problem-solving and innovative approaches to deliver exceptional results.'
+          title: challenge.title || 'Challenge',
+          subtitle: challenge.subtitle || 'Creative challenges require innovative solutions.',
+          content: challenge.content || 'This project presented unique challenges that required creative problem-solving and innovative approaches to deliver exceptional results.'
         },
         solution: {
-          title: project.solution?.title || 'Solution',
-          content: project.solution?.content || 'We developed a comprehensive solution that addresses all project requirements.',
-          additionalContent: project.solution?.additionalContent || 'The implementation exceeded expectations and delivered outstanding results.'
+          title: solution.title || 'Solution',
+          content: solution.content || 'We developed a comprehensive solution that addresses all project requirements.',
+          additionalContent: solution.additionalContent || 'The implementation exceeded expectations and delivered outstanding results.'
         },
         feedback: {
           title: "Client's feedback",
@@ -76,12 +79,7 @@ const getProjectData = async (id: string) => {
           clientPosition: 'Project Manager at',
           clientCompany: 'Amazing Company'
         },
-        images: (project.galleryImages || [
-          'https://dummyimage.com/1400x1000/2d2d2d/838383',
-          'https://dummyimage.com/1200x1200/4d4d4d/838383',
-          'https://dummyimage.com/1400x1000/2d2d2d/838383',
-          'https://dummyimage.com/1200x1200/4d4d4d/838383'
-        ]).slice(0, 4),
+        images: gallery.slice(0, 4),
         prevProject,
         nextProject
       };

@@ -3,8 +3,7 @@ import Link from 'next/link';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import Statistics from '@/components/Statistics';
-import connectDB from '@/lib/mongodb';
-import Project from '@/models/Project';
+import { supabase } from '@/lib/supabase';
 import ProjectsList, { ProjectListItem } from '@/components/ProjectsList';
 
 // Re-render the home page at most once a minute so newly published projects
@@ -13,24 +12,20 @@ export const revalidate = 60;
 
 async function getProjects(): Promise<ProjectListItem[]> {
   try {
-    await connectDB();
-    const projects = await Project.find({ isPublished: true })
-      .sort({ sortOrder: 1, createdAt: -1 })
-      .limit(12)
-      .lean();
-    return (JSON.parse(JSON.stringify(projects)) as Array<{
-      _id: string;
-      title: string;
-      services?: string;
-      client?: string;
-      featuredImage?: string;
-      featuredVideo?: string;
-    }>).map((p) => ({
-      id: String(p._id),
+    const { data, error } = await supabase
+      .from('projects')
+      .select('id, title, services, client, featured_image, featured_video')
+      .eq('is_published', true)
+      .order('sort_order', { ascending: true })
+      .order('created_at', { ascending: false })
+      .limit(12);
+    if (error) throw error;
+    return (data || []).map((p) => ({
+      id: p.id,
       title: p.title,
       subtitle: p.services || p.client || '',
-      image: p.featuredImage,
-      video: p.featuredVideo,
+      image: p.featured_image || undefined,
+      video: p.featured_video || undefined,
     }));
   } catch (e) {
     console.error('Home projects fetch failed:', e);
