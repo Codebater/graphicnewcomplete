@@ -1,13 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
-import connectDB from '@/lib/mongodb';
-import mongoose from 'mongoose';
+import { supabase } from '@/lib/supabase';
 
+export const runtime = 'nodejs';
+
+// PUT /api/projects/reorder - set sort_order for each project by its position
 export async function PUT(request: NextRequest) {
   try {
-    await connectDB();
-    
     const { projectIds } = await request.json();
-    
+
     if (!projectIds || !Array.isArray(projectIds)) {
       return NextResponse.json(
         { success: false, error: 'Invalid project IDs array' },
@@ -15,53 +15,22 @@ export async function PUT(request: NextRequest) {
       );
     }
 
-    console.log('🔄 REORDER API - Received projectIds:', projectIds);
+    const results = await Promise.all(
+      projectIds.map((projectId: string, index: number) =>
+        supabase.from('projects').update({ sort_order: index }).eq('id', projectId)
+      )
+    );
 
-    // Use raw MongoDB operations for more reliable updates
-    const db = mongoose.connection.db;
-    if (!db) throw new Error('Database connection not available');
-    const collection = db.collection('projects');
-
-    // Update sort order for each project
-    const updatePromises = projectIds.map((projectId: string, index: number) => {
-      console.log(`📝 Setting project ${projectId} sortOrder to ${index}`);
-      return collection.updateOne(
-        { _id: new mongoose.Types.ObjectId(projectId) },
-        { $set: { sortOrder: index } }
-      );
-    });
-
-    const updateResults = await Promise.all(updatePromises);
-    console.log('📊 Update results:', updateResults.map((r, i) => ({
-      projectId: projectIds[i],
-      sortOrder: i,
-      matched: r.matchedCount,
-      modified: r.modifiedCount
-    })));
-
-    // Verify the updates by fetching the projects
-    const updatedProjects = await collection.find({
-      _id: { $in: projectIds.map(id => new mongoose.Types.ObjectId(id)) }
-    }).sort({ sortOrder: 1 }).toArray();
-    
-    console.log('✅ Verification - Updated projects in database:', updatedProjects.map(p => ({ 
-      id: p._id, 
-      title: p.title, 
-      sortOrder: p.sortOrder 
-    })));
+    const firstError = results.find((r) => r.error)?.error;
+    if (firstError) throw firstError;
 
     return NextResponse.json({
       success: true,
       message: 'Project order updated successfully',
-      updatedProjects: updatedProjects.map(p => ({ 
-        id: p._id.toString(), 
-        title: p.title, 
-        sortOrder: p.sortOrder 
-      }))
+      updatedProjects: projectIds.map((id: string, index: number) => ({ id, sortOrder: index })),
     });
-
-  } catch (error: any) {
-    console.error('❌ Error reordering projects:', error);
+  } catch (error) {
+    console.error('Error reordering projects:', error);
     return NextResponse.json(
       { success: false, error: 'Failed to reorder projects' },
       { status: 500 }

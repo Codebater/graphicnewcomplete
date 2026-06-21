@@ -1,5 +1,17 @@
 import { Resend } from 'resend';
-import type { IConsultationBooking } from '@/models/ConsultationBooking';
+
+// Structural type — decoupled from any specific DB model.
+export type ConsultationEmailData = {
+  service: string;
+  date: string;
+  time: string;
+  name: string;
+  company?: string;
+  email: string;
+  phone?: string;
+  budget?: string;
+  message: string;
+};
 
 const FROM_UPDATES = 'updates@graphiq.art';
 const ADMIN_EMAIL = process.env.CONSULTATION_ADMIN_EMAIL || 'hello@graphiq.art';
@@ -20,7 +32,7 @@ function escapeHtml(s: string) {
     .replace(/"/g, '&quot;');
 }
 
-function bookingFieldsHtml(b: Pick<IConsultationBooking, keyof IConsultationBooking>) {
+function bookingFieldsHtml(b: ConsultationEmailData) {
   const rows: [string, string][] = [
     ['Service', String(b.service)],
     ['Preferred date', String(b.date)],
@@ -40,7 +52,7 @@ function bookingFieldsHtml(b: Pick<IConsultationBooking, keyof IConsultationBook
     .join('');
 }
 
-export async function sendConsultationEmails(booking: IConsultationBooking) {
+export async function sendConsultationEmails(booking: ConsultationEmailData) {
   const resend = getResend();
 
   const table = `<table style="border-collapse:collapse;max-width:640px;">${bookingFieldsHtml(booking)}</table>`;

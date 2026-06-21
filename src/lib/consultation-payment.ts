@@ -1,5 +1,4 @@
-import connectDB from '@/lib/mongodb';
-import ConsultationBooking from '@/models/ConsultationBooking';
+import { supabase } from '@/lib/supabase';
 import { getStripe } from '@/lib/stripe';
 import { sendConsultationEmails } from '@/lib/consultation-emails';
 
@@ -45,50 +44,58 @@ export async function finalizeConsultationFromSessionId(
     return { ok: false, error: 'Missing booking reference' };
   }
 
-  await connectDB();
-  const booking = await ConsultationBooking.findById(consultationId);
+  // Mark the booking paid.
+  const { data: booking, error } = await supabase
+    .from('consultation_bookings')
+    .update({ status: 'paid', stripe_session_id: sessionId })
+    .eq('id', consultationId)
+    .select('*')
+    .maybeSingle();
+
+  if (error) {
+    console.error('consultation finalize update failed:', error);
+    return { ok: false, error: 'Booking update failed' };
+  }
   if (!booking) {
     return { ok: false, error: 'Booking not found' };
   }
 
-  booking.status = 'paid';
-  booking.stripeSessionId = sessionId;
-  await booking.save();
+  // Send emails exactly once: atomically flip emails_sent false -> true.
+  // If no row matches (already true), we are not the one who flipped it -> skip.
+  const { data: flipped } = await supabase
+    .from('consultation_bookings')
+    .update({ emails_sent: true })
+    .eq('id', consultationId)
+    .eq('emails_sent', false)
+    .select('*')
+    .maybeSingle();
 
-  const previous = await ConsultationBooking.findOneAndUpdate(
-    { _id: consultationId, emailsSent: false },
-    { $set: { emailsSent: true } },
-    { new: false }
-  );
-
-  if (previous) {
+  if (flipped) {
     try {
-      await sendConsultationEmails(previous);
+      await sendConsultationEmails(flipped);
     } catch (e) {
-      await ConsultationBooking.updateOne({ _id: consultationId }, { $set: { emailsSent: false } });
+      await supabase
+        .from('consultation_bookings')
+        .update({ emails_sent: false })
+        .eq('id', consultationId);
       console.error('Consultation email delivery failed:', e);
       throw e;
     }
   }
 
-  const doc = await ConsultationBooking.findById(consultationId);
-  if (!doc) {
-    return { ok: false, error: 'Booking not found' };
-  }
-  const plain = doc.toObject();
   return {
     ok: true,
     booking: {
-      service: plain.service,
-      serviceLabel: serviceIdToLabel(plain.service),
-      date: plain.date,
-      time: plain.time,
-      name: plain.name,
-      company: plain.company,
-      email: plain.email,
-      phone: plain.phone,
-      message: plain.message,
-      budget: plain.budget,
+      service: booking.service,
+      serviceLabel: serviceIdToLabel(booking.service),
+      date: booking.date,
+      time: booking.time,
+      name: booking.name,
+      company: booking.company,
+      email: booking.email,
+      phone: booking.phone,
+      message: booking.message,
+      budget: booking.budget,
     },
   };
 }
