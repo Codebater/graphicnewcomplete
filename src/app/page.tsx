@@ -5,7 +5,6 @@ import Footer from '@/components/Footer';
 import Statistics from '@/components/Statistics';
 import { supabase } from '@/lib/supabase';
 import ProjectsList, { ProjectListItem } from '@/components/ProjectsList';
-import RiveCard from '@/components/RiveCard';
 
 // Re-render the home page at most once a minute so newly published projects
 // appear in the work list automatically (ISR).
@@ -315,11 +314,11 @@ export default async function Home() {
                         </div>
                         <div className="mxd-services-stack__works">
                           <div className="mxd-services-stack__work">
-                            <RiveCard src="/animations/gradient-box.riv" poster="/porthomeimages/brand1.png" className="mxd-services" ariaLabel="Animated brand graphic" />
+                            <Image className="mxd-services" src="/porthomeimages/brand1.png" alt="Work Preview" width={1200} height={960} quality={95} />
                             <div className="mxd-services-stack__tags tags-absolute"></div>
                           </div>
                           <div className="mxd-services-stack__work">
-                            <RiveCard src="/animations/gradient-box.riv" poster="/porthomeimages/brand2.png" className="mxd-services" ariaLabel="Animated brand graphic" />
+                            <Image className="mxd-services" src="/porthomeimages/brand2.png" alt="Work Preview" width={1200} height={960} quality={95} />
                             <div className="mxd-services-stack__tags tags-absolute"></div>
                           </div>
                         </div>

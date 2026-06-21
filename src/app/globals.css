@@ -132,6 +132,7 @@
 .promo-cta__arrow {
   display: inline-flex;
   align-items: center;
+  color: #fff !important;
   width: 0;
   margin-right: 0;
   opacity: 0;
