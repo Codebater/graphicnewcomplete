@@ -5,6 +5,7 @@ import Footer from '@/components/Footer';
 import Statistics from '@/components/Statistics';
 import { supabase } from '@/lib/supabase';
 import ProjectsList, { ProjectListItem } from '@/components/ProjectsList';
+import RiveCard from '@/components/RiveCard';
 
 // Re-render the home page at most once a minute so newly published projects
 // appear in the work list automatically (ISR).
@@ -313,20 +314,14 @@ export default async function Home() {
                             We make sure your brand&apos;s visuals resonate with your audience.</p>
                         </div>
                         <div className="mxd-services-stack__works">
-                          <Link className="mxd-services-stack__work" href="/project-details">
-                            <Image className="mxd-services" src="/porthomeimages/brand1.png" alt="Work Preview" width={1200} height={960} quality={95} />
-                            <div className="mxd-services-stack__tags tags-absolute">
-                        
-                            </div>
-                     
-                          </Link>
-                          <Link className="mxd-services-stack__work" href="/project-details">
-                            <Image className="mxd-services" src="/porthomeimages/brand2.png" alt="Work Preview" width={1200} height={960} quality={95} />
-                            <div className="mxd-services-stack__tags tags-absolute">
-                  
-                            </div>
-                  
-                          </Link>
+                          <div className="mxd-services-stack__work">
+                            <RiveCard src="/animations/gradient-box.riv" poster="/porthomeimages/brand1.png" className="mxd-services" ariaLabel="Animated brand graphic" />
+                            <div className="mxd-services-stack__tags tags-absolute"></div>
+                          </div>
+                          <div className="mxd-services-stack__work">
+                            <RiveCard src="/animations/gradient-box.riv" poster="/porthomeimages/brand2.png" className="mxd-services" ariaLabel="Animated brand graphic" />
+                            <div className="mxd-services-stack__tags tags-absolute"></div>
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -540,10 +535,10 @@ export default async function Home() {
                 <div className="mxd-promo__inner anim-zoom-out-container">
                   <div className="mxd-promo__content">
                     <p className="mxd-promo__title anim-uni-in-up">
-                      {/* <span className="mxd-promo__icon">
-                        <Image src="/emoji.png" alt="Icon" width={60} height={60} />
-                      </span> */}
-                      <span className="mxd-promo__caption reveal-type">Let&apos;s talk about your project!</span>
+                      <Link className="promo-cta" href="/contact">
+                        <i className="promo-cta__arrow ph-bold ph-arrow-right" aria-hidden="true"></i>
+                        <span className="mxd-promo__caption reveal-type promo-cta__text">Let&apos;s talk about your project!</span>
+                      </Link>
                     </p>
                     {/* <div className="mxd-promo__controls anim-uni-in-up">
                       <Link className="btn btn-anim btn-default btn-large btn-additional slide-right-up" href="/contact">

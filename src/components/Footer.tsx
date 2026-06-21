@@ -113,7 +113,7 @@ const Footer = () => {
                     <a href="https://www.behance.net/" className="footer-socials__link" target="_blank" rel="noopener noreferrer">Behance</a>
                   </li>
                   <li className="footer-socials__item anim-uni-in-up">
-                    <a href="https://www.instagram.com/" className="footer-socials__link" target="_blank" rel="noopener noreferrer">Instagram</a>
+                    <a href="https://www.instagram.com/itsndig" className="footer-socials__link" target="_blank" rel="noopener noreferrer">Instagram</a>
                   </li>
                   <li className="footer-socials__item anim-uni-in-up">
                     <a href="https://github.com/" className="footer-socials__link" target="_blank" rel="noopener noreferrer">Github</a>

@@ -120,3 +120,38 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* "Let's talk about your project" CTA — on hover an arrow slides in from the
+   left and the text nudges right. */
+.promo-cta {
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none;
+  color: inherit;
+}
+.promo-cta__arrow {
+  display: inline-flex;
+  align-items: center;
+  width: 0;
+  margin-right: 0;
+  opacity: 0;
+  transform: translateX(-0.6em);
+  overflow: hidden;
+  font-size: 0.72em;
+  transition: width 0.45s ease, opacity 0.45s ease, transform 0.45s ease, margin-right 0.45s ease;
+}
+.promo-cta__text {
+  display: inline-block;
+  transition: transform 0.45s ease;
+}
+.promo-cta:hover .promo-cta__arrow,
+.promo-cta:focus-visible .promo-cta__arrow {
+  width: 1em;
+  margin-right: 0.25em;
+  opacity: 1;
+  transform: translateX(0);
+}
+.promo-cta:hover .promo-cta__text,
+.promo-cta:focus-visible .promo-cta__text {
+  transform: translateX(0.15em);
+}
