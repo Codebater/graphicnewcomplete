@@ -132,12 +132,18 @@ export default function PixelLoader() {
 
   useEffect(() => {
     const calc = () => {
-      // Target tile ~3.8vw, clamped — small refined tiles on large screens.
-      const t = Math.max(30, Math.min(52, window.innerWidth * 0.038));
-      setDims({
-        cols: Math.ceil(window.innerWidth / t),
-        rows: Math.ceil(window.innerHeight / t),
-      });
+      // Measure the container itself (not the window) and target ~3.8vw tiles.
+      const w = gridRef.current?.clientWidth || window.innerWidth;
+      const h = gridRef.current?.clientHeight || window.innerHeight;
+      const t = Math.max(26, Math.min(52, w * 0.038));
+      // The face must always fit with at least one margin column/row, and the
+      // leftover must be EVEN so the face centers exactly (odd leftovers used
+      // to push the face off-center on mobile).
+      let cols = Math.max(FACE_W + 2, Math.ceil(w / t));
+      let rows = Math.max(FACE_H + 2, Math.ceil(h / t));
+      if ((cols - FACE_W) % 2 !== 0) cols += 1;
+      if ((rows - FACE_H) % 2 !== 0) rows += 1;
+      setDims({ cols, rows });
     };
     calc();
     window.addEventListener('resize', calc);
@@ -187,8 +193,8 @@ export default function PixelLoader() {
   }, [dims]);
 
   // Pre-hydration / first paint: the loader's solid background shows alone,
-  // then the tile field turns in.
-  if (!dims) return <span className="pixel-loader-screen" aria-label="Loading" />;
+  // then the tile field turns in. (Ref attached so calc() can measure it.)
+  if (!dims) return <span ref={gridRef} className="pixel-loader-screen" aria-label="Loading" />;
 
   const face = FACES[SEQ[step]];
   const rOff = Math.max(0, Math.floor((dims.rows - FACE_H) / 2));
