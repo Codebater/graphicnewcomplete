@@ -221,14 +221,14 @@ export default async function Home() {
                               We make sure your brand&apos;s visuals resonate with your audience.</p>
                           </div>
                           <div className="mxd-services-stack__works">
-                            <Link className="mxd-services-stack__work" href="/project-details">
+                            <Link className="mxd-services-stack__work" href="/portfolio">
                               <Image className="mxd-services" src="/porthomeimages/digitalproduct4.webp" alt="Work Preview" width={1200} height={960} priority quality={95} />
                               <div className="mxd-services-stack__tags tags-absolute">
                                
                               </div>
                               
                             </Link>
-                            <Link className="mxd-services-stack__work" href="/project-details">
+                            <Link className="mxd-services-stack__work" href="/portfolio">
                               <Image className="mxd-services" src="/porthomeimages/digitalproduct3.webp" alt="Work Preview" width={1200} height={960} quality={95} />
                               <div className="mxd-services-stack__tags tags-absolute">
                              
@@ -252,14 +252,14 @@ export default async function Home() {
                             We make sure your brand&apos;s visuals resonate with your audience.</p>
                         </div>
                         <div className="mxd-services-stack__works">
-                          <Link className="mxd-services-stack__work" href="/project-details">
+                          <Link className="mxd-services-stack__work" href="/portfolio">
                             <Image className="mxd-services" src="/porthomeimages/corpweb1.webp" alt="Work Preview" width={1200} height={960} quality={95} />
                             <div className="mxd-services-stack__tags tags-absolute">
                               
                             </div>
                         
                           </Link>
-                          <Link className="mxd-services-stack__work" href="/project-details">
+                          <Link className="mxd-services-stack__work" href="/portfolio">
                             <Image className="mxd-services" src="/porthomeimages/corpweb2.webp" alt="Work Preview" width={1200} height={960} quality={95} />
                             <div className="mxd-services-stack__tags tags-absolute">
                              
@@ -282,14 +282,14 @@ export default async function Home() {
                             your brand&apos;s visuals resonate with your audience.</p>
                         </div>
                         <div className="mxd-services-stack__works">
-                          <Link className="mxd-services-stack__work" href="/project-details">
+                          <Link className="mxd-services-stack__work" href="/portfolio">
                             <Image className="mxd-services" src="/porthomeimages/ecom1.png" alt="Work Preview" width={1200} height={960} quality={95} />
                             <div className="mxd-services-stack__tags tags-absolute">
                              
                             </div>
                           
                           </Link>
-                          <Link className="mxd-services-stack__work" href="/project-details">
+                          <Link className="mxd-services-stack__work" href="/portfolio">
                             <Image className="mxd-services" src="/porthomeimages/ecom2.png" alt="Work Preview" width={1200} height={960} quality={95} />
                             <div className="mxd-services-stack__tags tags-absolute">
                              
@@ -348,7 +348,7 @@ export default async function Home() {
                     </div>
                     <div className="col-12 col-xl-3 mxd-grid-item no-margin">
                       <div className="mxd-section-title__hrcontrols anim-uni-in-up">
-                        <Link className="btn btn-anim btn-default btn-outline slide-right-up" href="/works-masonry">
+                        <Link className="btn btn-anim btn-default btn-outline slide-right-up" href="/portfolio">
                           <span className="btn-caption">Works</span>
                           <i className="ph-bold ph-arrow-up-right"></i>
                         </Link>

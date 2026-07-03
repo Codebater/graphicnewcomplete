@@ -235,7 +235,7 @@ export default function AboutUs() {
                     <div className="col-12 col-xl-3 mxd-grid-item no-margin"></div>
                     <div className="col-12 col-xl-3 mxd-grid-item no-margin">
                       <div className="mxd-section-title__hrcontrols pre-title anim-uni-in-up">
-                        <Link className="btn btn-anim btn-default btn-outline slide-right-up" href="/blog">
+                        <Link className="btn btn-anim btn-default btn-outline slide-right-up" href="/portfolio">
                           <span className="btn-caption">View More</span>
                           <i className="ph-bold ph-arrow-up-right"></i>
                         </Link>
