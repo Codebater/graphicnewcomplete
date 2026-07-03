@@ -129,23 +129,27 @@
 .marquee-lens {
   position: absolute;
   inset: 0;
-  z-index: 5;
+  /* Above the text line (z auto) but BELOW the smiley image (z 2), so the
+     ball's eyes/gloss overlap the icons — they read as inside the ball. */
+  z-index: 1;
   pointer-events: none;
   overflow: hidden;
   clip-path: circle(0 at 50% 50%);
 }
 .marquee-lens__strip {
+  position: absolute;
+  top: 0;
+  left: 0;
   display: flex;
   align-items: center;
   gap: 5rem;
-  height: 100%;
   width: max-content;
   will-change: transform;
 }
 .marquee-lens__icon {
   flex: 0 0 auto;
-  width: 6.5rem;
-  height: 6.5rem;
+  width: 5rem;
+  height: 5rem;
   color: var(--t-bright);
   display: inline-flex;
 }
@@ -159,11 +163,11 @@
 }
 @media only screen and (min-width: 768px) {
   .marquee-lens__strip {
-    gap: 6rem;
+    gap: 5rem;
   }
   .marquee-lens__icon {
-    width: 12rem;
-    height: 12rem;
+    width: 8rem;
+    height: 8rem;
   }
 }
 
