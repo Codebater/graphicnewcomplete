@@ -55,19 +55,37 @@
   padding-right: 3rem;
 }
 .title {
-  display: inline;
-}
-.dot {
   display: inline-block;
-  width: 0.4em;
-  height: 0.4em;
-  margin-left: 0.3em;
-  border-radius: 50%;
-  background: var(--accent);
-  opacity: 0;
-  transform: scale(0.4);
-  transition: opacity 0.35s ease, transform 0.35s ease;
-  vertical-align: middle;
+  position: relative;
+}
+/* Pixel-tile strip — builds tile-by-tile under the active name (stepped,
+   binary pops — same language as the preloader's checkerboard). */
+.title::after {
+  content: '';
+  position: absolute;
+  top: calc(100% + 0.25rem);
+  left: 0;
+  height: 0.55rem;
+  width: 0;
+  background: repeating-linear-gradient(
+    90deg,
+    #ddf160 0 0.55rem,
+    transparent 0.55rem 0.95rem
+  );
+  transition: width 0.36s steps(12, jump-none);
+  pointer-events: none;
+}
+.itemActive .title::after {
+  width: 100%;
+}
+@media (prefers-reduced-motion: reduce) {
+  .title::after {
+    transition: none;
+  }
+}
+/* The tile strip is the active indicator now — the old dot is retired. */
+.dot {
+  display: none;
 }
 
 .meta {

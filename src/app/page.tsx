@@ -6,6 +6,8 @@ import Statistics from '@/components/Statistics';
 import { supabase } from '@/lib/supabase';
 import ProjectsList, { ProjectListItem } from '@/components/ProjectsList';
 import HeroMarqueeLens from '@/components/HeroMarqueeLens';
+import PixelText from '@/components/PixelText';
+import PixelRunner from '@/components/PixelRunner';
 import Loader from '@/components/Loader';
 
 // Re-render the home page at most once a minute so newly published projects
@@ -186,7 +188,8 @@ export default async function Home() {
                   <div className="row g-0">
                     <div className="col-12 col-xl-8 mxd-grid-item no-margin">
                       <div className="mxd-section-title__title">
-                        <h2 className="reveal-type">Selected work</h2>
+                        <h2 style={{ position: 'absolute', width: 1, height: 1, margin: -1, padding: 0, overflow: 'hidden', clipPath: 'inset(50%)', whiteSpace: 'nowrap' }}>Selected work</h2>
+                        <PixelText text="SELECTED WORK" className="anim-uni-in-up" />
                       </div>
                     </div>
                   </div>
@@ -310,11 +313,7 @@ export default async function Home() {
                         </div>
                         <div className="mxd-services-stack__works">
                           <div className="mxd-services-stack__work">
-                            <Image className="mxd-services" src="/porthomeimages/brand1.png" alt="Work Preview" width={1200} height={960} quality={95} />
-                            <div className="mxd-services-stack__tags tags-absolute"></div>
-                          </div>
-                          <div className="mxd-services-stack__work">
-                            <Image className="mxd-services" src="/porthomeimages/brand2.png" alt="Work Preview" width={1200} height={960} quality={95} />
+                            <PixelRunner />
                             <div className="mxd-services-stack__tags tags-absolute"></div>
                           </div>
                         </div>
