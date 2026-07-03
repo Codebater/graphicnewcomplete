@@ -2,6 +2,7 @@ import Link from 'next/link';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import DynamicPortfolio from '@/components/DynamicPortfolio';
+import Loader from '@/components/Loader';
 
 export const metadata = {
   title: 'Portfolio - GRAPHIQ STUDIO LLC - Our Creative Projects',
@@ -20,16 +21,7 @@ export default function Portfolio() {
   return (
     <>
       {/* Loader */}
-      <div id="loader" className="loader">
-        <div className="loader__wrapper">
-          <div className="loader__content">
-            <div className="loader__count">
-              <span className="count__text">0</span>
-              <span className="count__percent">%</span>
-            </div>
-          </div>
-        </div>
-      </div>
+      <Loader />
 
       <Header />
 

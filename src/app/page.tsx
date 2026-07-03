@@ -6,6 +6,7 @@ import Statistics from '@/components/Statistics';
 import { supabase } from '@/lib/supabase';
 import ProjectsList, { ProjectListItem } from '@/components/ProjectsList';
 import HeroMarqueeLens from '@/components/HeroMarqueeLens';
+import Loader from '@/components/Loader';
 
 // Re-render the home page at most once a minute so newly published projects
 // appear in the work list automatically (ISR).
@@ -40,16 +41,7 @@ export default async function Home() {
   return (
     <>
       {/* Loader */}
-      <div id="loader" className="loader">
-        <div className="loader__wrapper">
-          <div className="loader__content">
-            <div className="loader__count">
-              <span className="count__text">0</span>
-              <span className="count__percent">%</span>
-            </div>
-          </div>
-        </div>
-      </div>
+      <Loader />
 
       {/* Header */}
       <Header />

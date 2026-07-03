@@ -4,6 +4,7 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import PricingClient from '@/components/PricingClient';
 import PricingPlans from '@/components/PricingPlans';
+import Loader from '@/components/Loader';
 
 export const metadata = {
   title: 'Pricing - GRAPHIQ STUDIO LLC - Creative Solutions Made Simple',
@@ -23,16 +24,7 @@ export default function Pricing() {
     <>
       <PricingClient />
       {/* Loader */}
-      <div id="loader" className="loader">
-        <div className="loader__wrapper">
-          <div className="loader__content">
-            <div className="loader__count">
-              <span className="count__text">0</span>
-              <span className="count__percent">%</span>
-            </div>
-          </div>
-        </div>
-      </div>
+      <Loader />
 
       <Header />
 

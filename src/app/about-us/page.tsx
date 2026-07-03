@@ -4,6 +4,7 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import AboutUsClient from '@/components/AboutUsClient';
 import FreelancersList from '@/components/FreelancersList';
+import Loader from '@/components/Loader';
 
 export const metadata = {
   title: 'About Us - GRAPHIQ STUDIO LLC - Digital Agency & Creative Studio',
@@ -23,16 +24,7 @@ export default function AboutUs() {
     <>
       <AboutUsClient />
       {/* Loader */}
-      <div id="loader" className="loader">
-        <div className="loader__wrapper">
-          <div className="loader__content">
-            <div className="loader__count">
-              <span className="count__text">0</span>
-              <span className="count__percent">%</span>
-            </div>
-          </div>
-        </div>
-      </div>
+      <Loader />
 
       <Header />
 

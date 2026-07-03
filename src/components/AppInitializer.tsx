@@ -77,14 +77,71 @@ export default function AppInitializer() {
       }
 
       function hideLoader() {
-        gsap.to(".loader__count", { duration: 0.8, ease: 'power2.in', y: "100%", delay: 1.8 });
-        gsap.to(".loader__wrapper", { duration: 0.8, ease: 'power4.in', y: "-100%", delay: 2.2 });
-        setTimeout(() => {
-          const loader = document.getElementById("loader");
-          if (loader) {
-            loader.classList.add("loaded");
-          }
-        }, 3200);
+        const markLoaded = (ms: number) =>
+          setTimeout(() => {
+            const loader = document.getElementById("loader");
+            if (loader) {
+              loader.classList.add("loaded");
+            }
+          }, ms);
+
+        // Pixel-tile loader exit: 90s checkerboard dissolve. Half the tiles
+        // pop off (binary, no fade) in a left-to-right sweep leaving a perfect
+        // checkerboard, then the other half sweeps away.
+        const turnTiles = () => {
+          const gridEl = document.querySelector(".pixel-loader-screen");
+          const tiles = gridEl ? gridEl.querySelectorAll(".pixel-loader__tile") : [];
+          if (!gridEl || !tiles.length) return false;
+          const cols = getComputedStyle(gridEl).gridTemplateColumns.split(" ").length || 1;
+          const checkerA: Element[] = [];
+          const checkerB: Element[] = [];
+          tiles.forEach((t, i) => {
+            ((Math.floor(i / cols) + (i % cols)) % 2 === 0 ? checkerA : checkerB).push(t);
+          });
+          // Delay long enough that the stop-motion visibly plays between the
+          // turn-in entrance (~0.95s) and this exit, even on instant loads.
+          gsap.to(checkerA, {
+            opacity: 0,
+            duration: 0.001,
+            ease: "none",
+            delay: 2.3,
+            overwrite: "auto",
+            stagger: { grid: "auto", axis: "x", from: "start", amount: 0.45 },
+          });
+          gsap.to(checkerB, {
+            opacity: 0,
+            duration: 0.001,
+            ease: "none",
+            delay: 2.8,
+            overwrite: "auto",
+            stagger: { grid: "auto", axis: "x", from: "start", amount: 0.45 },
+          });
+          gsap.to(".loader__wrapper", { duration: 0.35, autoAlpha: 0, delay: 3.4, ease: "none" });
+          markLoaded(3800);
+          return true;
+        };
+
+        // Legacy exit (slide up) — used if no tile grid is present.
+        const slideAway = () => {
+          gsap.to(".loader__count", { duration: 0.8, ease: "power2.in", y: "100%", delay: 1.8 });
+          gsap.to(".loader__wrapper", { duration: 0.8, ease: "power4.in", y: "-100%", delay: 2.2 });
+          markLoaded(3200);
+        };
+
+        // The tile grid mounts client-side; if images finished loading before
+        // hydration, wait briefly for the tiles before falling back.
+        if (document.querySelector(".pixel-loader-screen")) {
+          if (turnTiles()) return;
+          let tries = 0;
+          const waitForTiles = setInterval(() => {
+            if (turnTiles() || ++tries > 12) {
+              clearInterval(waitForTiles);
+              if (tries > 12) slideAway();
+            }
+          }, 100);
+          return;
+        }
+        slideAway();
       }
 
       function pageAppearance() {

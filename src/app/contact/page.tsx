@@ -4,6 +4,7 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import ContactConsultationFlow from '@/components/ContactConsultationFlow';
 import '@/styles/step-form.css';
+import Loader from '@/components/Loader';
 
 export const metadata = {
   title: 'Contact - GRAPHIQ STUDIO LLC - Let\'s Talk About Your Project',
@@ -23,16 +24,7 @@ export default function Contact() {
     <>
       
       {/* Loader */}
-      <div id="loader" className="loader">
-        <div className="loader__wrapper">
-          <div className="loader__content">
-            <div className="loader__count">
-              <span className="count__text">0</span>
-              <span className="count__percent">%</span>
-            </div>
-          </div>
-        </div>
-      </div>
+      <Loader />
 
       <Header />
 

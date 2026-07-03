@@ -121,6 +121,91 @@
   }
 }
 
+/* Pixel "G" header logo — 5x5 tile grid; the accent tile travels the G path. */
+.pixel-g-logo {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 7.5%;
+  width: 100%;
+  aspect-ratio: 1;
+}
+.pixel-g-logo__tile {
+  border-radius: 24%;
+  /* subtle filler tiles; the G itself is high-contrast in both themes */
+  background: var(--base-tint);
+  transition: background-color 0.3s ease, transform 0.3s ease;
+}
+.pixel-g-logo__tile--on {
+  background: var(--base-opp);
+}
+.pixel-g-logo__tile--accent {
+  background: #ddf160;
+  transform: scale(1.12);
+}
+
+/* ---- Pixel buttons — stepped 8-bit corners + a green accent pixel that
+   hops one step on hover (same language as the pixel-G logo/preloader).
+   Hooks .btn-default = every main rectangular button; round icon buttons
+   keep their circle (smiley language). ---- */
+.btn.btn-default {
+  border-radius: 0;
+  clip-path: polygon(
+    0 0.8rem, 0.4rem 0.8rem, 0.4rem 0.4rem, 0.8rem 0.4rem, 0.8rem 0,
+    calc(100% - 0.8rem) 0, calc(100% - 0.8rem) 0.4rem, calc(100% - 0.4rem) 0.4rem,
+    calc(100% - 0.4rem) 0.8rem, 100% 0.8rem,
+    100% calc(100% - 0.8rem), calc(100% - 0.4rem) calc(100% - 0.8rem),
+    calc(100% - 0.4rem) calc(100% - 0.4rem), calc(100% - 0.8rem) calc(100% - 0.4rem),
+    calc(100% - 0.8rem) 100%,
+    0.8rem 100%, 0.8rem calc(100% - 0.4rem), 0.4rem calc(100% - 0.4rem),
+    0.4rem calc(100% - 0.8rem), 0 calc(100% - 0.8rem)
+  );
+  background-image: linear-gradient(#ddf160, #ddf160);
+  background-size: 0.6rem 0.6rem;
+  background-repeat: no-repeat;
+  background-position: calc(100% - 1.1rem) 0.9rem;
+  transition:
+    background-color 0.3s ease,
+    border-color 0.3s ease,
+    color 0.3s ease,
+    background-position 0.18s steps(2, end);
+}
+.btn.btn-default:hover,
+.btn.btn-default:focus-visible {
+  background-position: calc(100% - 2rem) 0.9rem;
+}
+/* On accent-colored buttons the green pixel would vanish — use a dark one. */
+.btn.btn-default.btn-additional {
+  background-image: linear-gradient(#161616, #161616);
+}
+
+/* Pixel preloader — full-screen tile field with a kawaii stop-motion smiley
+   in the center, in the pixel-G logo style. Columns/rows are set inline by
+   the PixelLoader component from the viewport size. */
+.pixel-loader-screen {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  gap: clamp(4px, 0.5vw, 8px);
+  padding: clamp(4px, 0.5vw, 8px);
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+.pixel-loader-screen.is-ready {
+  opacity: 1;
+}
+.pixel-loader-screen .pixel-loader__tile {
+  display: block;
+  border-radius: 22%;
+  background: var(--base-tint);
+  transition: background-color 0.14s ease;
+}
+.pixel-loader-screen .pixel-loader__tile--on {
+  background: var(--base-opp);
+}
+.pixel-loader-screen .pixel-loader__tile--accent {
+  background: #ddf160;
+}
+
 /* Hero marquee "lens" — inside the smiley circle the scrolling text shows as
    pixel icons (strip is transform-synced to the real marquee each frame). */
 .mxd-hero-02-marquee__line {

@@ -1,6 +1,6 @@
-import Image from 'next/image';
 import Link from 'next/link';
 import RotatingCaption from '@/components/RotatingCaption';
+import PixelGLogo from '@/components/PixelGLogo';
 
 export default function Header() {
   return (
@@ -89,9 +89,9 @@ export default function Header() {
         {/* header logo */}
         <div className="mxd-header__logo loading__fade">
           <Link href="/" className="mxd-logo">
-            {/* logo icon */}
-            <div className="mxd-logo__image" id="emoji-logo">
-              <Image className="emoji-display" id="emoji-display" src="/emojis/1.png" alt="Emoji" width={40} height={40} />
+            {/* logo icon — pixel G with traveling accent tile */}
+            <div className="mxd-logo__image">
+              <PixelGLogo />
             </div>
             {/* logo text */}
             <span className="mxd-logo__text">GRAPHIQ<br/>STUDIO LLC</span>
