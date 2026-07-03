@@ -127,6 +127,7 @@ const FACE_W = 13;
 export default function PixelLoader() {
   const [dims, setDims] = useState<{ cols: number; rows: number } | null>(null);
   const [step, setStep] = useState(0);
+  const [done, setDone] = useState(false);
   const gridRef = useRef<HTMLSpanElement | null>(null);
   const enteredRef = useRef(false);
 
@@ -152,9 +153,34 @@ export default function PixelLoader() {
     if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
       id = setInterval(() => setStep((s) => (s + 1) % SEQ.length), 150);
     }
+
+    // Once the loader has finished (hideLoader adds .loaded), stop the frame
+    // interval and unmount the ~600 tiles — otherwise they keep re-rendering
+    // forever behind the page and eat into scroll performance.
+    const loaderEl = document.getElementById('loader');
+    let mo: MutationObserver | undefined;
+    let doneTimer: ReturnType<typeof setTimeout> | undefined;
+    const finish = () => {
+      if (id) clearInterval(id);
+      setDone(true);
+    };
+    if (loaderEl) {
+      if (loaderEl.classList.contains('loaded')) {
+        finish();
+      } else {
+        mo = new MutationObserver(() => {
+          if (loaderEl.classList.contains('loaded')) finish();
+        });
+        mo.observe(loaderEl, { attributes: true, attributeFilter: ['class'] });
+      }
+    }
+    doneTimer = setTimeout(finish, 12000); // safety net
+
     return () => {
       window.removeEventListener('resize', calc);
       if (id) clearInterval(id);
+      if (mo) mo.disconnect();
+      if (doneTimer) clearTimeout(doneTimer);
     };
   }, []);
 
@@ -191,6 +217,9 @@ export default function PixelLoader() {
       stagger: { grid: 'auto', axis: 'x', from: 'start', amount: 0.35 },
     });
   }, [dims]);
+
+  // After the loader exit, render nothing — frees the tile nodes entirely.
+  if (done) return null;
 
   // Pre-hydration / first paint: the loader's solid background shows alone,
   // then the tile field turns in. (Ref attached so calc() can measure it.)

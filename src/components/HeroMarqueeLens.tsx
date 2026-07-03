@@ -126,44 +126,56 @@ export default function HeroMarqueeLens() {
       while (strip.scrollWidth < 2600 && guard++ < 20) addSet();
       strip.innerHTML += strip.innerHTML; // duplicate for seamless loop
 
+      // Geometry reads (getBoundingClientRect) force layout — doing them every
+      // frame fights the scroll animations. The strip's transform sync stays
+      // per-frame (style-only); the lens geometry refreshes every 4th frame.
+      let frameNo = 0;
+      let lastMask = '';
+      let stripHalf = 0;
       const tick = () => {
         if (!overlay) return;
         // Mirror the real track's x-position (works no matter how GSAP drives it).
         const m = new DOMMatrixReadOnly(getComputedStyle(track).transform);
-        const half = strip.scrollWidth / 2;
-        const x = half > 0 ? -((-m.m41 % half + half) % half) : 0;
+        const x = stripHalf > 0 ? -((-m.m41 % stripHalf + stripHalf) % stripHalf) : 0;
         strip.style.transform = `translate3d(${x}px,0,0)`;
 
-        // Keep the strip riding the marquee line's band (overlay covers the
-        // whole hero-marquee container).
-        const or = (marquee as HTMLElement).getBoundingClientRect();
-        const lr = line.getBoundingClientRect();
-        strip.style.top = `${lr.top - or.top}px`;
-        strip.style.left = `${lr.left - or.left}px`;
-        strip.style.height = `${lr.height}px`;
+        if (frameNo++ % 4 === 0) {
+          stripHalf = strip.scrollWidth / 2;
 
-        // Keep the lens glued to the smiley (handles resize / motion). The
-        // smiley PNG has transparent padding, so use a factor that matches the
-        // visible ball — icons only appear once truly inside it.
-        const sr = smiley.getBoundingClientRect();
-        const cx = sr.left + sr.width / 2 - or.left;
-        const cy = sr.top + sr.height / 2 - or.top;
-        const r = Math.min(sr.width, sr.height) * 0.36;
-        overlay.style.clipPath = r > 4 ? `circle(${r}px at ${cx}px ${cy}px)` : 'circle(0 at 50% 50%)';
+          // Keep the strip riding the marquee line's band (overlay covers the
+          // whole hero-marquee container).
+          const or = (marquee as HTMLElement).getBoundingClientRect();
+          const lr = line.getBoundingClientRect();
+          strip.style.top = `${lr.top - or.top}px`;
+          strip.style.left = `${lr.left - or.left}px`;
+          strip.style.height = `${lr.height}px`;
 
-        // Cut a matching hole in the text marquee so ONLY icons show inside
-        // the ball (the ball is slightly translucent, so unmasked text would
-        // ghost through).
-        if (maskedEl) {
-          const mr = maskedEl.getBoundingClientRect();
-          const mx = sr.left + sr.width / 2 - mr.left;
-          const my = sr.top + sr.height / 2 - mr.top;
-          const mask =
-            r > 4
-              ? `radial-gradient(circle at ${mx}px ${my}px, transparent ${r - 1}px, #000 ${r}px)`
-              : '';
-          maskedEl.style.webkitMaskImage = mask;
-          maskedEl.style.maskImage = mask;
+          // Keep the lens glued to the smiley (handles resize / motion). The
+          // smiley PNG has transparent padding, so use a factor that matches
+          // the visible ball — icons only appear once truly inside it.
+          const sr = smiley.getBoundingClientRect();
+          const cx = sr.left + sr.width / 2 - or.left;
+          const cy = sr.top + sr.height / 2 - or.top;
+          const r = Math.min(sr.width, sr.height) * 0.36;
+          overlay.style.clipPath = r > 4 ? `circle(${r}px at ${cx}px ${cy}px)` : 'circle(0 at 50% 50%)';
+
+          // Cut a matching hole in the text marquee so ONLY icons show inside
+          // the ball (the ball is slightly translucent, so unmasked text would
+          // ghost through).
+          if (maskedEl) {
+            const mr = maskedEl.getBoundingClientRect();
+            const mx = sr.left + sr.width / 2 - mr.left;
+            const my = sr.top + sr.height / 2 - mr.top;
+            const mask =
+              r > 4
+                ? `radial-gradient(circle at ${mx}px ${my}px, transparent ${r - 1}px, #000 ${r}px)`
+                : '';
+            if (mask !== lastMask) {
+              lastMask = mask;
+              maskedEl.style.webkitMaskImage = mask;
+              maskedEl.style.maskImage = mask;
+            }
+          }
         }
 
         raf = requestAnimationFrame(tick);

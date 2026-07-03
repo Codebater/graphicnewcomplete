@@ -275,8 +275,29 @@ export default function PixelRunner() {
     });
     io.observe(canvas);
 
+    // Pause outright when the tab is hidden.
+    const onVis = () => {
+      if (document.hidden && running) {
+        running = false;
+        cancelAnimationFrame(raf);
+      } else if (!document.hidden && !running) {
+        running = true;
+        S.last = performance.now();
+        raf = requestAnimationFrame(loop);
+      }
+    };
+    document.addEventListener('visibilitychange', onVis);
+
+    let lastIdleDraw = 0;
     const loop = (now: number) => {
       if (!running) return;
+      // While idle (nobody playing), ~24fps is plenty — keeps the card alive
+      // without competing with the page's scroll animations.
+      if (S.mode === 'idle' && now - lastIdleDraw < 40) {
+        raf = requestAnimationFrame(loop);
+        return;
+      }
+      lastIdleDraw = now;
       const dt = Math.min(0.05, (now - S.last) / 1000);
       S.last = now;
       S.t += dt;
@@ -565,6 +586,7 @@ export default function PixelRunner() {
       cancelAnimationFrame(raf);
       ro.disconnect();
       io.disconnect();
+      document.removeEventListener('visibilitychange', onVis);
       canvas.removeEventListener('pointerdown', onDown);
       canvas.removeEventListener('pointerup', onUp);
       canvas.removeEventListener('pointercancel', onUp);
