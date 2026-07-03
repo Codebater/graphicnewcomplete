@@ -311,8 +311,8 @@ export default async function Home() {
                           <p className="t-opposite">We create visually compelling designs that enhance user experience. 
                             We make sure your brand&apos;s visuals resonate with your audience.</p>
                         </div>
-                        <div className="mxd-services-stack__works">
-                          <div className="mxd-services-stack__work">
+                        <div className="mxd-services-stack__works game-works">
+                          <div className="mxd-services-stack__work game-work">
                             <PixelRunner />
                             <div className="mxd-services-stack__tags tags-absolute"></div>
                           </div>

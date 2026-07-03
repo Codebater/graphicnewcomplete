@@ -143,6 +143,18 @@
   transform: scale(1.12);
 }
 
+/* Game card: let the runner fill the card's available space instead of forcing
+   an explicit height (which overflowed the fixed-height card on desktop and
+   clipped the game's ground/feet). min-height:0 lets these flex children
+   shrink to the space the flex column allocates. */
+.game-works,
+.game-work {
+  min-height: 0;
+}
+.game-work > div:first-child {
+  height: 100% !important;
+}
+
 /* ---- Pixel text headline — tile-built letters (logo/preloader language)
    with a blinking accent block cursor. Sized via --pxt (one tile). ---- */
 .pixel-text {
