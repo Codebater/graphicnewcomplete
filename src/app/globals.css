@@ -121,6 +121,52 @@
   }
 }
 
+/* Hero marquee "lens" — inside the smiley circle the scrolling text shows as
+   pixel icons (strip is transform-synced to the real marquee each frame). */
+.mxd-hero-02-marquee__line {
+  position: relative;
+}
+.marquee-lens {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  pointer-events: none;
+  overflow: hidden;
+  clip-path: circle(0 at 50% 50%);
+}
+.marquee-lens__strip {
+  display: flex;
+  align-items: center;
+  gap: 5rem;
+  height: 100%;
+  width: max-content;
+  will-change: transform;
+}
+.marquee-lens__icon {
+  flex: 0 0 auto;
+  width: 6.5rem;
+  height: 6.5rem;
+  color: var(--t-bright);
+  display: inline-flex;
+}
+.marquee-lens__icon:nth-child(2n) {
+  color: var(--accent);
+}
+.marquee-lens__icon svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+@media only screen and (min-width: 768px) {
+  .marquee-lens__strip {
+    gap: 6rem;
+  }
+  .marquee-lens__icon {
+    width: 12rem;
+    height: 12rem;
+  }
+}
+
 /* "Let's talk about your project" CTA — on hover an arrow slides in from the
    left and the text nudges right. */
 .promo-cta {

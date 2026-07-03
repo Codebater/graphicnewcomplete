@@ -5,6 +5,7 @@ import Footer from '@/components/Footer';
 import Statistics from '@/components/Statistics';
 import { supabase } from '@/lib/supabase';
 import ProjectsList, { ProjectListItem } from '@/components/ProjectsList';
+import HeroMarqueeLens from '@/components/HeroMarqueeLens';
 
 // Re-render the home page at most once a minute so newly published projects
 // appear in the work list automatically (ISR).
@@ -52,6 +53,9 @@ export default async function Home() {
 
       {/* Header */}
       <Header />
+
+      {/* Hero marquee lens effect (text -> pixel icons inside the smiley) */}
+      <HeroMarqueeLens />
 
       {/* Page Content */}
       <main id="mxd-page-content" className="mxd-page-content">
