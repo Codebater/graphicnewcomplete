@@ -57,7 +57,7 @@ type StarItem = { x: number; y: number };
 type Cloud = { x: number; y: number; speed: number; size: number };
 type Wave = { x: number; t: number; power: number };
 
-export default function PixelRunner() {
+export default function PixelRunner({ autoStart = false }: { autoStart?: boolean }) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
   useEffect(() => {
@@ -579,7 +579,15 @@ export default function PixelRunner() {
       ctx.restore();
       raf = requestAnimationFrame(loop);
     };
-    canvas.dataset.state = 'idle';
+    if (autoStart) {
+      // mounted via the "tap to play" placeholder — start running immediately
+      reset();
+      S.mode = 'run';
+      canvas.dataset.state = 'run';
+      try { canvas.focus(); } catch {}
+    } else {
+      canvas.dataset.state = 'idle';
+    }
     raf = requestAnimationFrame(loop);
 
     return () => {
@@ -593,10 +601,10 @@ export default function PixelRunner() {
       canvas.removeEventListener('keydown', onKey);
       canvas.removeEventListener('keyup', onKeyUp);
     };
-  }, []);
+  }, [autoStart]);
 
   return (
-    <div style={{ width: '100%', height: 'clamp(280px, 34vw, 500px)', position: 'relative' }}>
+    <div style={{ width: '100%', height: '100%', position: 'relative' }}>
       <canvas
         ref={canvasRef}
         role="application"

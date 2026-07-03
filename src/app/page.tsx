@@ -7,7 +7,7 @@ import { supabase } from '@/lib/supabase';
 import ProjectsList, { ProjectListItem } from '@/components/ProjectsList';
 import HeroMarqueeLens from '@/components/HeroMarqueeLens';
 import PixelText from '@/components/PixelText';
-import PixelRunner from '@/components/PixelRunner';
+import PixelRunnerLazy from '@/components/PixelRunnerLazy';
 import Loader from '@/components/Loader';
 
 // Re-render the home page at most once a minute so newly published projects
@@ -313,7 +313,7 @@ export default async function Home() {
                         </div>
                         <div className="mxd-services-stack__works game-works">
                           <div className="mxd-services-stack__work game-work">
-                            <PixelRunner />
+                            <PixelRunnerLazy />
                             <div className="mxd-services-stack__tags tags-absolute"></div>
                           </div>
                         </div>
