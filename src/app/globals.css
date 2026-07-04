@@ -755,8 +755,17 @@ html body {
   background: #ddf160;   /* the whole word lights up green on hover */
 }
 
-/* menu links: a green tile bullet steps in on hover — pixel cursor language */
-.main-menu__link { position: relative; }
+/* menu links: a green tile bullet steps in on hover — pixel cursor language.
+   inline-flex + line-height 1 so the anchor box hugs the tile lettering —
+   the template's 4rem line box floated the hitbox ~44px ABOVE the visible
+   text, making taps land on the link below. */
+.main-menu__item .main-menu__link {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  line-height: 1;
+  padding: 0.6rem 0;   /* comfortable tap target around the lettering */
+}
 .main-menu__link::before {
   content: '';
   display: inline-block;
@@ -791,6 +800,9 @@ html body {
   pointer-events: none;
 }
 .rotating-caption__line.is-on { opacity: 1; }
+/* ink of the menu card's surface — a base span rule was forcing black,
+   invisible on the dark card in the light theme */
+.mxd-menu__caption .rotating-caption__line { color: var(--t-opp-medium); }
 
 /* menu caption + bottom data line: small green lead-in tiles */
 .mxd-menu__caption::before {
