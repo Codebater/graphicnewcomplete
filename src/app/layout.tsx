@@ -27,9 +27,6 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        {/* project media (covers, posters, videos) live on Vercel Blob —
-            preconnect so the first fetch mid-scroll skips DNS+TLS setup */}
-        <link rel="preconnect" href="https://zu5qvxcujdfyikfz.public.blob.vercel-storage.com" crossOrigin="anonymous" />
         <link rel="icon" href="/favicon.ico" type="image/x-icon" />
         <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
         <link rel="icon" href="/favicon.png" type="image/png" />

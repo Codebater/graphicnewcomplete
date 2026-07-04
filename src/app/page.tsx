@@ -86,7 +86,7 @@ export default async function Home() {
               <div className="mxd-hero-02-static__center">
                 <div className="mxd-hero-02-marquee">
                   <div className="mxd-hero-02-marquee__image loading__item">
-                    <Image className="mxd-move" src="/porthomeimages/smiley.png" alt="Hero Image" width={400} height={400} priority />
+                    <Image className="mxd-move" src="/porthomeimages/smiley.png" alt="Hero Image" width={400} height={400} />
                   </div>
                   <div className="mxd-hero-02-marquee__line loading__item">
                     <div className="marquee marquee-left--gsap">

@@ -162,9 +162,7 @@ export default function HeroMarqueeLens() {
       let lastClip = '';
       const tick = () => {
         if (!overlay || !onScreen) return;
-        // Mirror the real track's x-position EVERY frame (style read only —
-        // no layout). Skipping frames desyncs the icons from the marquee and
-        // makes the eyes stutter.
+        // Mirror the real track's x-position (style read only — no layout).
         const m = new DOMMatrixReadOnly(getComputedStyle(track).transform);
         const x = -((-m.m41 % stripPeriod + stripPeriod) % stripPeriod);
         strip.style.transform = `translate3d(${x}px,0,0)`;
