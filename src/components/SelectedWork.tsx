@@ -80,8 +80,8 @@ export default function SelectedWork({ projects }: { projects: ProjectListItem[]
   // Each step parks the scroll ON the new work and hard-locks it through the
   // transition plus a viewing beat. Scroll intent is only read while IDLE, so
   // steps can never chain, skip, or double-fire — one gesture, one work.
-  const WIPE_MS = 820;   // transition length (all wipe layers exit by ~760ms)
-  const HOLD_MS = 1000;  // viewing beat after the transition before unlocking
+  const WIPE_MS = 820;  // transition length (all wipe layers exit by ~760ms)
+  const HOLD_MS = 500;  // viewing beat after the transition before unlocking
   const [wipeOn, setWipeOn] = useState(false);
   // Nothing is active/loaded until the section's ENTRY transition plays — the
   // first work (and its video) only appears once the viewer is locked.
@@ -90,6 +90,7 @@ export default function SelectedWork({ projects }: { projects: ProjectListItem[]
   const wipeOnRef = useRef(false);
   const skipWipeRef = useRef(false); // backward scrub changes skip the wipe/lock
   const freeRideUntilRef = useRef(0); // stepper fully off (to-top ride etc.)
+  const parkNextRef = useRef(0);      // throttle for the mid-lock backstop park
   const firstActive = useRef(true);
   const inViewRef = useRef(false);
   const lockUntilRef = useRef(0);
@@ -112,25 +113,24 @@ export default function SelectedWork({ projects }: { projects: ProjectListItem[]
   snapRef.current = snapToF;
 
   const startWipe = () => {
+    unlockRef.current(); // release any previous blockers first (never leak them)
     lockUntilRef.current = Date.now() + WIPE_MS + HOLD_MS;
     setWipeOn(true);
     wipeOnRef.current = true;
 
-    // Freeze the scroll for the whole step (transition + viewing beat).
-    // Lenis covers desktop wheel; overflow/touch-action covers native touch.
-    const isMobile = window.matchMedia('(max-width: 1023px)').matches;
+    // Freeze the scroll for the whole step (transition + viewing beat) by
+    // blocking the input events — NOT by toggling overflow on <html>, which
+    // shifts the viewport on iOS mid-gesture, invalidates ScrollTrigger's
+    // measurements (parking then lands wrong and steps become unreachable)
+    // and forces full-page reflows every step.
     const w = window as unknown as { lenis?: { stop?: () => void; start?: () => void } };
-    const html = document.documentElement;
+    const prevent = (ev: Event) => ev.preventDefault();
+    window.addEventListener('touchmove', prevent, { passive: false });
+    window.addEventListener('wheel', prevent, { passive: false });
     w.lenis?.stop?.();
-    if (isMobile) {
-      html.style.overflow = 'hidden';
-      html.style.touchAction = 'none';
-    }
     unlockRef.current = () => {
-      if (isMobile) {
-        html.style.overflow = '';
-        html.style.touchAction = '';
-      }
+      window.removeEventListener('touchmove', prevent);
+      window.removeEventListener('wheel', prevent);
       w.lenis?.start?.();
     };
 
@@ -276,14 +276,19 @@ export default function SelectedWork({ projects }: { projects: ProjectListItem[]
               const cur = activeRef.current;
               if (Date.now() < freeRideUntilRef.current) return; // to-top ride: stepper off
               if (Date.now() < lockUntilRef.current) {
-                if (f - cur > 0.03) snapRef.current(cur); // forward drift only
+                // backstop against leftover momentum — throttled single parks,
+                // never a per-frame scroll fight
+                if (f - cur > 0.06 && Date.now() > parkNextRef.current) {
+                  parkNextRef.current = Date.now() + 180;
+                  snapRef.current(cur);
+                }
                 return;
               }
-              if (f - cur > 0.5 && cur < N - 1) {
+              if (f - cur > 0.3 && cur < N - 1) {
                 activeRef.current = cur + 1;
                 setActive(cur + 1);       // fires the wipe (locks + parks)
                 snapRef.current(cur + 1);
-              } else if (f - cur < -0.5 && cur > 0) {
+              } else if (f - cur < -0.35 && cur > 0) {
                 skipWipeRef.current = true;
                 const next = Math.max(0, Math.round(f));
                 activeRef.current = next;
