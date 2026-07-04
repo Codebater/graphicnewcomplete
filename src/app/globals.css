@@ -770,14 +770,18 @@ html body {
 /* hairline outline that follows the stepped clip shape (a normal border
    can't) — defines the near-white cards on the white theme and the dark
    tint cards on the dark theme. Applied on the PARENT (clip-path on the
-   card itself would cut its own shadow). */
-.stack-item,
-.mxd-stats-cards__item,
-.footer-blocks__column {
-  --pixel-card-line: color-mix(in srgb, var(--t-bright) 22%, transparent);
-  filter:
-    drop-shadow(1px 1px 0 var(--pixel-card-line))
-    drop-shadow(-1px -1px 0 var(--pixel-card-line));
+   card itself would cut its own shadow). Desktop only: these parents are
+   GSAP-transformed while scrolling (stacking/entrance), and re-filtering
+   every frame janks mobile GPUs. */
+@media (min-width: 1024px) {
+  .stack-item,
+  .mxd-stats-cards__item,
+  .footer-blocks__column {
+    --pixel-card-line: color-mix(in srgb, var(--t-bright) 22%, transparent);
+    filter:
+      drop-shadow(1px 1px 0 var(--pixel-card-line))
+      drop-shadow(-1px -1px 0 var(--pixel-card-line));
+  }
 }
 /* on green accent cards the green pixel would vanish — use a dark one */
 .mxd-services-stack__inner.bg-accent,

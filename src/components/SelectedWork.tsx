@@ -71,6 +71,19 @@ export default function SelectedWork({ projects }: { projects: ProjectListItem[]
   const fillRef = useRef<HTMLSpanElement | null>(null);
   const [active, setActive] = useState(0);
   const activeRef = useRef(0);
+  // The wipe only exists in the DOM for a short window after a REAL project
+  // change (never on initial load), then React removes it — no reliance on
+  // CSS animation fill states, so tiles can never get stuck on screen.
+  const [wipeOn, setWipeOn] = useState(false);
+  const firstActive = useRef(true);
+  const inViewRef = useRef(false);
+
+  useEffect(() => {
+    if (firstActive.current) { firstActive.current = false; return; }
+    setWipeOn(true);
+    const t = setTimeout(() => setWipeOn(false), 1150);
+    return () => clearTimeout(t);
+  }, [active]);
 
   useEffect(() => {
     if (!projects.length) return;
@@ -168,21 +181,40 @@ export default function SelectedWork({ projects }: { projects: ProjectListItem[]
     };
   }, [projects]);
 
-  // Play the active frame's video, pause the others (React's `muted` prop
-  // quirk can block autoplay, so drive playback imperatively).
-  useEffect(() => {
+  // Play the active frame's video ONLY while the section is near the viewport
+  // (videos are preload="none", so nothing downloads or decodes during the
+  // initial hero scroll on mobile). Pause everything else.
+  const syncVideos = () => {
     const root = rootRef.current;
     if (!root) return;
     root.querySelectorAll<HTMLVideoElement>('video').forEach((v) => {
       const isActive = !!v.closest(`.${styles.frameActive}`);
       v.muted = true;
-      if (isActive) {
+      if (isActive && inViewRef.current) {
         v.play().catch(() => {});
       } else if (!v.paused) {
         v.pause();
       }
     });
-  }, [active, projects]);
+  };
+  useEffect(syncVideos, [active, projects]);
+  useEffect(() => {
+    const root = rootRef.current;
+    if (!root) return;
+    const io = new IntersectionObserver(
+      ([e]) => {
+        inViewRef.current = e.isIntersecting;
+        syncVideos();
+      },
+      // the section starts right below the 100vh hero, so at page load its
+      // edge already touches the viewport bottom — require ~120px of real
+      // entry before the video is allowed to load/play
+      { rootMargin: '0px 0px -120px 0px' }
+    );
+    io.observe(root);
+    return () => io.disconnect();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   if (!projects.length) return null;
   const N = projects.length;
@@ -225,7 +257,7 @@ export default function SelectedWork({ projects }: { projects: ProjectListItem[]
                 {projects.map((p, i) => (
                   <div key={p.id} className={`${styles.frame} ${i === active ? styles.frameActive : ''}`}>
                     {p.video ? (
-                      <video src={p.video} muted loop playsInline autoPlay preload="metadata" />
+                      <video src={p.video} muted loop playsInline preload="none" />
                     ) : p.image ? (
                       // eslint-disable-next-line @next/next/no-img-element
                       <img src={p.image} alt={p.title} loading="lazy" />
@@ -235,41 +267,40 @@ export default function SelectedWork({ projects }: { projects: ProjectListItem[]
                   </div>
                 ))}
 
-                {/* checkerboard tile wipe — remounts (and replays) on change;
-                    the tiles draw a heart / trophy / 1UP mid-transition.
-                    Two layers: tiles pop in staggered (sweep), each LAYER pops
-                    out as one — the dark field at 620ms, the motif at 1050ms —
-                    so the shape holds alone on the media before vanishing. */}
-                {(() => {
+                {/* checkerboard tile wipe — only exists in the DOM for ~1.15s
+                    after a real project change (React removes it, so tiles can
+                    never linger). The tiles draw a heart / trophy / 1UP
+                    mid-transition: tiles pop in staggered (sweep), each LAYER
+                    pops out as one — dark field first, motif a beat later. */}
+                {wipeOn && (() => {
                   const shape = WIPE_SHAPES[active % WIPE_SHAPES.length];
                   const rowOff = Math.floor((WIPE_ROWS - shape.length) / 2);
                   const colOff = Math.floor((WIPE_COLS - shape[0].length) / 2);
-                  const cells = Array.from({ length: WIPE_COLS * WIPE_ROWS }).map((_, i) => {
-                    const c = i % WIPE_COLS;
-                    const r = (i / WIPE_COLS) | 0;
-                    const d = c * 16 + ((r + c) % 2) * 80; // sweep + checker offset (ms)
-                    const ch = shape[r - rowOff]?.[c - colOff];
-                    return { d, ch };
-                  });
+                  const delay = (c: number, r: number) => c * 16 + ((r + c) % 2) * 80;
+                  // only the shape's own cells get DOM nodes (placed on the grid)
+                  const shapeCells: { c: number; r: number; ch: string }[] = [];
+                  shape.forEach((row, sr) =>
+                    [...row].forEach((ch, sc) => {
+                      if (ch === '#' || ch === 'o') shapeCells.push({ c: sc + colOff, r: sr + rowOff, ch });
+                    })
+                  );
                   return (
                     <>
                       <div key={`d${active}`} className={`${styles.wipe} ${styles.wipeDarkLayer}`} aria-hidden="true">
-                        {cells.map((cell, i) => (
-                          <i key={i} className={styles.wipeDark} style={{ animationDelay: `${cell.d}ms` }} />
-                        ))}
+                        {Array.from({ length: WIPE_COLS * WIPE_ROWS }).map((_, i) => {
+                          const c = i % WIPE_COLS;
+                          const r = (i / WIPE_COLS) | 0;
+                          return <i key={i} className={styles.wipeDark} style={{ animationDelay: `${delay(c, r)}ms` }} />;
+                        })}
                       </div>
                       <div key={`s${active}`} className={`${styles.wipe} ${styles.wipeShapeLayer}`} aria-hidden="true">
-                        {cells.map((cell, i) =>
-                          cell.ch === '#' || cell.ch === 'o' ? (
-                            <i
-                              key={i}
-                              className={cell.ch === '#' ? styles.wipeShape : styles.wipeShapeAlt}
-                              style={{ animationDelay: `${cell.d}ms` }}
-                            />
-                          ) : (
-                            <i key={i} />
-                          )
-                        )}
+                        {shapeCells.map(({ c, r, ch }, i) => (
+                          <i
+                            key={i}
+                            className={ch === '#' ? styles.wipeShape : styles.wipeShapeAlt}
+                            style={{ gridColumn: c + 1, gridRow: r + 1, animationDelay: `${delay(c, r)}ms` }}
+                          />
+                        ))}
                       </div>
                     </>
                   );
