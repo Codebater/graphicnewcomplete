@@ -458,6 +458,11 @@ html body {
   background-repeat: no-repeat;
   background-position: calc(100% - 0.9rem) 0.9rem;
 }
+/* hidden on phones — its scroll ride conflicts with the section snapping/
+   holds there (and thumbs have the native fast-scroll anyway) */
+@media (max-width: 1023px) {
+  #to-top.btn-to-top { display: none !important; }
+}
 /* hamburger: a kawaii smiley (same language as the preloader / hero ball).
    The two template "lines" become vertical pixel eyes — AppInitializer
    stretches + crosses them into the X when the menu opens — plus a smile
