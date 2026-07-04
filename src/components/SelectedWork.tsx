@@ -81,7 +81,7 @@ export default function SelectedWork({ projects }: { projects: ProjectListItem[]
   useEffect(() => {
     if (firstActive.current) { firstActive.current = false; return; }
     setWipeOn(true);
-    const t = setTimeout(() => setWipeOn(false), 1150);
+    const t = setTimeout(() => setWipeOn(false), 820); // all layers exit by ~760ms
     return () => clearTimeout(t);
   }, [active]);
 
@@ -276,7 +276,7 @@ export default function SelectedWork({ projects }: { projects: ProjectListItem[]
                   const shape = WIPE_SHAPES[active % WIPE_SHAPES.length];
                   const rowOff = Math.floor((WIPE_ROWS - shape.length) / 2);
                   const colOff = Math.floor((WIPE_COLS - shape[0].length) / 2);
-                  const delay = (c: number, r: number) => c * 16 + ((r + c) % 2) * 80;
+                  const delay = (c: number, r: number) => c * 12 + ((r + c) % 2) * 60;
                   // only the shape's own cells get DOM nodes (placed on the grid)
                   const shapeCells: { c: number; r: number; ch: string }[] = [];
                   shape.forEach((row, sr) =>

@@ -40,15 +40,24 @@
   text-indent: 0.32em;
   color: var(--muted);
 }
-.tag i { width: 5px; height: 5px; border-radius: 50%; background: var(--accent, #c9a24b); }
-/* mini tile lettering for the left label */
+/* direct child only — `.tag i` would also hit every PixelText tile cell
+   (they're <i> elements too) and turn the lettering into solid blobs */
+.tag > i { width: 5px; height: 5px; border-radius: 50%; background: var(--accent, #c9a24b); }
+/* mini tile lettering for the left label — tiles need real gaps (≥35% of the
+   tile) or the letters merge into unreadable blobs at this size */
 .pixelTag :global(.pixel-text) {
-  --pxt: 0.26rem;
-  gap: calc(var(--pxt) * 0.85);
+  --pxt: 0.34rem;
+  gap: calc(var(--pxt) * 1.2);
   padding: 0;
-  opacity: 0.75;
+  opacity: 0.9;
 }
+.pixelTag :global(.pixel-text__letter) { gap: calc(var(--pxt) * 0.38); }
+.pixelTag :global(.pixel-text__cell) { border-radius: 24%; }
 .pixelTag :global(.pixel-text__cell--on) { background: #ddf160; }
+/* light theme: green-on-cream is illegible — use the theme ink instead */
+:global([color-scheme='light']) .pixelTag :global(.pixel-text__cell--on) {
+  background: var(--t-bright);
+}
 
 /* accent bloom behind the player */
 .pin::before {
@@ -209,9 +218,9 @@
    (preloader language); hold phase = motif floating over the new project. */
 /* real durations (not 1ms) so throttled compositors can't skip the final
    frame; steps keep the binary pixel pop. The motif leaves just a beat after
-   the field — a quick flash, it never lingers over the loaded project. */
-.wipeDarkLayer { animation: sw-layer-out 0.2s steps(3, end) forwards; animation-delay: 620ms; }
-.wipeShapeLayer { animation: sw-layer-out 0.2s steps(3, end) forwards; animation-delay: 760ms; }
+   the field — a quick flash, gone before the transition even finishes. */
+.wipeDarkLayer { animation: sw-layer-out 0.16s steps(3, end) forwards; animation-delay: 460ms; }
+.wipeShapeLayer { animation: sw-layer-out 0.16s steps(3, end) forwards; animation-delay: 600ms; }
 .wipe i {
   display: block;
   opacity: 0;
@@ -255,13 +264,15 @@
   align-items: center;
   gap: 0.7rem;
 }
-/* tile-font digits */
+/* tile-font digits — same 1px-gap treatment so they stay readable */
 .pixelNum :global(.pixel-text) {
-  --pxt: 0.24rem;
-  gap: calc(var(--pxt) * 0.7);
+  --pxt: 0.28rem;
+  gap: calc(var(--pxt) * 0.8);
   padding: 0;
   filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.7));
 }
+.pixelNum :global(.pixel-text__letter) { gap: calc(var(--pxt) * 0.38); }
+.pixelNum :global(.pixel-text__cell) { border-radius: 24%; }
 .pixelNum :global(.pixel-text__cell--on) { background: #fff; }
 /* tile progress strip — fills tile-by-tile with scroll progress */
 .progress {
@@ -395,7 +406,7 @@
     left: clamp(1.2rem, 6vw, 2rem);
     right: clamp(1.2rem, 6vw, 2rem);
   }
-  .pixelTag :global(.pixel-text) { --pxt: 0.22rem; }
+  /* keep the tag tiles at full size on mobile — smaller merges into blobs */
 
   .player { width: min(88vw, 520px); }
 
