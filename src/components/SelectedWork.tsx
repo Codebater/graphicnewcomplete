@@ -81,6 +81,9 @@ export default function SelectedWork({ projects }: { projects: ProjectListItem[]
   useEffect(() => {
     if (firstActive.current) { firstActive.current = false; return; }
     setWipeOn(true);
+    // haptic tick on each detent (Android Chrome; iOS Safari has no vibration
+    // API — there the native scroll-snap physics provide the tactile feel)
+    try { (navigator as Navigator & { vibrate?: (ms: number) => void }).vibrate?.(12); } catch { /* noop */ }
 
     // On phones, hold the scroll while the transition plays — one flick = one
     // clean project change; scrolling resumes the moment the wipe is done.
@@ -247,6 +250,18 @@ export default function SelectedWork({ projects }: { projects: ProjectListItem[]
       style={{ ['--sw-h' as string]: `${N * 90}vh` }}
       aria-label="Selected work"
     >
+      {/* Native scroll-snap detents (mobile) — one invisible snap point per
+          work at its exact runway position, so the phone's own scroll physics
+          settles each project into place like the iOS date-picker wheel. */}
+      {Array.from({ length: N }).map((_, i) => (
+        <div
+          key={`snap-${i}`}
+          className={styles.snapPoint}
+          aria-hidden="true"
+          style={{ top: `calc((${N * 90}vh - 100vh) * ${N > 1 ? i / (N - 1) : 0})` }}
+        />
+      ))}
+
       {/* ---------- desktop: sticky-pinned showcase ---------- */}
       <div className={styles.pin} style={{ ['--accent' as string]: accent }}>
         <div className={styles.topbar}>
