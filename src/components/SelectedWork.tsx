@@ -19,6 +19,11 @@ import styles from './SelectedWork.module.css';
 const ACCENT = '#DDF160';
 const num = (n: number) => String(n + 1).padStart(2, '0');
 
+// Poster convention: a webp first-frame sitting beside the video file
+// (e.g. …/ami-loop.mp4 → …/ami-loop-poster.webp). Shown while approaching
+// the section so the video costs nothing until the viewer is pinned.
+const posterOf = (videoUrl: string) => videoUrl.replace(/\.(mp4|webm|mov)(\?.*)?$/i, '-poster.webp');
+
 // checker wipe grid (cols x rows tiles over the media)
 const WIPE_COLS = 16;
 const WIPE_ROWS = 11;
@@ -75,6 +80,12 @@ export default function SelectedWork({ projects }: { projects: ProjectListItem[]
   // change (never on initial load), then React removes it — no reliance on
   // CSS animation fill states, so tiles can never get stuck on screen.
   const [wipeOn, setWipeOn] = useState(false);
+  // Video elements mount only once the viewer is pinned — until then video
+  // works show a poster image (zero network/decoder cost on the way down).
+  // Armed from the ScrollTrigger (progress > 0 = pin engaged); IO delivery is
+  // too flaky for this.
+  const [videoArmed, setVideoArmed] = useState(false);
+  const videoArmedRef = useRef(false);
   const firstActive = useRef(true);
   const inViewRef = useRef(false);
 
@@ -161,6 +172,11 @@ export default function SelectedWork({ projects }: { projects: ProjectListItem[]
             invalidateOnRefresh: true,
             onRefresh: measure,
             onUpdate: (self: any) => {
+              // pin engaged → mount the video elements (posters showed until now)
+              if (!videoArmedRef.current && self.progress > 0.001) {
+                videoArmedRef.current = true;
+                setVideoArmed(true);
+              }
               const f = self.progress * (N - 1);
               gsap.set(list, { y: -(firstCenter + f * step) });
               // tile progress strip: fills tile-by-tile (18 tiles), binary steps
@@ -190,8 +206,25 @@ export default function SelectedWork({ projects }: { projects: ProjectListItem[]
           if (st && !ScrollTrigger.getAll().includes(st)) create();
         }, 1200);
 
+        // Arm the <video> elements when the scroll gets within 150px of the
+        // pin (plain scroll listener — fires on every real touch/lenis
+        // scroll, no IO/ST delivery quirks). Until then video works show
+        // only their poster: zero network/decoder cost on the way down.
+        const armOnScroll = () => {
+          if (videoArmedRef.current || !st) return;
+          if (window.scrollY > st.start - 150) {
+            videoArmedRef.current = true;
+            inViewRef.current = true; // this close, the section fills the screen
+            setVideoArmed(true);
+            window.removeEventListener('scroll', armOnScroll);
+          }
+        };
+        window.addEventListener('scroll', armOnScroll, { passive: true });
+        armOnScroll(); // page may load already inside the section
+
         return () => {
           clearInterval(guard);
+          window.removeEventListener('scroll', armOnScroll);
           if (st) st.kill();
         };
       });
@@ -220,7 +253,7 @@ export default function SelectedWork({ projects }: { projects: ProjectListItem[]
       }
     });
   };
-  useEffect(syncVideos, [active, projects]);
+  useEffect(syncVideos, [active, videoArmed, projects]);
   useEffect(() => {
     const root = rootRef.current;
     if (!root) return;
@@ -292,7 +325,27 @@ export default function SelectedWork({ projects }: { projects: ProjectListItem[]
                 {projects.map((p, i) => (
                   <div key={p.id} className={`${styles.frame} ${i === active ? styles.frameActive : ''}`}>
                     {p.video ? (
-                      <video src={p.video} muted loop playsInline preload="none" />
+                      <>
+                        {/* poster shows on approach; the video element only
+                            exists once the viewer is pinned */}
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={posterOf(p.video)}
+                          alt={p.title}
+                          loading="lazy"
+                          onError={(e) => { (e.currentTarget as HTMLImageElement).style.visibility = 'hidden'; }}
+                        />
+                        {videoArmed && (
+                          <video
+                            src={p.video}
+                            muted
+                            loop
+                            playsInline
+                            preload="none"
+                            style={{ position: 'absolute', inset: 0 }}
+                          />
+                        )}
+                      </>
                     ) : p.image ? (
                       // eslint-disable-next-line @next/next/no-img-element
                       <img src={p.image} alt={p.title} loading="lazy" />
