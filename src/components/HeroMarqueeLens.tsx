@@ -75,6 +75,7 @@ export default function HeroMarqueeLens() {
     let overlay: HTMLDivElement | null = null;
     let tries = 0;
     let retryTimer: ReturnType<typeof setTimeout> | null = null;
+    let cleanupInit: (() => void) | null = null;
 
     let maskedEl: HTMLElement | null = null;
 
@@ -124,51 +125,72 @@ export default function HeroMarqueeLens() {
       }
       let guard = 0;
       while (strip.scrollWidth < 2600 && guard++ < 20) addSet();
+      const setLen = strip.children.length;
       strip.innerHTML += strip.innerHTML; // duplicate for seamless loop
 
-      // Geometry reads (getBoundingClientRect) force layout — doing them every
-      // frame fights the scroll animations. The strip's transform sync stays
-      // per-frame (style-only); the lens geometry refreshes every 4th frame.
+      // EXACT loop period: distance between the first icon of each set.
+      // (scrollWidth/2 is wrong by gap/2 because of the flex gap — that was
+      // the visible "jump" every time the strip wrapped.)
+      const first = strip.children[0] as HTMLElement;
+      const second = strip.children[setLen] as HTMLElement;
+      const stripPeriod = second.offsetLeft - first.offsetLeft;
+
+      // Static band geometry — only changes on resize, never per frame.
+      const measureBand = () => {
+        if (!overlay) return;
+        const or = (marquee as HTMLElement).getBoundingClientRect();
+        const lr = line.getBoundingClientRect();
+        strip.style.top = `${lr.top - or.top}px`;
+        strip.style.left = `${lr.left - or.left}px`;
+        strip.style.height = `${lr.height}px`;
+      };
+      measureBand();
+      window.addEventListener('resize', measureBand);
+
+      // Only animate while the hero is actually on screen — the loop used to
+      // run for the entire page life, stealing frames from every section.
+      let onScreen = true;
+      const io = new IntersectionObserver(([e]) => {
+        const was = onScreen;
+        onScreen = e.isIntersecting;
+        if (onScreen && !was) raf = requestAnimationFrame(tick);
+      });
+      io.observe(marquee as HTMLElement);
+
       let frameNo = 0;
       let lastMask = '';
-      let stripHalf = 0;
+      let lastClip = '';
       const tick = () => {
-        if (!overlay) return;
-        // Mirror the real track's x-position (works no matter how GSAP drives it).
+        if (!overlay || !onScreen) return;
+        // Mirror the real track's x-position (style read only — no layout).
         const m = new DOMMatrixReadOnly(getComputedStyle(track).transform);
-        const x = stripHalf > 0 ? -((-m.m41 % stripHalf + stripHalf) % stripHalf) : 0;
+        const x = -((-m.m41 % stripPeriod + stripPeriod) % stripPeriod);
         strip.style.transform = `translate3d(${x}px,0,0)`;
 
-        if (frameNo++ % 4 === 0) {
-          stripHalf = strip.scrollWidth / 2;
-
-          // Keep the strip riding the marquee line's band (overlay covers the
-          // whole hero-marquee container).
+        // Lens tracking every 3rd frame; rects are cheap here (only transforms
+        // change between frames, so layout stays clean) and clip/mask writes
+        // are guarded so nothing repaints unless the lens really moved.
+        if (frameNo++ % 3 === 0) {
           const or = (marquee as HTMLElement).getBoundingClientRect();
-          const lr = line.getBoundingClientRect();
-          strip.style.top = `${lr.top - or.top}px`;
-          strip.style.left = `${lr.left - or.left}px`;
-          strip.style.height = `${lr.height}px`;
-
-          // Keep the lens glued to the smiley (handles resize / motion). The
-          // smiley PNG has transparent padding, so use a factor that matches
-          // the visible ball — icons only appear once truly inside it.
           const sr = smiley.getBoundingClientRect();
           const cx = sr.left + sr.width / 2 - or.left;
           const cy = sr.top + sr.height / 2 - or.top;
           const r = Math.min(sr.width, sr.height) * 0.36;
-          overlay.style.clipPath = r > 4 ? `circle(${r}px at ${cx}px ${cy}px)` : 'circle(0 at 50% 50%)';
+          const clip = r > 4 ? `circle(${Math.round(r)}px at ${Math.round(cx)}px ${Math.round(cy)}px)` : 'circle(0 at 50% 50%)';
+          if (clip !== lastClip) {
+            lastClip = clip;
+            overlay.style.clipPath = clip;
+          }
 
-          // Cut a matching hole in the text marquee so ONLY icons show inside
-          // the ball (the ball is slightly translucent, so unmasked text would
-          // ghost through).
+          // Matching hole in the text marquee so ONLY icons show inside the
+          // ball (the ball is slightly translucent).
           if (maskedEl) {
             const mr = maskedEl.getBoundingClientRect();
-            const mx = sr.left + sr.width / 2 - mr.left;
-            const my = sr.top + sr.height / 2 - mr.top;
+            const mx = Math.round(sr.left + sr.width / 2 - mr.left);
+            const my = Math.round(sr.top + sr.height / 2 - mr.top);
             const mask =
               r > 4
-                ? `radial-gradient(circle at ${mx}px ${my}px, transparent ${r - 1}px, #000 ${r}px)`
+                ? `radial-gradient(circle at ${mx}px ${my}px, transparent ${Math.round(r) - 1}px, #000 ${Math.round(r)}px)`
                 : '';
             if (mask !== lastMask) {
               lastMask = mask;
@@ -181,6 +203,11 @@ export default function HeroMarqueeLens() {
         raf = requestAnimationFrame(tick);
       };
       raf = requestAnimationFrame(tick);
+
+      cleanupInit = () => {
+        window.removeEventListener('resize', measureBand);
+        io.disconnect();
+      };
       return true;
     };
 
@@ -192,6 +219,7 @@ export default function HeroMarqueeLens() {
     return () => {
       cancelAnimationFrame(raf);
       if (retryTimer) clearTimeout(retryTimer);
+      cleanupInit?.();
       overlay?.remove();
       if (maskedEl) {
         maskedEl.style.webkitMaskImage = '';
