@@ -8,6 +8,8 @@ export type ProjectListItem = {
   id: string;
   title: string;
   subtitle?: string;
+  category?: string;
+  desc?: string;
   image?: string;
   video?: string;
 };

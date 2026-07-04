@@ -4,9 +4,9 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import Statistics from '@/components/Statistics';
 import { supabase } from '@/lib/supabase';
-import ProjectsList, { ProjectListItem } from '@/components/ProjectsList';
+import type { ProjectListItem } from '@/components/ProjectsList';
+import SelectedWork from '@/components/SelectedWork';
 import HeroMarqueeLens from '@/components/HeroMarqueeLens';
-import PixelText from '@/components/PixelText';
 import PixelRunnerLazy from '@/components/PixelRunnerLazy';
 import Loader from '@/components/Loader';
 
@@ -18,19 +18,26 @@ async function getProjects(): Promise<ProjectListItem[]> {
   try {
     const { data, error } = await supabase
       .from('projects')
-      .select('id, title, services, client, featured_image, featured_video')
+      .select('id, title, services, client, description, featured_image, featured_video')
       .eq('is_published', true)
       .order('sort_order', { ascending: true })
       .order('created_at', { ascending: false })
       .limit(12);
     if (error) throw error;
-    return (data || []).map((p) => ({
-      id: p.id,
-      title: p.title,
-      subtitle: p.services || p.client || '',
-      image: p.featured_image || undefined,
-      video: p.featured_video || undefined,
-    }));
+    return (data || []).map((p) => {
+      const raw = (p.description || '').replace(/\s+/g, ' ').trim();
+      // first ~2 sentences, capped for the showcase player
+      const desc = raw ? raw.slice(0, 150).replace(/[,;:\s]+\S*$/, '') + (raw.length > 150 ? '…' : '') : '';
+      return {
+        id: p.id,
+        title: p.title,
+        subtitle: p.services || p.client || '',
+        category: (p.services || p.client || 'Project') as string,
+        desc,
+        image: p.featured_image || undefined,
+        video: p.featured_video || undefined,
+      };
+    });
   } catch (e) {
     console.error('Home projects fetch failed:', e);
     return [];
@@ -179,26 +186,9 @@ export default async function Home() {
           </div>
         </div>
 
-        {/* Selected Work — project list with hover reveal */}
-        <div className="mxd-section padding-pre-grid">
-          <div className="mxd-container grid-container">
-            <div className="mxd-block">
-              <div className="mxd-section-title pre-grid">
-                <div className="container-fluid p-0">
-                  <div className="row g-0">
-                    <div className="col-12 col-xl-8 mxd-grid-item no-margin">
-                      <div className="mxd-section-title__title">
-                        <h2 style={{ position: 'absolute', width: 1, height: 1, margin: -1, padding: 0, overflow: 'hidden', clipPath: 'inset(50%)', whiteSpace: 'nowrap' }}>Selected work</h2>
-                        <PixelText text="SELECTED WORK" className="anim-uni-in-up" />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <ProjectsList projects={projects} />
-            </div>
-          </div>
-        </div>
+        {/* Selected Work — pinned editorial showcase */}
+        <h2 style={{ position: 'absolute', width: 1, height: 1, margin: -1, padding: 0, overflow: 'hidden', clipPath: 'inset(50%)', whiteSpace: 'nowrap' }}>Selected work</h2>
+        <SelectedWork projects={projects} />
 
         {/* Services/Features Stacking Cards Section */}
         <div className="mxd-section padding-stacked-section">

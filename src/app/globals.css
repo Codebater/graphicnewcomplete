@@ -121,6 +121,15 @@
   }
 }
 
+/* Enable position:sticky inside the page. The template sets
+   `body { overflow-x: hidden }`, and the spec then promotes body's
+   `overflow-y: visible` to `auto`, turning body into a scroll container that
+   breaks sticky. `overflow-x: clip` clips horizontally WITHOUT creating a
+   scroll container, so overflow-y stays visible and sticky works. */
+html body {
+  overflow-x: clip !important;
+}
+
 /* Pixel "G" header logo — 5x5 tile grid; the accent tile travels the G path. */
 .pixel-g-logo {
   display: grid;
