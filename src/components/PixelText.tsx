@@ -39,44 +39,87 @@ const GLYPHS: Record<string, string[]> = {
   '8': ['###', '#.#', '###', '#.#', '###'],
   '9': ['###', '#.#', '###', '..#', '###'],
   "'": ['#', '#', '.', '.', '.'],
+  ':': ['.', '#', '.', '#', '.'],
+};
+
+// 5×7 variant — classic bitmap-font proportions, far more legible at nav-link
+// sizes than the 3×5 micro font (which is for tiny labels/digits).
+const GLYPHS7: Record<string, string[]> = {
+  A: ['.###.', '#...#', '#...#', '#####', '#...#', '#...#', '#...#'],
+  B: ['####.', '#...#', '#...#', '####.', '#...#', '#...#', '####.'],
+  C: ['.####', '#....', '#....', '#....', '#....', '#....', '.####'],
+  D: ['####.', '#...#', '#...#', '#...#', '#...#', '#...#', '####.'],
+  E: ['#####', '#....', '####.', '#....', '#....', '#....', '#####'],
+  F: ['#####', '#....', '####.', '#....', '#....', '#....', '#....'],
+  G: ['.####', '#....', '#....', '#..##', '#...#', '#...#', '.###.'],
+  H: ['#...#', '#...#', '#####', '#...#', '#...#', '#...#', '#...#'],
+  I: ['###', '.#.', '.#.', '.#.', '.#.', '.#.', '###'],
+  J: ['..###', '...#.', '...#.', '...#.', '...#.', '#..#.', '.##..'],
+  K: ['#...#', '#..#.', '#.#..', '##...', '#.#..', '#..#.', '#...#'],
+  L: ['#....', '#....', '#....', '#....', '#....', '#....', '#####'],
+  M: ['#...#', '##.##', '#.#.#', '#...#', '#...#', '#...#', '#...#'],
+  N: ['#...#', '##..#', '#.#.#', '#..##', '#...#', '#...#', '#...#'],
+  O: ['.###.', '#...#', '#...#', '#...#', '#...#', '#...#', '.###.'],
+  P: ['####.', '#...#', '#...#', '####.', '#....', '#....', '#....'],
+  Q: ['.###.', '#...#', '#...#', '#...#', '#.#.#', '#..#.', '.##.#'],
+  R: ['####.', '#...#', '#...#', '####.', '#.#..', '#..#.', '#...#'],
+  S: ['.####', '#....', '#....', '.###.', '....#', '....#', '####.'],
+  T: ['#####', '..#..', '..#..', '..#..', '..#..', '..#..', '..#..'],
+  U: ['#...#', '#...#', '#...#', '#...#', '#...#', '#...#', '.###.'],
+  V: ['#...#', '#...#', '#...#', '#...#', '#...#', '.#.#.', '..#..'],
+  W: ['#...#', '#...#', '#...#', '#.#.#', '#.#.#', '##.##', '#...#'],
+  X: ['#...#', '.#.#.', '..#..', '..#..', '..#..', '.#.#.', '#...#'],
+  Y: ['#...#', '.#.#.', '..#..', '..#..', '..#..', '..#..', '..#..'],
+  Z: ['#####', '....#', '...#.', '..#..', '.#...', '#....', '#####'],
 };
 
 export default function PixelText({
   text,
   className,
   cursor = true,
+  font = '3x5',
 }: {
   text: string;
   className?: string;
   cursor?: boolean;
+  font?: '3x5' | '5x7';
 }) {
+  const glyphs = font === '5x7' ? GLYPHS7 : GLYPHS;
+  const renderLetter = (ch: string, key: number) => {
+    const g = glyphs[ch] || GLYPHS[ch];
+    if (!g) return null;
+    const w = g[0].length;
+    return (
+      <span
+        key={key}
+        className="pixel-text__letter"
+        aria-hidden="true"
+        style={{ gridTemplateColumns: `repeat(${w}, var(--pxt))` }}
+      >
+        {g.flatMap((row, r) =>
+          [...row].map((c, ci) => (
+            <i
+              key={`${r}-${ci}`}
+              className={'pixel-text__cell' + (c === '#' ? ' pixel-text__cell--on' : '')}
+            />
+          ))
+        )}
+      </span>
+    );
+  };
+
+  // Letters are grouped per word so line wrapping only happens at word
+  // boundaries (bare letters as flex items would break mid-word).
   return (
     <span className={`pixel-text${className ? ` ${className}` : ''}`} role="img" aria-label={text}>
-      {text.toUpperCase().split('').map((ch, li) => {
-        if (ch === ' ') {
-          return <span key={li} className="pixel-text__space" aria-hidden="true" />;
-        }
-        const g = GLYPHS[ch];
-        if (!g) return null;
-        const w = g[0].length;
-        return (
-          <span
-            key={li}
-            className="pixel-text__letter"
-            aria-hidden="true"
-            style={{ gridTemplateColumns: `repeat(${w}, var(--pxt))` }}
-          >
-            {g.flatMap((row, r) =>
-              [...row].map((c, ci) => (
-                <i
-                  key={`${r}-${ci}`}
-                  className={'pixel-text__cell' + (c === '#' ? ' pixel-text__cell--on' : '')}
-                />
-              ))
-            )}
+      {text.toUpperCase().split(' ').map((word, wi, arr) => (
+        <span key={wi} style={{ display: 'contents' }}>
+          <span className="pixel-text__word" aria-hidden="true">
+            {[...word].map((ch, li) => renderLetter(ch, li))}
           </span>
-        );
-      })}
+          {wi < arr.length - 1 && <span className="pixel-text__space" aria-hidden="true" />}
+        </span>
+      ))}
       {cursor && <span className="pixel-text__cursor" aria-hidden="true" />}
     </span>
   );

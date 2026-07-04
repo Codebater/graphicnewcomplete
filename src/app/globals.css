@@ -175,6 +175,11 @@ html body {
   row-gap: calc(var(--pxt) * 1.8);
   padding: 0.4rem 0;
 }
+/* letters are grouped per word — wrapping happens between words only */
+.pixel-text__word {
+  display: flex;
+  gap: inherit;
+}
 .pixel-text__letter {
   display: grid;
   grid-auto-rows: var(--pxt);
@@ -564,8 +569,8 @@ html body {
 /* sun — brand green, rays twinkle in two stop-motion frames */
 .pixel-sky__sun {
   font-size: clamp(7px, 0.85vw, 11px);
-  top: 12%;
-  right: 12%;
+  top: 27%;   /* below the caption band so text never runs under it */
+  right: 9%;
   color: #ddf160;
   animation: pixel-sun-twinkle 1.8s steps(1) infinite;
 }
@@ -732,6 +737,20 @@ html body {
   .mxd-menu__contain .hamburger__base { animation: none; }
 }
 
+/* menu links in the brand tile lettering (SELECTED WORK style) — ink of the
+   menu card's surface so it adapts to both themes */
+.main-menu__link .pixel-text {
+  --pxt: clamp(0.42rem, 1.2vw, 0.6rem);   /* 5×7 glyphs — bigger overall letters */
+  gap: calc(var(--pxt) * 1.2);   /* clear tracking between letters */
+  padding: 0.2rem 0;
+}
+.main-menu__link .pixel-text__cell { border-radius: 20%; }
+.main-menu__link .pixel-text__cell--on { background: var(--t-opp-bright); }
+.no-touch .main-menu__link:hover .pixel-text__cell--on,
+.main-menu__link:focus-visible .pixel-text__cell--on {
+  background: #ddf160;   /* the whole word lights up green on hover */
+}
+
 /* menu links: a green tile bullet steps in on hover — pixel cursor language */
 .main-menu__link { position: relative; }
 .main-menu__link::before {
@@ -750,6 +769,24 @@ html body {
   opacity: 1;
   margin-right: 0.28em;
 }
+
+/* rotating menu caption — lines are absolutely stacked in a fixed-height box
+   so swapping them never moves the menu below */
+.rotating-caption {
+  position: relative;
+  display: block;
+  min-height: 3.2em;   /* room for the tallest line at two rows */
+}
+.rotating-caption__line {
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: 0;
+  opacity: 0;
+  transition: opacity 0.35s ease;
+  pointer-events: none;
+}
+.rotating-caption__line.is-on { opacity: 1; }
 
 /* menu caption + bottom data line: small green lead-in tiles */
 .mxd-menu__caption::before {
