@@ -71,20 +71,26 @@ export default function SelectedWork({ projects }: { projects: ProjectListItem[]
   const fillRef = useRef<HTMLSpanElement | null>(null);
   const [active, setActive] = useState(0);
   const activeRef = useRef(0);
-  // The wipe only exists in the DOM for a short window after a REAL project
-  // change (never on initial load), then React removes it — no reliance on
-  // CSS animation fill states, so tiles can never get stuck on screen.
+  // The wipe only exists in the DOM for a short window (React removes it — no
+  // reliance on CSS animation fill states, so tiles can never get stuck).
+  // It fires on project changes AND once on section entry, with a cooldown:
+  // a new transition can only START 1s after the previous one finished, so
+  // fast scrolling can't chain transitions back to back.
+  const WIPE_MS = 820;      // all layers exit by ~760ms
+  const COOLDOWN_MS = 1000; // breather after a transition before the next
   const [wipeOn, setWipeOn] = useState(false);
   const firstActive = useRef(true);
   const inViewRef = useRef(false);
+  const coolUntilRef = useRef(0);
+  const wipeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const unlockRef = useRef<() => void>(() => {});
 
-  useEffect(() => {
-    if (firstActive.current) { firstActive.current = false; return; }
+  const startWipe = () => {
+    coolUntilRef.current = Date.now() + WIPE_MS + COOLDOWN_MS;
     setWipeOn(true);
 
     // On phones, hold the scroll while the transition plays — one flick = one
     // clean project change; scrolling resumes the moment the wipe is done.
-    // (Prevents mid-transition re-triggers and skipped projects.)
     const isMobile = window.matchMedia('(max-width: 1023px)').matches;
     const w = window as unknown as { lenis?: { stop?: () => void; start?: () => void } };
     const html = document.documentElement;
@@ -93,7 +99,7 @@ export default function SelectedWork({ projects }: { projects: ProjectListItem[]
       html.style.overflow = 'hidden';
       html.style.touchAction = 'none';
     }
-    const unlock = () => {
+    unlockRef.current = () => {
       if (isMobile) {
         html.style.overflow = '';
         html.style.touchAction = '';
@@ -101,9 +107,25 @@ export default function SelectedWork({ projects }: { projects: ProjectListItem[]
       }
     };
 
-    const t = setTimeout(() => { setWipeOn(false); unlock(); }, 820); // all layers exit by ~760ms
-    return () => { clearTimeout(t); unlock(); };
+    if (wipeTimer.current) clearTimeout(wipeTimer.current);
+    wipeTimer.current = setTimeout(() => {
+      setWipeOn(false);
+      unlockRef.current();
+    }, WIPE_MS);
+  };
+  const startWipeRef = useRef(startWipe);
+  startWipeRef.current = startWipe;
+
+  useEffect(() => {
+    if (firstActive.current) { firstActive.current = false; return; }
+    startWipeRef.current();
   }, [active]);
+
+  // teardown safety: never leave the page scroll-locked
+  useEffect(() => () => {
+    if (wipeTimer.current) clearTimeout(wipeTimer.current);
+    unlockRef.current();
+  }, []);
 
   useEffect(() => {
     if (!projects.length) return;
@@ -157,6 +179,9 @@ export default function SelectedWork({ projects }: { projects: ProjectListItem[]
             scrub: 1,
             invalidateOnRefresh: true,
             onRefresh: measure,
+            // Entry transition: the moment the section pins (viewer centred),
+            // the wipe plays once and dissolves while the first project runs.
+            onEnter: () => startWipeRef.current(),
             onUpdate: (self: any) => {
               const f = self.progress * (N - 1);
               gsap.set(list, { y: -(firstCenter + f * step) });
@@ -167,10 +192,13 @@ export default function SelectedWork({ projects }: { projects: ProjectListItem[]
               }
               // Hysteresis: only commit to a new project once we're clearly
               // inside its zone (not hovering the .5 boundary). Stops the tile
-              // wipe from flip-flopping / re-firing on jittery mobile scroll,
-              // so the checkerboard only appears on a real transition.
+              // wipe from flip-flopping / re-firing on jittery mobile scroll.
+              // Cooldown: a new transition can't start until 1s after the
+              // previous one finished — fast scrolling queues at most ONE
+              // pending change instead of chaining transitions.
               const idx = Math.round(f);
               if (idx !== activeRef.current && Math.abs(f - idx) < 0.4) {
+                if (Date.now() < coolUntilRef.current) return;
                 activeRef.current = idx;
                 setActive(idx);
               }
