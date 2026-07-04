@@ -157,20 +157,29 @@ export default function HeroMarqueeLens() {
       });
       io.observe(marquee as HTMLElement);
 
+      // Phones get half the cadence — the effect stays in sync visually but
+      // costs half the main-thread work during the critical first scroll.
+      const isMobile = window.matchMedia('(max-width: 1023px)').matches;
+      const syncEvery = isMobile ? 2 : 1;   // strip transform mirror
+      const lensEvery = isMobile ? 6 : 3;   // lens geometry/mask tracking
+
       let frameNo = 0;
       let lastMask = '';
       let lastClip = '';
       const tick = () => {
         if (!overlay || !onScreen) return;
-        // Mirror the real track's x-position (style read only — no layout).
-        const m = new DOMMatrixReadOnly(getComputedStyle(track).transform);
-        const x = -((-m.m41 % stripPeriod + stripPeriod) % stripPeriod);
-        strip.style.transform = `translate3d(${x}px,0,0)`;
+        frameNo++;
+        if (frameNo % syncEvery === 0) {
+          // Mirror the real track's x-position (style read only — no layout).
+          const m = new DOMMatrixReadOnly(getComputedStyle(track).transform);
+          const x = -((-m.m41 % stripPeriod + stripPeriod) % stripPeriod);
+          strip.style.transform = `translate3d(${x}px,0,0)`;
+        }
 
-        // Lens tracking every 3rd frame; rects are cheap here (only transforms
+        // Lens tracking (throttled); rects are cheap here (only transforms
         // change between frames, so layout stays clean) and clip/mask writes
         // are guarded so nothing repaints unless the lens really moved.
-        if (frameNo++ % 3 === 0) {
+        if (frameNo % lensEvery === 0) {
           const or = (marquee as HTMLElement).getBoundingClientRect();
           const sr = smiley.getBoundingClientRect();
           const cx = sr.left + sr.width / 2 - or.left;
