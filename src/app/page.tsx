@@ -8,6 +8,8 @@ import type { ProjectListItem } from '@/components/ProjectsList';
 import SelectedWork from '@/components/SelectedWork';
 import HeroMarqueeLens from '@/components/HeroMarqueeLens';
 import PixelRunnerLazy from '@/components/PixelRunnerLazy';
+import PixelText from '@/components/PixelText';
+import PromoWork from '@/components/PromoWork';
 import Loader from '@/components/Loader';
 
 // Re-render the home page at most once a minute so newly published projects
@@ -204,7 +206,7 @@ export default async function Home() {
                         <div className="mxd-services-stack__container">
                           <div className="mxd-services-stack__title showcase-title">
                             <h3 className="opposite">Digital products</h3>
-                            <span className="mxd-services-stack__number t-opp-muted">/01</span>
+                            <span className="mxd-services-stack__number t-opp-muted" aria-label="/01"><PixelText text="01" cursor={false} /></span>
                           </div>
                           <div className="mxd-services-stack__info showcase-info">
                             <p className="t-opposite">We create visually compelling designs that enhance user experience. 
@@ -235,7 +237,7 @@ export default async function Home() {
                       <div className="mxd-services-stack__inner showcase-inner bg-accent">
                         <div className="mxd-services-stack__title showcase-title">
                           <h3 className="opposite">Corporate websites</h3>
-                          <span className="mxd-services-stack__number t-opp-brigth">/02</span>
+                          <span className="mxd-services-stack__number t-opp-brigth" aria-label="/02"><PixelText text="02" cursor={false} /></span>
                         </div>
                         <div className="mxd-services-stack__info showcase-info">
                           <p className="t-opposite">We create visually compelling designs that enhance user experience. 
@@ -265,7 +267,7 @@ export default async function Home() {
                       <div className="mxd-services-stack__inner radius-dark showcase-inner bg-base-tint">
                         <div className="mxd-services-stack__title showcase-title">
                           <h3>eCommerce</h3>
-                          <span className="mxd-services-stack__number t-muted-extra">/03</span>
+                          <span className="mxd-services-stack__number t-muted-extra" aria-label="/03"><PixelText text="03" cursor={false} /></span>
                         </div>
                         <div className="mxd-services-stack__info showcase-info">
                           <p>We create visually compelling designs that enhance user experience. We make sure 
@@ -295,7 +297,7 @@ export default async function Home() {
                       <div className="mxd-services-stack__inner showcase-inner bg-base-opp">
                         <div className="mxd-services-stack__title showcase-title">
                           <h3 className="opposite">Brand identity</h3>
-                          <span className="mxd-services-stack__number t-opp-muted">/04</span>
+                          <span className="mxd-services-stack__number t-opp-muted" aria-label="/04"><PixelText text="04" cursor={false} /></span>
                         </div>
                         <div className="mxd-services-stack__info showcase-info">
                           <p className="t-opposite">We create visually compelling designs that enhance user experience. 
@@ -518,12 +520,12 @@ export default async function Home() {
               <div className="mxd-promo">
                 <div className="mxd-promo__inner anim-zoom-out-container">
                   <div className="mxd-promo__content">
-                    <p className="mxd-promo__title anim-uni-in-up">
-                      <Link className="promo-cta" href="/contact">
-                        <i className="promo-cta__arrow ph-bold ph-arrow-right" aria-hidden="true"></i>
-                        <span className="mxd-promo__caption reveal-type promo-cta__text">Let&apos;s talk about your project!</span>
-                      </Link>
-                    </p>
+                    {/* tile-font LET'S WORK wordmark instead of the text CTA
+                        (full width — the template caps __title at 70% which
+                        would left-anchor the centred wordmark) */}
+                    <div className="mxd-promo__title anim-uni-in-up" style={{ width: '100%' }}>
+                      <PromoWork />
+                    </div>
                     {/* <div className="mxd-promo__controls anim-uni-in-up">
                       <Link className="btn btn-anim btn-default btn-large btn-additional slide-right-up" href="/contact">
                         <span className="btn-caption">Contact Us</span>

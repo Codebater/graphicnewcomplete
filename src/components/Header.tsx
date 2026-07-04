@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import RotatingCaption from '@/components/RotatingCaption';
 import PixelGLogo from '@/components/PixelGLogo';
+import PixelSky from '@/components/PixelSky';
 
 export default function Header() {
   return (
@@ -9,13 +10,18 @@ export default function Header() {
       <nav className="mxd-nav__wrap" data-lenis-prevent="">
         {/* Hamburger */}
         <div className="mxd-nav__contain loading__fade">
-          <button 
+          <button
             className="mxd-nav__hamburger"
             aria-label="Toggle menu"
           >
-            <div className="hamburger__base"></div>
+            {/* the base morphs into the menu card; the pixel sky inside it only
+                shows once it's the card (hidden while it's the small chip) */}
+            <div className="hamburger__base"><PixelSky /></div>
+            {/* kawaii smiley — the two "lines" are the eyes (they stretch and
+                cross into the X when the menu opens), plus a smile mouth */}
             <div className="hamburger__line"></div>
             <div className="hamburger__line"></div>
+            <div className="hamburger__mouth"></div>
           </button>
         </div>
 

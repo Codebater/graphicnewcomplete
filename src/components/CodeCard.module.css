@@ -1,281 +1,259 @@
-/* ===== Code Genius — celestial / futuristic collectible card ===== */
+/* ===== The Code Genius — collectible card (KING-card language, personalized
+   for Asad: Midas hand + GENIUS/CODE graffiti, mirrored splash layout) ===== */
 .stage {
-  --h: 0;
-  --px: 0.5;
-  --py: 0.35;
-  --gold: #e6b45a;
-  --champ: #f3e2b8;
-  --ivory: #fff6e2;
-  --amber: #f0a94e;
-  perspective: 1250px;
+  --h: 0;          /* hover 0..1 (set by JS) */
+  --px: 0.5;       /* pointer x 0..1 */
+  --py: 0.35;      /* pointer y 0..1 */
+  --gold: #e8b84b;
+  --violet: #9f5bff;
+  --deep: #17081f;
+  perspective: 1100px;
   width: 100%;
   max-width: 380px;
   margin: 0 auto;
-  padding: 20% 0 9%;   /* vertical room for halo / geometry to break out */
+  /* Frame fills the container (like the photos); only vertical room is kept so
+     the Midas hand/splashes can break out top & bottom. */
+  padding: 15% 0 8%;
   display: flex;
   justify-content: center;
 }
+
 .float {
   width: 100%;
-  animation: cc-float 8s ease-in-out infinite;
+  animation: cc-float 6s ease-in-out infinite;
   transform-style: preserve-3d;
 }
 @keyframes cc-float {
-  0%, 100% { transform: translateY(0) rotate(-0.25deg); }
-  50%      { transform: translateY(-10px) rotate(0.25deg); }
+  0%, 100% { transform: translateY(0) rotate(0.4deg); }
+  50%      { transform: translateY(-12px) rotate(-0.4deg); }
 }
+
 .card {
   position: relative;
   aspect-ratio: 3 / 4.35;
   width: 100%;
   transform-style: preserve-3d;
+  transition: transform 0.05s linear;
   will-change: transform;
 }
 
-/* ---- clipped frame ---- */
+/* ---- clipped inner frame ---- */
 .frame {
   position: absolute;
   inset: 0;
   border-radius: 26px;
   overflow: hidden;
   transform: translateZ(0);
-  background: #16110a;
-  box-shadow: 0 28px 66px -22px rgba(90, 60, 15, 0.6), inset 0 0 60px rgba(255, 236, 190, 0.25);
+  background: var(--deep);
+  box-shadow: 0 30px 60px -20px rgba(0, 0, 0, 0.75), inset 0 0 60px rgba(0, 0, 0, 0.6);
 }
 .portrait {
   position: absolute;
   left: 50%;
-  top: 41%;
-  width: 130%;
+  top: 52%;
+  width: 96%;
   transform: translate(-50%, -50%)
-    translate(calc((var(--px) - 0.5) * -12px), calc((var(--py) - 0.5) * -12px));
-  /* warm-grade the cool studio photo so it sits in the gold celestial palette */
-  filter: sepia(0.32) saturate(1.32) brightness(1.05) contrast(1.02);
-  animation: cc-breathe 9s ease-in-out infinite;
+    translate(calc((var(--px) - 0.5) * -14px), calc((var(--py) - 0.5) * -14px));
+  /* warm Midas grade — gold-touched skin */
+  filter: sepia(0.24) saturate(1.28) brightness(1.04) contrast(1.03);
 }
-@keyframes cc-breathe {
-  0%, 100% { translate: 0 0; }
-  50%      { translate: 0 -5px; }
-}
-/* push toward champagne + darken edges so the effects pop */
+/* push the backdrop toward brand purple + gold from the Midas hand above */
 .tint {
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(85% 65% at 50% 26%, rgba(255, 244, 214, 0.28), transparent 62%),
-    linear-gradient(180deg, rgba(20, 14, 6, 0.5) 0%, transparent 24%, transparent 46%, rgba(14, 9, 4, 0.9) 100%);
-}
-/* volumetric clouds around the lower half */
-.clouds {
-  position: absolute;
-  inset: 0;
-  background:
-    radial-gradient(40% 26% at 26% 82%, rgba(255, 244, 216, 0.6), transparent 72%),
-    radial-gradient(46% 30% at 78% 74%, rgba(250, 226, 180, 0.5), transparent 74%),
-    radial-gradient(60% 34% at 50% 96%, rgba(255, 248, 228, 0.65), transparent 72%),
-    radial-gradient(34% 22% at 60% 66%, rgba(240, 210, 150, 0.4), transparent 72%);
-  mix-blend-mode: screen;
-  animation: cc-clouds 18s ease-in-out infinite alternate;
-  pointer-events: none;
-}
-@keyframes cc-clouds {
-  0%   { transform: translate(0, 0) scale(1); }
-  100% { transform: translate(-3%, -2%) scale(1.07); }
+    radial-gradient(120% 80% at 50% 12%, rgba(232, 184, 75, 0.26), transparent 58%),
+    radial-gradient(120% 80% at 50% 70%, rgba(159, 91, 255, 0.2), transparent 65%),
+    linear-gradient(180deg, rgba(23, 8, 31, 0.55) 0%, transparent 26%, transparent 52%, rgba(12, 4, 18, 0.86) 100%);
+  mix-blend-mode: normal;
 }
 .vignette {
   position: absolute;
   inset: 0;
-  background: radial-gradient(128% 116% at 50% 40%, transparent 60%, rgba(40, 26, 6, 0.55) 100%);
+  background: radial-gradient(130% 120% at 50% 40%, transparent 55%, rgba(0, 0, 0, 0.72) 100%);
 }
-.shimmer {
+/* moving diagonal shine, brighter on hover */
+.shine {
   position: absolute;
   inset: -40%;
-  background: linear-gradient(118deg, transparent 43%, rgba(255, 255, 255, 0.22) 50%, transparent 57%);
+  background: linear-gradient(115deg, transparent 38%, rgba(255, 255, 255, 0.14) 47%, rgba(232, 184, 75, 0.22) 50%, transparent 60%);
   transform: translateX(-30%);
-  animation: cc-shine 6.5s ease-in-out infinite;
-  opacity: calc(0.35 + var(--h) * 0.5);
+  animation: cc-shine 5.5s ease-in-out infinite;
+  opacity: calc(0.5 + var(--h) * 0.5);
   mix-blend-mode: screen;
-  pointer-events: none;
 }
 @keyframes cc-shine {
-  0%, 100% { transform: translateX(-45%); }
-  50%      { transform: translateX(45%); }
+  0%, 100% { transform: translateX(45%); }
+  50%      { transform: translateX(-45%); }
+}
+.grain {
+  position: absolute;
+  inset: 0;
+  opacity: 0.06;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
-/* ---- multi-ring orbital halo ---- */
-.ring {
-  position: absolute;
-  left: 50%;
-  top: 30%;
-  border-radius: 50%;
-  border: 2px solid rgba(240, 200, 120, 0.85);
-  box-shadow: 0 0 14px rgba(240, 198, 116, 0.5), inset 0 0 14px rgba(240, 198, 116, 0.25);
-  pointer-events: none;
-}
-.ringFront1, .ringFront2 { mix-blend-mode: screen; z-index: 4; }
-.ringBack1  { width: 150%; aspect-ratio: 1; margin: -75% 0 0 -75%; animation: cc-spinA 20s linear infinite; }
-.ringBack2  { width: 122%; aspect-ratio: 1; margin: -61% 0 0 -61%; border-style: dashed; border-color: rgba(255, 232, 180, 0.6); animation: cc-spinB 30s linear infinite; }
-.ringFront1 { width: 138%; aspect-ratio: 1; margin: -69% 0 0 -69%; border-color: rgba(255, 240, 205, 0.9); animation: cc-spinC 24s linear infinite; }
-.ringFront2 { width: 108%; aspect-ratio: 1; margin: -54% 0 0 -54%; border-width: 1.5px; border-style: dashed; animation: cc-spinD 16s linear infinite; }
-@keyframes cc-spinA { from { transform: rotateX(72deg) rotateZ(0);   } to { transform: rotateX(72deg) rotateZ(360deg);  } }
-@keyframes cc-spinB { from { transform: rotateX(62deg) rotateY(18deg) rotateZ(0); } to { transform: rotateX(62deg) rotateY(18deg) rotateZ(-360deg); } }
-@keyframes cc-spinC { from { transform: rotateX(76deg) rotateZ(0);   } to { transform: rotateX(76deg) rotateZ(-360deg); } }
-@keyframes cc-spinD { from { transform: rotateY(68deg) rotateZ(0);   } to { transform: rotateY(68deg) rotateZ(360deg);  } }
-
-/* ---- constellation + arches (faint, behind) ---- */
-.constellation {
-  position: absolute;
-  inset: -6% -6% auto -6%;
-  height: 78%;
-  transform: translateZ(-40px);
-  opacity: 0.5;
-  animation: cc-drift 20s ease-in-out infinite alternate;
-  pointer-events: none;
-}
-.constellation line { stroke: rgba(240, 205, 130, 0.5); stroke-width: 0.8; }
-.constellation circle { fill: #ffe6a8; }
-@keyframes cc-drift { 0% { transform: translateZ(-40px) translate(0,0); } 100% { transform: translateZ(-40px) translate(2%, 1.5%); } }
-.arches {
-  position: absolute;
-  left: 8%; right: 8%; bottom: 0;
-  height: 70%;
-  transform: translateZ(-55px);
-  opacity: 0.22;
-  fill: none;
-  stroke: rgba(240, 205, 140, 0.7);
-  stroke-width: 1.1;
-  pointer-events: none;
-}
-
-/* ---- animated gold border ---- */
+/* ---- animated premium border (gold + violet, gentle pulse) ---- */
 .border {
   position: absolute;
   inset: 0;
   border-radius: 26px;
   padding: 2px;
-  background: linear-gradient(145deg, var(--ivory), var(--gold) 38%, #b9822f 55%, var(--champ) 78%, var(--ivory));
-  background-size: 220% 220%;
+  background: linear-gradient(140deg, var(--gold), rgba(159, 91, 255, 0.9) 45%, #3a1155 60%, var(--gold));
+  background-size: 200% 200%;
   -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
   -webkit-mask-composite: xor;
   mask-composite: exclude;
-  animation: cc-bordermove 8s linear infinite;
+  animation: cc-bordermove 7s linear infinite, cc-borderpulse 3.4s ease-in-out infinite;
   transform: translateZ(18px);
-  box-shadow: 0 0 calc(10px + var(--h) * 22px) rgba(235, 190, 100, calc(0.25 + var(--h) * 0.4));
-  transition: box-shadow 0.3s ease;
+  box-shadow: 0 0 18px rgba(232, 184, 75, 0.25);
   pointer-events: none;
 }
-@keyframes cc-bordermove { to { background-position: 220% 0; } }
+@keyframes cc-bordermove { to { background-position: 200% 0; } }
+@keyframes cc-borderpulse {
+  0%, 100% { box-shadow: 0 0 14px rgba(232, 184, 75, 0.22), 0 0 6px rgba(159, 91, 255, 0.18); }
+  50%      { box-shadow: 0 0 26px rgba(232, 184, 75, 0.4), 0 0 12px rgba(159, 91, 255, 0.32); }
+}
 
+/* ---- bloom behind/around the card (gold-leaning for Midas) ---- */
 .glow {
   position: absolute;
-  inset: -16%;
-  border-radius: 42px;
-  background: radial-gradient(52% 48% at calc(var(--px) * 100%) calc(var(--py) * 100%), rgba(255, 208, 120, 0.6), transparent 70%);
+  inset: -18%;
+  border-radius: 40px;
+  background: radial-gradient(60% 55% at calc(var(--px) * 100%) calc(var(--py) * 100%), rgba(232, 184, 75, 0.5), rgba(159, 91, 255, 0.28) 55%, transparent 75%);
   filter: blur(26px);
-  opacity: calc(0.4 + var(--h) * 0.55);
-  transform: translateZ(-32px);
+  opacity: calc(0.45 + var(--h) * 0.55);
+  transform: translateZ(-40px);
   transition: opacity 0.3s ease;
   pointer-events: none;
 }
 
-/* ---- light ribbons ---- */
-.ribbons {
+/* ---- foreground art breaking the frame ---- */
+/* the Midas hand reaches down from above, gold dripping onto him */
+.hand {
   position: absolute;
-  inset: -6%;
-  width: 112%;
-  height: 112%;
-  transform: translateZ(30px);
+  width: 38%;
+  left: 54%;
+  top: -21%;
+  transform: translateX(-50%) translateZ(70px) rotate(6deg)
+    translate(calc((var(--px) - 0.5) * 10px), calc((var(--py) - 0.5) * 8px));
+  filter: drop-shadow(0 8px 20px rgba(232, 184, 75, 0.5));
   pointer-events: none;
-  overflow: visible;
+  z-index: 4;
 }
-.ribbons path { fill: none; stroke: url(#cc-rib); stroke-width: 3.5; filter: drop-shadow(0 0 5px rgba(240, 198, 116, 0.6)); }
-.ribbon1 { animation: cc-rib1 11s ease-in-out infinite; }
-.ribbon2 { animation: cc-rib2 14s ease-in-out infinite; opacity: 0.8; }
-@keyframes cc-rib1 { 0%,100% { transform: translate(0,0); } 50% { transform: translate(2%, -2%); } }
-@keyframes cc-rib2 { 0%,100% { transform: translate(0,0); } 50% { transform: translate(-2%, 2%); } }
-
-/* ---- holographic panels ---- */
-.panel {
+.splash {
   position: absolute;
-  width: 30%;
-  padding: 8px 9px;
-  border-radius: 8px;
-  background: linear-gradient(150deg, rgba(255, 244, 214, 0.16), rgba(240, 198, 116, 0.08));
-  border: 1px solid rgba(255, 236, 190, 0.4);
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25), inset 0 0 12px rgba(255, 236, 190, 0.12);
-  backdrop-filter: blur(3px);
-  -webkit-backdrop-filter: blur(3px);
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
   pointer-events: none;
-  z-index: 6;
+  filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.5));
 }
-.panelDot { width: 5px; height: 5px; border-radius: 50%; background: var(--amber); box-shadow: 0 0 6px var(--amber); margin-bottom: 2px; }
-.panelLine { height: 3px; border-radius: 2px; background: linear-gradient(90deg, rgba(255, 240, 205, 0.85), rgba(240, 198, 116, 0.3)); }
-.panelA { top: 16%; left: -16%; transform: translateZ(60px) rotate(-6deg); animation: cc-panelA 9s ease-in-out infinite; }
-.panelB { top: 46%; right: -17%; transform: translateZ(72px) rotate(5deg); animation: cc-panelB 11s ease-in-out infinite; }
-.panelC { bottom: 20%; left: -13%; width: 26%; transform: translateZ(50px) rotate(4deg); animation: cc-panelA 13s ease-in-out infinite reverse; }
-@keyframes cc-panelA { 0%,100% { translate: 0 0; } 50% { translate: 3% -6%; } }
-@keyframes cc-panelB { 0%,100% { translate: 0 0; } 50% { translate: -3% 6%; } }
+/* violet splat escaping the top-LEFT corner (mirror of the King layout) */
+.splashA {
+  width: 34%;
+  left: -13%;
+  top: -12%;
+  opacity: 0.95;
+  transform: translateZ(48px) scaleX(-1);
+  animation: cc-drift2 11s ease-in-out infinite;
+  z-index: 3;
+}
+/* gold splat escaping the right edge (mid) */
+.splashB {
+  width: 27%;
+  right: -14%;
+  top: 34%;
+  opacity: 0.9;
+  transform: translateZ(40px) scaleX(-1);
+  animation: cc-drift1 9s ease-in-out infinite;
+  z-index: 3;
+}
+/* small gold splat escaping bottom-left, behind the type */
+.splashC {
+  width: 22%;
+  left: -10%;
+  bottom: -10%;
+  opacity: 0.75;
+  transform: translateZ(30px) rotate(-8deg);
+  animation: cc-drift1 13s ease-in-out infinite;
+  z-index: 2;
+}
+@keyframes cc-drift1 {
+  0%, 100% { translate: 0 0; }
+  50%      { translate: -6px -8px; }
+}
+@keyframes cc-drift2 {
+  0%, 100% { translate: 0 0; }
+  50%      { translate: 7px 6px; }
+}
 
-/* ---- floating gold geometry ---- */
-.shape {
+/* ---- floating dust ---- */
+.dust {
   position: absolute;
-  display: block;
+  inset: 0;
+  transform: translateZ(90px);
   pointer-events: none;
-  background: linear-gradient(140deg, var(--ivory), var(--gold) 55%, #b9822f);
-  box-shadow: 0 0 10px rgba(240, 198, 116, 0.55);
-  z-index: 5;
 }
-.shapeA { width: 18px; height: 18px; top: 10%; right: -8%;  border-radius: 4px; transform: translateZ(80px) rotate(20deg); animation: cc-spin3d 12s linear infinite; }
-.shapeB { width: 12px; height: 12px; top: 62%; left: -10%;  transform: translateZ(66px) rotate(45deg); animation: cc-bob 7s ease-in-out infinite; }
-.shapeC { width: 22px; height: 22px; bottom: 8%; right: -6%; clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%); transform: translateZ(88px); animation: cc-spin3d 16s linear infinite reverse; }
-.shapeD { width: 9px;  height: 9px;  top: 34%; right: -12%; border-radius: 2px; transform: translateZ(54px); animation: cc-bob 9s ease-in-out infinite; }
-.shapeE { width: 14px; height: 14px; top: 24%; left: -12%;  clip-path: polygon(50% 0, 100% 100%, 0 100%); transform: translateZ(76px); animation: cc-spin3d 20s linear infinite; }
-.shapeF { width: 8px;  height: 8px;  bottom: 30%; right: 4%; border-radius: 50%; transform: translateZ(94px); animation: cc-bob 6s ease-in-out infinite; }
-@keyframes cc-spin3d { from { transform: translateZ(80px) rotate3d(1,1,0,0deg); } to { transform: translateZ(80px) rotate3d(1,1,0,360deg); } }
-@keyframes cc-bob { 0%,100% { margin-top: 0; } 50% { margin-top: -10px; } }
-
-/* ---- rising particles ---- */
-.dust { position: absolute; inset: 0; transform: translateZ(90px); pointer-events: none; overflow: hidden; border-radius: 26px; }
 .dust span {
-  position: absolute; width: 3px; height: 3px; border-radius: 50%;
-  background: #ffe6a8; left: calc(6% + (var(--i) * 5.7%)); bottom: -6%; opacity: 0;
-  box-shadow: 0 0 7px rgba(255, 214, 130, 0.9);
-  animation: cc-dust calc(6s + var(--i) * 0.4s) ease-in infinite;
-  animation-delay: calc(var(--i) * -0.5s);
+  position: absolute;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: var(--gold);
+  left: calc((93% - (var(--i) * 6.4%)));
+  top: calc((12% + (var(--i) * 5.6%)));
+  opacity: 0;
+  box-shadow: 0 0 6px rgba(232, 184, 75, 0.8);
+  animation: cc-dust calc(5s + var(--i) * 0.5s) ease-in-out infinite;
+  animation-delay: calc(var(--i) * -0.7s);
 }
+.dust span:nth-child(even) { background: var(--violet); box-shadow: 0 0 6px rgba(159, 91, 255, 0.9); }
 @keyframes cc-dust {
-  0% { opacity: 0; transform: translateY(0) scale(0.5); }
-  20% { opacity: 0.9; } 80% { opacity: 0.6; }
-  100% { opacity: 0; transform: translateY(-380px) scale(1.15); }
+  0%   { opacity: 0; transform: translateY(10px) scale(0.6); }
+  30%  { opacity: 0.9; }
+  70%  { opacity: 0.7; }
+  100% { opacity: 0; transform: translateY(-34px) scale(1.1); }
 }
 
 /* ---- typography ---- */
 .type {
-  position: absolute; left: 0; right: 0; bottom: 5.5%;
-  text-align: center; transform: translateZ(55px); pointer-events: none; z-index: 7;
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 4%;
+  text-align: center;
+  transform: translateZ(55px);
+  pointer-events: none;
+  z-index: 5;
 }
-.title {
-  font-family: Georgia, "Times New Roman", serif;
-  font-weight: 700;
-  font-size: clamp(1.9rem, 6.6vw, 2.7rem);
-  letter-spacing: 0.1em; text-indent: 0.1em; line-height: 1;
-  background: linear-gradient(180deg, #fff7e4 0%, #f0c574 46%, #c98f36 100%);
-  -webkit-background-clip: text; background-clip: text; color: transparent;
-  filter: drop-shadow(0 2px 8px rgba(70, 45, 10, 0.6)) drop-shadow(0 0 12px rgba(255, 210, 120, 0.45));
+.wordWrap {
+  position: relative;
+  display: inline-block;
+  width: 66%;
+}
+.word {
+  display: block;
+  width: 100%;
+  filter: drop-shadow(0 6px 14px rgba(0, 0, 0, 0.6)) drop-shadow(0 0 14px rgba(159, 91, 255, 0.35));
+}
+/* "CODE" tag — bottom-right of GENIUS, smaller, same graffiti style */
+.codeTag {
+  position: absolute;
+  width: 50%;
+  right: -16%;
+  bottom: -14%;
+  transform: rotate(-3deg);
+  filter: drop-shadow(0 5px 12px rgba(0, 0, 0, 0.6)) drop-shadow(0 0 12px rgba(159, 91, 255, 0.35));
 }
 .sub {
-  margin-top: 0.55rem;
-  font-family: Georgia, "Times New Roman", serif;
-  letter-spacing: 0.24em; text-indent: 0.24em;
-  font-size: clamp(0.5rem, 1.35vw, 0.66rem);
-  color: #f7e7c4;
-  text-shadow: 0 1px 5px rgba(60, 40, 8, 0.8), 0 0 9px rgba(255, 210, 120, 0.35);
+  margin-top: 2px;
+  font-family: var(--_font-accent, "Funnel Display", sans-serif);
+  font-weight: 700;
+  letter-spacing: 0.42em;
+  text-indent: 0.42em;
+  font-size: clamp(0.7rem, 1.6vw, 0.95rem);
+  color: #f4e6c2;
+  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.8), 0 0 10px rgba(232, 184, 75, 0.35);
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .float, .portrait, .clouds, .shimmer, .ring, .constellation, .border,
-  .ribbon1, .ribbon2, .panel, .shape, .dust span { animation: none; }
+  .float, .shine, .border, .splashA, .splashB, .dust span { animation: none; }
 }

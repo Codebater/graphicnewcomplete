@@ -14,12 +14,56 @@ import styles from './SelectedWork.module.css';
 // brand's pixel tiles: stepped media corners, a checkerboard tile wipe on
 // project change, tile-font counter and a tile progress strip.
 
-const ACCENTS = ['#c9a24b', '#8ea6c4', '#b98a6e', '#84a493', '#a98bb2', '#cfc7ba'];
+// Single brand accent (the pixel-green) — no per-project theme colours, so the
+// section reads as one coherent GRAPHIQ system.
+const ACCENT = '#DDF160';
 const num = (n: number) => String(n + 1).padStart(2, '0');
 
 // checker wipe grid (cols x rows tiles over the media)
 const WIPE_COLS = 16;
 const WIPE_ROWS = 11;
+
+// Pixel-art motifs drawn BY the wipe tiles: while the dark tiles fade out
+// early, the shape tiles (green, `o` = white highlight) hold a beat so a
+// heart / trophy / 1UP reads mid-transition, then dissolves. Rotates per
+// project so every change feels like a little arcade reward.
+const WIPE_SHAPES: string[][] = [
+  [
+    // heart
+    '..##...##..',
+    '.#o##.####.',
+    '###########',
+    '###########',
+    '.#########.',
+    '..#######..',
+    '...#####...',
+    '....###....',
+    '.....#.....',
+  ],
+  [
+    // trophy
+    '###########',
+    '#.o######.#',
+    '#.#######.#',
+    '.#.#####.#.',
+    '...#####...',
+    '....###....',
+    '.....#.....',
+    '....###....',
+    '..#######..',
+  ],
+  [
+    // 1UP mushroom
+    '...#####...',
+    '..##ooo##..',
+    '.###ooo###.',
+    '#oo#####oo#',
+    '.#########.',
+    '...ooooo...',
+    '...o#o#o...',
+    '....ooo....',
+  ],
+];
 
 export default function SelectedWork({ projects }: { projects: ProjectListItem[] }) {
   const rootRef = useRef<HTMLElement | null>(null);
@@ -88,8 +132,12 @@ export default function SelectedWork({ projects }: { projects: ProjectListItem[]
                 const filled = Math.round(self.progress * 18);
                 fillRef.current.style.width = `${(filled / 18) * 100}%`;
               }
+              // Hysteresis: only commit to a new project once we're clearly
+              // inside its zone (not hovering the .5 boundary). Stops the tile
+              // wipe from flip-flopping / re-firing on jittery mobile scroll,
+              // so the checkerboard only appears on a real transition.
               const idx = Math.round(f);
-              if (idx !== activeRef.current) {
+              if (idx !== activeRef.current && Math.abs(f - idx) < 0.4) {
                 activeRef.current = idx;
                 setActive(idx);
               }
@@ -138,7 +186,7 @@ export default function SelectedWork({ projects }: { projects: ProjectListItem[]
 
   if (!projects.length) return null;
   const N = projects.length;
-  const accent = ACCENTS[active % ACCENTS.length];
+  const accent = ACCENT;
 
   return (
     <section
@@ -154,7 +202,7 @@ export default function SelectedWork({ projects }: { projects: ProjectListItem[]
             <PixelText text="SELECTED WORK" cursor={false} />
             <i />
           </span>
-          <span className={styles.tag}>2025 — PORTFOLIO</span>
+          <span className={`${styles.tag} ${styles.metaTag}`}>2025 — PORTFOLIO</span>
         </div>
 
         <div className={styles.stage}>
@@ -187,21 +235,45 @@ export default function SelectedWork({ projects }: { projects: ProjectListItem[]
                   </div>
                 ))}
 
-                {/* checkerboard tile wipe — remounts (and replays) on change */}
-                <div key={active} className={styles.wipe} aria-hidden="true">
-                  {Array.from({ length: WIPE_COLS * WIPE_ROWS }).map((_, i) => {
+                {/* checkerboard tile wipe — remounts (and replays) on change;
+                    the tiles draw a heart / trophy / 1UP mid-transition.
+                    Two layers: tiles pop in staggered (sweep), each LAYER pops
+                    out as one — the dark field at 620ms, the motif at 1050ms —
+                    so the shape holds alone on the media before vanishing. */}
+                {(() => {
+                  const shape = WIPE_SHAPES[active % WIPE_SHAPES.length];
+                  const rowOff = Math.floor((WIPE_ROWS - shape.length) / 2);
+                  const colOff = Math.floor((WIPE_COLS - shape[0].length) / 2);
+                  const cells = Array.from({ length: WIPE_COLS * WIPE_ROWS }).map((_, i) => {
                     const c = i % WIPE_COLS;
                     const r = (i / WIPE_COLS) | 0;
                     const d = c * 16 + ((r + c) % 2) * 80; // sweep + checker offset (ms)
-                    return (
-                      <i
-                        key={i}
-                        className={(r * 7 + c * 3) % 11 === 0 ? styles.wipeAccent : undefined}
-                        style={{ animationDelay: `${d}ms` }}
-                      />
-                    );
-                  })}
-                </div>
+                    const ch = shape[r - rowOff]?.[c - colOff];
+                    return { d, ch };
+                  });
+                  return (
+                    <>
+                      <div key={`d${active}`} className={`${styles.wipe} ${styles.wipeDarkLayer}`} aria-hidden="true">
+                        {cells.map((cell, i) => (
+                          <i key={i} className={styles.wipeDark} style={{ animationDelay: `${cell.d}ms` }} />
+                        ))}
+                      </div>
+                      <div key={`s${active}`} className={`${styles.wipe} ${styles.wipeShapeLayer}`} aria-hidden="true">
+                        {cells.map((cell, i) =>
+                          cell.ch === '#' || cell.ch === 'o' ? (
+                            <i
+                              key={i}
+                              className={cell.ch === '#' ? styles.wipeShape : styles.wipeShapeAlt}
+                              style={{ animationDelay: `${cell.d}ms` }}
+                            />
+                          ) : (
+                            <i key={i} />
+                          )
+                        )}
+                      </div>
+                    </>
+                  );
+                })()}
 
                 <div className={styles.mediaBar}>
                   <span className={styles.play} aria-hidden="true">▶</span>

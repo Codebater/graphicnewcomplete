@@ -358,3 +358,452 @@ html body {
 .promo-cta:focus-visible .promo-cta__text {
   transform: translateX(0.15em);
 }
+
+/* ---- Pixel header controls — the theme toggle and hamburger become 8-bit
+   chips (stepped corners + a green accent pixel), same language as the
+   pixel buttons / pixel-G logo. ---- */
+.mxd-color-switcher,
+.hamburger__base {
+  border-radius: 0 !important;   /* beat main.css's circle (it loads later) */
+  clip-path: polygon(
+    0 0.8rem, 0.4rem 0.8rem, 0.4rem 0.4rem, 0.8rem 0.4rem, 0.8rem 0,
+    calc(100% - 0.8rem) 0, calc(100% - 0.8rem) 0.4rem, calc(100% - 0.4rem) 0.4rem,
+    calc(100% - 0.4rem) 0.8rem, 100% 0.8rem,
+    100% calc(100% - 0.8rem), calc(100% - 0.4rem) calc(100% - 0.8rem),
+    calc(100% - 0.4rem) calc(100% - 0.4rem), calc(100% - 0.8rem) calc(100% - 0.4rem),
+    calc(100% - 0.8rem) 100%,
+    0.8rem 100%, 0.8rem calc(100% - 0.4rem), 0.4rem calc(100% - 0.4rem),
+    0.4rem calc(100% - 0.8rem), 0 calc(100% - 0.8rem)
+  );
+}
+/* theme toggle: give it a visible chip base to pair with the hamburger,
+   plus the hopping green accent pixel (.mxd-header__controls prefix wins the
+   cascade over main.css, which loads after globals) */
+.mxd-header__controls .mxd-color-switcher {
+  color: var(--t-opp-bright);   /* icon in the chip's opposite ink (the chip
+                                   itself is base-opp-tint) — visible in both themes */
+  background-color: var(--base-opp-tint);
+  background-image: linear-gradient(#ddf160, #ddf160);
+  background-size: 0.5rem 0.5rem;
+  background-repeat: no-repeat;
+  background-position: calc(100% - 0.9rem) 0.9rem;
+  transition: background-position 0.18s steps(2, end);
+}
+.mxd-header__controls .mxd-color-switcher:hover,
+.mxd-header__controls .mxd-color-switcher:focus-visible {
+  background-position: calc(100% - 1.5rem) 0.9rem;
+}
+/* hover fill: subtle same-ink tint instead of the template's base-tint
+   (which would swallow the opposite-ink icon on the tinted chip) */
+.no-touch .mxd-header__controls .mxd-color-switcher:hover::before {
+  background-color: color-mix(in srgb, var(--t-opp-bright) 10%, transparent);
+}
+.mxd-color-switcher::before { border-radius: 0 !important; }   /* hover fill follows the chip */
+/* hollow inset bezel — a stepped inner frame so the chips read as carved
+   face-plates (hidden once the base has morphed into the big menu card) */
+.mxd-header__controls .mxd-color-switcher::after,
+.mxd-nav__hamburger .hamburger__base::after {
+  content: '';
+  position: absolute;
+  inset: 0.55rem;
+  border: 2px solid color-mix(in srgb, var(--t-opp-bright) 20%, transparent);
+  clip-path: polygon(
+    0 0.4rem, 0.2rem 0.4rem, 0.2rem 0.2rem, 0.4rem 0.2rem, 0.4rem 0,
+    calc(100% - 0.4rem) 0, calc(100% - 0.4rem) 0.2rem, calc(100% - 0.2rem) 0.2rem,
+    calc(100% - 0.2rem) 0.4rem, 100% 0.4rem,
+    100% calc(100% - 0.4rem), calc(100% - 0.2rem) calc(100% - 0.4rem),
+    calc(100% - 0.2rem) calc(100% - 0.2rem), calc(100% - 0.4rem) calc(100% - 0.2rem),
+    calc(100% - 0.4rem) 100%,
+    0.4rem 100%, 0.4rem calc(100% - 0.2rem), 0.2rem calc(100% - 0.2rem),
+    0.2rem calc(100% - 0.4rem), 0 calc(100% - 0.4rem)
+  );
+  pointer-events: none;
+}
+.mxd-menu__contain .hamburger__base::after { display: none; }
+/* hamburger: a kawaii smiley (same language as the preloader / hero ball).
+   The two template "lines" become vertical pixel eyes — AppInitializer
+   stretches + crosses them into the X when the menu opens — plus a smile
+   mouth that fades out. Its own accent pixel too (the base morphs into
+   the opened menu card, taking the pixel language with it). */
+.mxd-nav__contain .mxd-nav__hamburger {
+  flex-direction: row;   /* eyes side by side (beats main.css's column) */
+  gap: 0.6rem;
+  padding-bottom: 1rem;   /* lifts the eyes so the mouth fits below */
+}
+.mxd-nav__hamburger .hamburger__line {
+  border-radius: 0;
+  width: 0.55rem;
+  height: 0.55rem;
+  background-color: transparent;   /* the visible eye is the ::before, so the
+                                      face life never fights GSAP's open transform */
+  position: relative;
+}
+/* round bead eyes with a life cycle: they blink, glance left, glance right
+   (stop-motion turns), blink again, return — all in one steps() loop */
+.mxd-nav__hamburger .hamburger__line::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background-color: var(--t-opp-bright);
+  animation: hamburger-eye-life 7.5s steps(1) infinite;
+}
+/* while the menu is open the eyes are the X — hold the pose */
+.mxd-nav__hamburger.nav-open .hamburger__line::before {
+  animation: none;
+  border-radius: 0.2rem;
+}
+@keyframes hamburger-eye-life {
+  0%, 17% { transform: none; }
+  18% { transform: scaleY(0.15); }          /* blink */
+  20%, 33% { transform: none; }
+  34%, 46% { transform: translateX(-28%); } /* glance left */
+  47%, 60% { transform: translateX(28%); }  /* turn right */
+  61% { transform: translateX(28%) scaleY(0.15); } /* blink mid-glance */
+  63%, 72% { transform: translateX(28%); }
+  73%, 100% { transform: none; }            /* back to centre */
+}
+.hamburger__mouth {
+  position: absolute;
+  left: 50%;
+  top: 52%;
+  transform: translateX(-50%);
+  width: 1.5rem;
+  height: 0.75rem;
+  border: 0.3rem solid var(--t-opp-bright);
+  border-top: none;
+  border-radius: 0 0 1.5rem 1.5rem;
+  z-index: 2;
+}
+@media (prefers-reduced-motion: reduce) {
+  .mxd-nav__hamburger .hamburger__line::before { animation: none; }
+}
+.hamburger__base {
+  background-image: linear-gradient(#ddf160, #ddf160);
+  background-size: 0.5rem 0.5rem;
+  background-repeat: no-repeat;
+  background-position: calc(100% - 0.9rem) 0.9rem;
+}
+.no-touch .mxd-nav__hamburger:hover .hamburger__base {
+  background-position: calc(100% - 1.5rem) 0.9rem;
+  transition: background-position 0.18s steps(2, end);
+}
+
+/* ---- Pixel menu — when the hamburger base has flipped into the menu it
+   becomes the full menu card: larger stepped corners, the accent pixel in
+   the corner, and a faint tile grid so it reads as the brand's tile field. ---- */
+.mxd-menu__contain .hamburger__base {
+  clip-path: polygon(
+    0 1.6rem, 0.8rem 1.6rem, 0.8rem 0.8rem, 1.6rem 0.8rem, 1.6rem 0,
+    calc(100% - 1.6rem) 0, calc(100% - 1.6rem) 0.8rem, calc(100% - 0.8rem) 0.8rem,
+    calc(100% - 0.8rem) 1.6rem, 100% 1.6rem,
+    100% calc(100% - 1.6rem), calc(100% - 0.8rem) calc(100% - 1.6rem),
+    calc(100% - 0.8rem) calc(100% - 0.8rem), calc(100% - 1.6rem) calc(100% - 0.8rem),
+    calc(100% - 1.6rem) 100%,
+    1.6rem 100%, 1.6rem calc(100% - 0.8rem), 0.8rem calc(100% - 0.8rem),
+    0.8rem calc(100% - 1.6rem), 0 calc(100% - 1.6rem)
+  );
+  background-image:
+    /* green accent pixel */
+    linear-gradient(#ddf160, #ddf160),
+    /* faint tile grid (very low alpha so content stays calm) */
+    repeating-linear-gradient(0deg, currentColor 0 1px, transparent 1px 3.2rem),
+    repeating-linear-gradient(90deg, currentColor 0 1px, transparent 1px 3.2rem);
+  background-size: 0.9rem 0.9rem, 100% 100%, 100% 100%;
+  background-repeat: no-repeat, repeat, repeat;
+  background-position: calc(100% - 1.6rem) 1.6rem, 0 0, 0 0;
+  color: rgba(22, 22, 22, 0.05);   /* grid line colour via currentColor */
+}
+
+/* ---- Pixel sky in the opened menu — tile sun, drifting clouds, flapping
+   birds. Sprites are drawn with box-shadow tiles (1em = one tile, font-size
+   sets the tile scale); movement uses steps() for the stop-motion feel.
+   Hidden while the base is still the small hamburger chip. ---- */
+.pixel-sky { display: none; }
+.mxd-menu__contain .hamburger__base .pixel-sky {
+  display: block;
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+.pixel-sky i {
+  position: absolute;
+  display: block;
+  width: 1em;
+  height: 1em;
+  background: currentColor;
+}
+/* sun — brand green, rays twinkle in two stop-motion frames */
+.pixel-sky__sun {
+  font-size: clamp(7px, 0.85vw, 11px);
+  top: 12%;
+  right: 12%;
+  color: #ddf160;
+  animation: pixel-sun-twinkle 1.8s steps(1) infinite;
+}
+@keyframes pixel-sun-twinkle {
+  0%, 100% {
+    box-shadow:
+      -1em -1em 0 currentColor, 0 -1em 0 currentColor, 1em -1em 0 currentColor,
+      -1em 0 0 currentColor, 1em 0 0 currentColor,
+      -1em 1em 0 currentColor, 0 1em 0 currentColor, 1em 1em 0 currentColor,
+      0 -3em 0 currentColor, 0 3em 0 currentColor,
+      -3em 0 0 currentColor, 3em 0 0 currentColor,
+      -2em -2em 0 currentColor, 2em -2em 0 currentColor,
+      -2em 2em 0 currentColor, 2em 2em 0 currentColor;
+  }
+  50% {
+    box-shadow:
+      -1em -1em 0 currentColor, 0 -1em 0 currentColor, 1em -1em 0 currentColor,
+      -1em 0 0 currentColor, 1em 0 0 currentColor,
+      -1em 1em 0 currentColor, 0 1em 0 currentColor, 1em 1em 0 currentColor,
+      0 -4em 0 currentColor, 0 4em 0 currentColor,
+      -4em 0 0 currentColor, 4em 0 0 currentColor,
+      -3em -3em 0 currentColor, 3em -3em 0 currentColor,
+      -3em 3em 0 currentColor, 3em 3em 0 currentColor;
+  }
+}
+/* clouds — soft silhouettes of the card's own ink, chunky steps drift */
+.pixel-sky__cloud {
+  left: -22em;
+  color: color-mix(in srgb, var(--t-opp-bright) 14%, transparent);
+  animation: pixel-cloud-drift linear infinite;
+}
+.pixel-sky__cloud--a {
+  font-size: clamp(6px, 0.8vw, 10px);
+  top: 18%;
+  box-shadow:
+    1em 0 0 currentColor, 2em 0 0 currentColor, 3em 0 0 currentColor,
+    4em 0 0 currentColor, 5em 0 0 currentColor, 6em 0 0 currentColor,
+    1em -1em 0 currentColor, 2em -1em 0 currentColor, 3em -1em 0 currentColor,
+    5em -1em 0 currentColor,
+    2em -2em 0 currentColor, 3em -2em 0 currentColor;
+  animation-duration: 56s;
+  animation-delay: -14s;
+  animation-timing-function: steps(160, end);
+}
+.pixel-sky__cloud--b {
+  font-size: clamp(5px, 0.6vw, 8px);
+  top: 42%;
+  box-shadow:
+    1em 0 0 currentColor, 2em 0 0 currentColor, 3em 0 0 currentColor, 4em 0 0 currentColor,
+    1em -1em 0 currentColor, 2em -1em 0 currentColor, 3em -1em 0 currentColor;
+  animation-duration: 78s;
+  animation-delay: -46s;
+  animation-timing-function: steps(200, end);
+}
+.pixel-sky__cloud--c {
+  font-size: clamp(6px, 0.7vw, 9px);
+  top: 66%;
+  box-shadow:
+    1em 0 0 currentColor, 2em 0 0 currentColor, 3em 0 0 currentColor,
+    4em 0 0 currentColor, 5em 0 0 currentColor,
+    2em -1em 0 currentColor, 3em -1em 0 currentColor, 4em -1em 0 currentColor;
+  animation-duration: 92s;
+  animation-delay: -70s;
+  animation-timing-function: steps(220, end);
+}
+@keyframes pixel-cloud-drift {
+  to { transform: translateX(calc(100vw + 46em)); }
+}
+/* birds — two-frame wing flap, bobbing across the sky */
+.pixel-sky__bird {
+  font-size: clamp(4px, 0.5vw, 6px);
+  color: color-mix(in srgb, var(--t-opp-bright) 55%, transparent);
+  /* the element tile is the body; the flapping wings are the shadows */
+}
+.pixel-sky__bird--a {
+  top: 26%;
+  left: -8em;
+  animation:
+    pixel-bird-fly 34s steps(260, end) infinite,
+    pixel-bird-flap 0.5s steps(1) infinite;
+  animation-delay: -6s, 0s;
+}
+.pixel-sky__bird--b {
+  top: 54%;
+  left: -8em;
+  animation:
+    pixel-bird-fly 46s steps(320, end) infinite,
+    pixel-bird-flap 0.62s steps(1) infinite;
+  animation-delay: -30s, -0.2s;
+}
+@keyframes pixel-bird-fly {
+  0% { transform: translate(0, 0); }
+  25% { transform: translate(calc(25vw + 4em), -3em); }
+  50% { transform: translate(calc(50vw + 8em), 1em); }
+  75% { transform: translate(calc(75vw + 12em), -2em); }
+  100% { transform: translate(calc(100vw + 16em), 0); }
+}
+@keyframes pixel-bird-flap {
+  0%, 100% { box-shadow: -1em -1em 0 currentColor, 1em -1em 0 currentColor; }
+  50% { box-shadow: -1em 0 0 currentColor, 1em 0 0 currentColor; }
+}
+/* rocket — flies bottom-left → top-right in chunky steps, resting off-screen
+   most of the loop so each pass feels like an event */
+.pixel-sky__rocket {
+  position: absolute;
+  left: -14em;
+  top: 72%;
+  font-size: clamp(5px, 0.65vw, 9px);
+  animation: pixel-rocket-fly 26s steps(220, end) infinite;
+  animation-delay: -5s;
+}
+/* body: adaptive ink tiles, green porthole, tapered nose + fins (multicolour
+   box-shadow tile art) */
+.pixel-sky__rocket-body {
+  color: color-mix(in srgb, var(--t-opp-bright) 80%, transparent);
+  box-shadow:
+    /* fins + tail column */
+    0 -2em 0 currentColor, 0 -1em 0 currentColor,
+    0 1em 0 currentColor, 0 2em 0 currentColor,
+    /* upper hull */
+    1em -1em 0 currentColor, 2em -1em 0 currentColor, 3em -1em 0 currentColor,
+    4em -1em 0 currentColor, 5em -1em 0 currentColor,
+    /* centre line with green porthole */
+    1em 0 0 currentColor, 2em 0 0 currentColor,
+    3em 0 0 #ddf160,
+    4em 0 0 currentColor, 5em 0 0 currentColor, 6em 0 0 currentColor,
+    7em 0 0 currentColor, 8em 0 0 currentColor,
+    /* lower hull */
+    1em 1em 0 currentColor, 2em 1em 0 currentColor, 3em 1em 0 currentColor,
+    4em 1em 0 currentColor, 5em 1em 0 currentColor;
+}
+/* flame: two-frame flicker behind the tail */
+.pixel-sky__rocket-flame {
+  left: -1em;
+  top: 0;
+  color: #ddf160;
+  animation: pixel-rocket-flame 0.24s steps(1) infinite;
+}
+@keyframes pixel-rocket-flame {
+  0%, 100% {
+    box-shadow: -1em 0 0 color-mix(in srgb, #ddf160 55%, transparent);
+  }
+  50% {
+    box-shadow:
+      -1em 0 0 color-mix(in srgb, #ddf160 70%, transparent),
+      -2em 0 0 color-mix(in srgb, #ddf160 30%, transparent);
+  }
+}
+@keyframes pixel-rocket-fly {
+  0% { transform: translate(0, 0) rotate(-14deg); }
+  34%, 100% { transform: translate(calc(100vw + 34em), -42vh) rotate(-14deg); }
+}
+/* the card's faint tile grid drifts diagonally (one cell per loop = seamless);
+   the green accent pixel layer stays pinned in the corner */
+.mxd-menu__contain .hamburger__base {
+  animation: menu-grid-drift 7s steps(8, end) infinite;
+}
+@keyframes menu-grid-drift {
+  from { background-position: calc(100% - 1.6rem) 1.6rem, 0 0, 0 0; }
+  to { background-position: calc(100% - 1.6rem) 1.6rem, 3.2rem 3.2rem, 3.2rem 3.2rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .pixel-sky i, .pixel-sky__rocket { animation-play-state: paused; }
+  .mxd-menu__contain .hamburger__base { animation: none; }
+}
+
+/* menu links: a green tile bullet steps in on hover — pixel cursor language */
+.main-menu__link { position: relative; }
+.main-menu__link::before {
+  content: '';
+  display: inline-block;
+  width: 0.32em;
+  height: 0.32em;
+  margin-right: 0;
+  background: #ddf160;
+  opacity: 0;
+  transform: translateY(-0.06em);
+  transition: opacity 0.15s steps(2, end), width 0.15s steps(2, end), margin-right 0.15s steps(2, end);
+}
+.main-menu__link:hover::before,
+.main-menu__link:focus-visible::before {
+  opacity: 1;
+  margin-right: 0.28em;
+}
+
+/* menu caption + bottom data line: small green lead-in tiles */
+.mxd-menu__caption::before {
+  content: '';
+  display: block;
+  width: 0.9rem;
+  height: 0.9rem;
+  margin-bottom: 1.2rem;
+  background: #ddf160;
+}
+.mxd-menu__data p:first-child::before {
+  content: '';
+  display: inline-block;
+  width: 0.6rem;
+  height: 0.6rem;
+  margin-right: 0.7rem;
+  background: #ddf160;
+}
+
+/* ---- Pixel cards — every big content card joins the tile family: the
+   services stack, the stats/"happy clients" cards and the footer cards get
+   stepped 8-bit corners + a green accent pixel in the corner.
+   (The "Let's talk about your project" promo band is deliberately NOT here —
+   it keeps the template's GSAP zoom-out scroll morph, which animates
+   border-radius 200px → normal and would fight a static clip.) ---- */
+.mxd-services-stack__inner,
+.mxd-stats-cards__inner,
+.footer-blocks__card {
+  border-radius: 0 !important;
+  clip-path: polygon(
+    0 1.6rem, 0.8rem 1.6rem, 0.8rem 0.8rem, 1.6rem 0.8rem, 1.6rem 0,
+    calc(100% - 1.6rem) 0, calc(100% - 1.6rem) 0.8rem, calc(100% - 0.8rem) 0.8rem,
+    calc(100% - 0.8rem) 1.6rem, 100% 1.6rem,
+    100% calc(100% - 1.6rem), calc(100% - 0.8rem) calc(100% - 1.6rem),
+    calc(100% - 0.8rem) calc(100% - 0.8rem), calc(100% - 1.6rem) calc(100% - 0.8rem),
+    calc(100% - 1.6rem) 100%,
+    1.6rem 100%, 1.6rem calc(100% - 0.8rem), 0.8rem calc(100% - 0.8rem),
+    0.8rem calc(100% - 1.6rem), 0 calc(100% - 1.6rem)
+  );
+  background-image: linear-gradient(#ddf160, #ddf160);
+  background-size: 0.9rem 0.9rem;
+  background-repeat: no-repeat;
+  background-position: calc(100% - 1.6rem) 1.6rem;
+}
+/* hairline outline that follows the stepped clip shape (a normal border
+   can't) — defines the near-white cards on the white theme and the dark
+   tint cards on the dark theme. Applied on the PARENT (clip-path on the
+   card itself would cut its own shadow). */
+.stack-item,
+.mxd-stats-cards__item,
+.footer-blocks__column {
+  --pixel-card-line: color-mix(in srgb, var(--t-bright) 22%, transparent);
+  filter:
+    drop-shadow(1px 1px 0 var(--pixel-card-line))
+    drop-shadow(-1px -1px 0 var(--pixel-card-line));
+}
+/* on green accent cards the green pixel would vanish — use a dark one */
+.mxd-services-stack__inner.bg-accent,
+.mxd-stats-cards__inner.bg-accent {
+  background-image: linear-gradient(#161616, #161616);
+}
+/* work previews (and the game frame) get medium stepped corners */
+.mxd-services-stack__work {
+  border-radius: 0 !important;
+  clip-path: polygon(
+    0 1.2rem, 0.6rem 1.2rem, 0.6rem 0.6rem, 1.2rem 0.6rem, 1.2rem 0,
+    calc(100% - 1.2rem) 0, calc(100% - 1.2rem) 0.6rem, calc(100% - 0.6rem) 0.6rem,
+    calc(100% - 0.6rem) 1.2rem, 100% 1.2rem,
+    100% calc(100% - 1.2rem), calc(100% - 0.6rem) calc(100% - 1.2rem),
+    calc(100% - 0.6rem) calc(100% - 0.6rem), calc(100% - 1.2rem) calc(100% - 0.6rem),
+    calc(100% - 1.2rem) 100%,
+    1.2rem 100%, 1.2rem calc(100% - 0.6rem), 0.6rem calc(100% - 0.6rem),
+    0.6rem calc(100% - 1.2rem), 0 calc(100% - 1.2rem)
+  );
+}
+/* card numbers in the tile font — coloured by the card's own number class
+   (t-opp-muted / t-opp-brigth / t-muted-extra) via currentColor */
+.mxd-services-stack__number .pixel-text {
+  --pxt: clamp(0.4rem, 1vw, 0.72rem);
+  padding: 0;
+}
+.mxd-services-stack__number .pixel-text__cell--on {
+  background: currentColor;
+}

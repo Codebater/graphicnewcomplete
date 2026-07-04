@@ -48,7 +48,7 @@
   padding: 0;
   opacity: 0.75;
 }
-.pixelTag :global(.pixel-text__cell--on) { background: var(--ink); }
+.pixelTag :global(.pixel-text__cell--on) { background: #ddf160; }
 
 /* accent bloom behind the player */
 .pin::before {
@@ -201,20 +201,30 @@
   pointer-events: none;
   z-index: 1;
 }
+/* One animation per element (composite-order safe): tiles pop IN staggered
+   (sweep, delay inline); each LAYER pops OUT as a whole — the dark field at
+   620ms, the motif layer at 1050ms. Cover phase = motif on dark tile field
+   (preloader language); hold phase = motif floating over the new project. */
+/* real durations (not 1ms) so throttled compositors can't skip the final
+   frame; steps keep the binary pixel pop. The motif leaves just a beat after
+   the field — a quick flash, it never lingers over the loaded project. */
+.wipeDarkLayer { animation: sw-layer-out 0.2s steps(3, end) forwards; animation-delay: 620ms; }
+.wipeShapeLayer { animation: sw-layer-out 0.2s steps(3, end) forwards; animation-delay: 760ms; }
 .wipe i {
   display: block;
-  background: #131313;
   opacity: 0;
-  animation: sw-wipe 0.62s steps(1) both;
 }
-/* brand accent only (preloader palette), not the per-project theme color */
-.wipe .wipeAccent { background: #ddf160; }
-@keyframes sw-wipe {
-  0% { opacity: 0; }
-  18% { opacity: 1; }
-  72% { opacity: 1; }
-  100% { opacity: 0; }
+.wipe .wipeDark,
+.wipe .wipeShape,
+.wipe .wipeShapeAlt {
+  animation: sw-tile-in 1ms steps(1, end) both;
 }
+.wipe .wipeDark { background: #131313; }
+/* soft dark edge so the motif also reads over light project media */
+.wipe .wipeShape { background: #ddf160; box-shadow: 0 0 0 2px rgba(10, 10, 10, 0.4); }
+.wipe .wipeShapeAlt { background: #ffffff; box-shadow: 0 0 0 2px rgba(10, 10, 10, 0.4); }
+@keyframes sw-tile-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes sw-layer-out { from { opacity: 1; } to { opacity: 0; } }
 
 .mediaBar {
   position: absolute;
@@ -290,10 +300,11 @@
 .infoActive { opacity: 1; transform: none; pointer-events: auto; }
 .cat {
   font-family: var(--_font-default, sans-serif);
+  font-weight: 600;
   font-size: clamp(0.6rem, 0.85vw, 0.74rem);
   letter-spacing: 0.28em;
   text-indent: 0.28em;
-  color: var(--muted);
+  color: #ddf160;   /* brand accent */
   margin-bottom: clamp(0.8rem, 1.6vh, 1.3rem);
 }
 .title {
@@ -367,21 +378,59 @@
 }
 @keyframes sw-scroll { 0%,100% { opacity: 0; transform: translate(-50%, 0); } 40% { opacity: 1; transform: translate(-50%, 5px); } }
 
-/* ---- mobile / tablet: same pinned player, no side list, centred ---- */
+/* ---- mobile / tablet: viewer centred in the screen, title beneath ---- */
 @media (max-width: 1023px) {
   .listViewport { display: none; }
-  .player { width: min(90vw, 560px); }
-  .media { border-radius: 12px; }
+  .hint { display: none; }
+  .metaTag { display: none; }            /* was colliding with the hamburger */
+
+  /* dynamic viewport height → no jump when the mobile toolbar shows/hides
+     (that's what made it feel "not fixed"). */
+  .pin { height: 100dvh; min-height: 0; }
+
   .topbar {
+    top: max(1.4rem, env(safe-area-inset-top));
     left: clamp(1.2rem, 6vw, 2rem);
     right: clamp(1.2rem, 6vw, 2rem);
   }
-  .hint { display: none; }
-  .info { min-height: clamp(200px, 30vh, 260px); }
+  .pixelTag :global(.pixel-text) { --pxt: 0.22rem; }
+
+  .player { width: min(88vw, 520px); }
+
+  /* The MEDIA is the anchor: it centres in the pin. The info is lifted out of
+     the flow (absolute, hanging just below the viewer) so it no longer pushes
+     the viewer toward the top. */
+  .info {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    min-height: 0;
+    margin-top: clamp(1.1rem, 3.2vh, 1.8rem);
+  }
+  .cat {
+    font-size: 0.66rem;
+    letter-spacing: 0.3em;
+    margin-bottom: 0.85rem;
+  }
+  .title { font-size: clamp(2rem, 9vw, 2.9rem); }
+  .desc {
+    max-width: 34ch;
+    font-size: 0.92rem;
+    line-height: 1.5;
+    margin-top: 0.85rem;
+  }
+  .view { margin-top: 1.2rem; font-size: 0.68rem; }
+}
+
+/* very small phones — keep the viewer + title on screen together */
+@media (max-width: 1023px) and (max-height: 720px) {
+  .desc { display: none; }
+  .info { margin-top: clamp(0.9rem, 2.5vh, 1.4rem); }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .mouse::after { animation: none; }
-  .wipe i { animation: none; }
+  .wipe { display: none; }   /* the wipe/motif is purely decorative */
   .frame, .infoBlock, .itemName, .item::before { transition-duration: 0.2s; }
 }
