@@ -252,15 +252,16 @@ html body {
   background-image: linear-gradient(#161616, #161616);
 }
 
-/* Pixel preloader — full-screen tile field with a kawaii stop-motion smiley
-   in the center, in the pixel-G logo style. Columns/rows are set inline by
-   the PixelLoader component from the viewport size. */
+/* Pixel preloader — a kawaii stop-motion smiley (13×9 tile face) centred on
+   the loader's clean background. No full-screen tile field: filler cells are
+   transparent, only the face tiles paint. */
 .pixel-loader-screen {
+  --plt: clamp(16px, 3vw, 28px);   /* tile size */
   position: absolute;
   inset: 0;
   display: grid;
-  gap: clamp(4px, 0.5vw, 8px);
-  padding: clamp(4px, 0.5vw, 8px);
+  place-content: center;
+  gap: clamp(3px, 0.4vw, 6px);
   opacity: 0;
   transition: opacity 0.5s ease;
 }
@@ -269,8 +270,10 @@ html body {
 }
 .pixel-loader-screen .pixel-loader__tile {
   display: block;
+  width: var(--plt);
+  height: var(--plt);
   border-radius: 22%;
-  background: var(--base-tint);
+  background: transparent;   /* filler cells are invisible */
   transition: background-color 0.14s ease;
 }
 .pixel-loader-screen .pixel-loader__tile--on {

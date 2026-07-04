@@ -2,9 +2,9 @@
 
 import { useEffect, useRef, useState } from 'react';
 
-// Kawaii stop-motion faces (plus the pixel-G logo) on an 11x9 pixel box,
-// drawn in the middle of a full-screen tile field.
-// '#' = bright tile, '*' = accent tile, '.' = filler.
+// Kawaii stop-motion faces (plus the pixel-G logo) on a 13x9 pixel box,
+// centred on the loader's clean background — no full-screen tile field.
+// '#' = bright tile, '*' = accent tile, '.' = empty (transparent).
 const FACES: string[][] = [
   // 0 — happy: tall shiny eyes (inner-top notch), ω mouth tight under them,
   // chunky cheek blush — features sit low = kawaii proportions.
@@ -125,38 +125,19 @@ const FACE_H = 9;
 const FACE_W = 13;
 
 export default function PixelLoader() {
-  const [dims, setDims] = useState<{ cols: number; rows: number } | null>(null);
   const [step, setStep] = useState(0);
   const [done, setDone] = useState(false);
   const gridRef = useRef<HTMLSpanElement | null>(null);
   const enteredRef = useRef(false);
 
   useEffect(() => {
-    const calc = () => {
-      // Measure the container itself (not the window) and target ~3.8vw tiles.
-      const w = gridRef.current?.clientWidth || window.innerWidth;
-      const h = gridRef.current?.clientHeight || window.innerHeight;
-      const t = Math.max(26, Math.min(52, w * 0.038));
-      // The face must always fit with at least one margin column/row, and the
-      // leftover must be EVEN so the face centers exactly (odd leftovers used
-      // to push the face off-center on mobile).
-      let cols = Math.max(FACE_W + 2, Math.ceil(w / t));
-      let rows = Math.max(FACE_H + 2, Math.ceil(h / t));
-      if ((cols - FACE_W) % 2 !== 0) cols += 1;
-      if ((rows - FACE_H) % 2 !== 0) rows += 1;
-      setDims({ cols, rows });
-    };
-    calc();
-    window.addEventListener('resize', calc);
-
     let id: ReturnType<typeof setInterval> | undefined;
     if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
       id = setInterval(() => setStep((s) => (s + 1) % SEQ.length), 150);
     }
 
     // Once the loader has finished (hideLoader adds .loaded), stop the frame
-    // interval and unmount the ~600 tiles — otherwise they keep re-rendering
-    // forever behind the page and eat into scroll performance.
+    // interval and unmount the tiles.
     const loaderEl = document.getElementById('loader');
     let mo: MutationObserver | undefined;
     let doneTimer: ReturnType<typeof setTimeout> | undefined;
@@ -177,31 +158,26 @@ export default function PixelLoader() {
     doneTimer = setTimeout(finish, 12000); // safety net
 
     return () => {
-      window.removeEventListener('resize', calc);
       if (id) clearInterval(id);
       if (mo) mo.disconnect();
       if (doneTimer) clearTimeout(doneTimer);
     };
   }, []);
 
-  // Entrance — mirror of the exit: a 90s checkerboard build-in. Half the
-  // tiles pop ON (binary, no fade) in a left-to-right sweep, then the other
-  // half. Runs once, right after the grid first renders.
+  // Entrance — checkerboard build-in of the face tiles (binary pops).
   useEffect(() => {
-    if (!dims || enteredRef.current || !gridRef.current) return;
+    if (enteredRef.current || !gridRef.current) return;
     enteredRef.current = true;
     const w = window as unknown as { gsap?: typeof import('gsap').gsap };
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
     if (!w.gsap) return; // CSS fade-in fallback still applies
     const g = w.gsap;
     const tiles = Array.from(gridRef.current.children);
-    const cols = dims.cols;
     const checkerA: Element[] = [];
     const checkerB: Element[] = [];
     tiles.forEach((t, i) => {
-      ((Math.floor(i / cols) + (i % cols)) % 2 === 0 ? checkerA : checkerB).push(t);
+      ((Math.floor(i / FACE_W) + (i % FACE_W)) % 2 === 0 ? checkerA : checkerB).push(t);
     });
-    // Kill the container's CSS fade — the pops must be binary, not softened.
     g.set(gridRef.current, { opacity: 1 });
     g.from(checkerA, {
       opacity: 0,
@@ -216,26 +192,16 @@ export default function PixelLoader() {
       delay: 0.4,
       stagger: { grid: 'auto', axis: 'x', from: 'start', amount: 0.35 },
     });
-  }, [dims]);
+  }, []);
 
   // After the loader exit, render nothing — frees the tile nodes entirely.
   if (done) return null;
 
-  // Pre-hydration / first paint: the loader's solid background shows alone,
-  // then the tile field turns in. (Ref attached so calc() can measure it.)
-  if (!dims) return <span ref={gridRef} className="pixel-loader-screen" aria-label="Loading" />;
-
   const face = FACES[SEQ[step]];
-  const rOff = Math.max(0, Math.floor((dims.rows - FACE_H) / 2));
-  const cOff = Math.max(0, Math.floor((dims.cols - FACE_W) / 2));
-
   const cells = [];
-  for (let r = 0; r < dims.rows; r++) {
-    for (let c = 0; c < dims.cols; c++) {
-      const fr = r - rOff;
-      const fc = c - cOff;
-      let ch = '.';
-      if (fr >= 0 && fr < FACE_H && fc >= 0 && fc < FACE_W) ch = face[fr][fc];
+  for (let r = 0; r < FACE_H; r++) {
+    for (let c = 0; c < FACE_W; c++) {
+      const ch = face[r][c];
       cells.push(
         <span
           key={`${r}-${c}`}
@@ -256,8 +222,8 @@ export default function PixelLoader() {
       role="img"
       aria-label="Loading"
       style={{
-        gridTemplateColumns: `repeat(${dims.cols}, 1fr)`,
-        gridTemplateRows: `repeat(${dims.rows}, 1fr)`,
+        gridTemplateColumns: `repeat(${FACE_W}, var(--plt))`,
+        gridTemplateRows: `repeat(${FACE_H}, var(--plt))`,
       }}
     >
       {cells}

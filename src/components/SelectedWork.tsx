@@ -84,18 +84,34 @@ export default function SelectedWork({ projects }: { projects: ProjectListItem[]
   const coolUntilRef = useRef(0);
   const wipeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const unlockRef = useRef<() => void>(() => {});
+  const stRef = useRef<any>(null);
+
+  // Snap the page scroll to an exact progress point on the section's runway
+  // (used to discard overshoot accumulated during a locked transition).
+  const snapToF = (fTarget: number) => {
+    const st = stRef.current;
+    if (!st) return;
+    const total = Math.max(1, projects.length - 1);
+    const y = st.start + (fTarget / total) * (st.end - st.start);
+    const w = window as unknown as { lenis?: { scrollTo?: (y: number, o?: any) => void } };
+    if (w.lenis?.scrollTo) w.lenis.scrollTo(y, { immediate: true });
+    else window.scrollTo(0, y);
+  };
+  const snapRef = useRef(snapToF);
+  snapRef.current = snapToF;
 
   const startWipe = () => {
     coolUntilRef.current = Date.now() + WIPE_MS + COOLDOWN_MS;
     setWipeOn(true);
 
-    // On phones, hold the scroll while the transition plays — one flick = one
-    // clean project change; scrolling resumes the moment the wipe is done.
+    // Hold the scroll while the transition plays — one gesture = one clean
+    // project change. Lenis covers desktop wheel; overflow/touch-action
+    // covers native touch scrolling on phones.
     const isMobile = window.matchMedia('(max-width: 1023px)').matches;
     const w = window as unknown as { lenis?: { stop?: () => void; start?: () => void } };
     const html = document.documentElement;
+    w.lenis?.stop?.();
     if (isMobile) {
-      w.lenis?.stop?.();
       html.style.overflow = 'hidden';
       html.style.touchAction = 'none';
     }
@@ -103,14 +119,22 @@ export default function SelectedWork({ projects }: { projects: ProjectListItem[]
       if (isMobile) {
         html.style.overflow = '';
         html.style.touchAction = '';
-        w.lenis?.start?.();
       }
+      w.lenis?.start?.();
     };
 
     if (wipeTimer.current) clearTimeout(wipeTimer.current);
     wipeTimer.current = setTimeout(() => {
       setWipeOn(false);
       unlockRef.current();
+      // Discard forward overshoot: park the scroll exactly on the active
+      // project so leftover momentum can't carry past it. (Backwards is left
+      // free so users can always scroll up and out of the section.)
+      const st = stRef.current;
+      if (st) {
+        const f = st.progress * Math.max(1, projects.length - 1);
+        if (f > activeRef.current + 0.02) snapRef.current(activeRef.current);
+      }
     }, WIPE_MS);
   };
   const startWipeRef = useRef(startWipe);
@@ -190,20 +214,28 @@ export default function SelectedWork({ projects }: { projects: ProjectListItem[]
                 const filled = Math.round(self.progress * 18);
                 fillRef.current.style.width = `${(filled / 18) * 100}%`;
               }
-              // Hysteresis: only commit to a new project once we're clearly
-              // inside its zone (not hovering the .5 boundary). Stops the tile
-              // wipe from flip-flopping / re-firing on jittery mobile scroll.
-              // Cooldown: a new transition can't start until 1s after the
-              // previous one finished — fast scrolling queues at most ONE
-              // pending change instead of chaining transitions.
+              // Strict stepping — transitions can never be skipped:
+              // 1) Cooldown: while a transition plays (+1s breather) no new
+              //    change commits, and FORWARD overshoot past the next
+              //    boundary snaps the scroll back — the runway physically
+              //    can't be blown through. (Backwards stays free so users can
+              //    always leave the section upward.)
+              // 2) Steps are clamped to ±1 — even a huge fling advances one
+              //    project per transition.
+              const cur = activeRef.current;
+              if (Date.now() < coolUntilRef.current) {
+                if (f - cur > 0.55) snapRef.current(cur + 0.55);
+                return;
+              }
               const idx = Math.round(f);
-              if (idx !== activeRef.current && Math.abs(f - idx) < 0.4) {
-                if (Date.now() < coolUntilRef.current) return;
-                activeRef.current = idx;
-                setActive(idx);
+              if (idx !== cur && Math.abs(f - idx) < 0.4) {
+                const next = cur + Math.sign(idx - cur);
+                activeRef.current = next;
+                setActive(next);
               }
             },
           });
+          stRef.current = st;
           requestAnimationFrame(() => ScrollTrigger.refresh());
         };
         create();
