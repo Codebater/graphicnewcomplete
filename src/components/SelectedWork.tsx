@@ -76,37 +76,40 @@ export default function SelectedWork({ projects }: { projects: ProjectListItem[]
   // It fires on project changes AND once on section entry, with a cooldown:
   // a new transition can only START 1s after the previous one finished, so
   // fast scrolling can't chain transitions back to back.
-  const WIPE_MS = 820;      // all layers exit by ~760ms
-  const COOLDOWN_MS = 1000; // breather after a transition before the next
+  // ---- sequential stepper: Transition → Work → Transition → Work ----
+  // Each step parks the scroll ON the new work and hard-locks it through the
+  // transition plus a viewing beat. Scroll intent is only read while IDLE, so
+  // steps can never chain, skip, or double-fire — one gesture, one work.
+  const WIPE_MS = 820;   // transition length (all wipe layers exit by ~760ms)
+  const HOLD_MS = 1000;  // viewing beat after the transition before unlocking
   const [wipeOn, setWipeOn] = useState(false);
   const firstActive = useRef(true);
   const inViewRef = useRef(false);
-  const coolUntilRef = useRef(0);
+  const lockUntilRef = useRef(0);
   const wipeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const lockTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const unlockRef = useRef<() => void>(() => {});
   const stRef = useRef<any>(null);
 
-  // Snap the page scroll to an exact progress point on the section's runway
-  // (used to discard overshoot accumulated during a locked transition).
+  // Park the page scroll at an exact step on the section's runway.
   const snapToF = (fTarget: number) => {
     const st = stRef.current;
     if (!st) return;
     const total = Math.max(1, projects.length - 1);
     const y = st.start + (fTarget / total) * (st.end - st.start);
-    const w = window as unknown as { lenis?: { scrollTo?: (y: number, o?: any) => void } };
-    if (w.lenis?.scrollTo) w.lenis.scrollTo(y, { immediate: true });
-    else window.scrollTo(0, y);
+    const l = (window as unknown as { lenis?: any }).lenis;
+    if (l?.scrollTo && !l.isStopped) l.scrollTo(y, { immediate: true });
+    else window.scrollTo(0, y); // lenis stopped during the lock — park natively
   };
   const snapRef = useRef(snapToF);
   snapRef.current = snapToF;
 
   const startWipe = () => {
-    coolUntilRef.current = Date.now() + WIPE_MS + COOLDOWN_MS;
+    lockUntilRef.current = Date.now() + WIPE_MS + HOLD_MS;
     setWipeOn(true);
 
-    // Hold the scroll while the transition plays — one gesture = one clean
-    // project change. Lenis covers desktop wheel; overflow/touch-action
-    // covers native touch scrolling on phones.
+    // Freeze the scroll for the whole step (transition + viewing beat).
+    // Lenis covers desktop wheel; overflow/touch-action covers native touch.
     const isMobile = window.matchMedia('(max-width: 1023px)').matches;
     const w = window as unknown as { lenis?: { stop?: () => void; start?: () => void } };
     const html = document.documentElement;
@@ -124,18 +127,12 @@ export default function SelectedWork({ projects }: { projects: ProjectListItem[]
     };
 
     if (wipeTimer.current) clearTimeout(wipeTimer.current);
-    wipeTimer.current = setTimeout(() => {
-      setWipeOn(false);
+    if (lockTimer.current) clearTimeout(lockTimer.current);
+    wipeTimer.current = setTimeout(() => setWipeOn(false), WIPE_MS);
+    lockTimer.current = setTimeout(() => {
       unlockRef.current();
-      // Discard forward overshoot: park the scroll exactly on the active
-      // project so leftover momentum can't carry past it. (Backwards is left
-      // free so users can always scroll up and out of the section.)
-      const st = stRef.current;
-      if (st) {
-        const f = st.progress * Math.max(1, projects.length - 1);
-        if (f > activeRef.current + 0.02) snapRef.current(activeRef.current);
-      }
-    }, WIPE_MS);
+      snapRef.current(activeRef.current); // release exactly parked on the work
+    }, WIPE_MS + HOLD_MS);
   };
   const startWipeRef = useRef(startWipe);
   startWipeRef.current = startWipe;
@@ -148,6 +145,7 @@ export default function SelectedWork({ projects }: { projects: ProjectListItem[]
   // teardown safety: never leave the page scroll-locked
   useEffect(() => () => {
     if (wipeTimer.current) clearTimeout(wipeTimer.current);
+    if (lockTimer.current) clearTimeout(lockTimer.current);
     unlockRef.current();
   }, []);
 
@@ -204,8 +202,21 @@ export default function SelectedWork({ projects }: { projects: ProjectListItem[]
             invalidateOnRefresh: true,
             onRefresh: measure,
             // Entry transition: the moment the section pins (viewer centred),
-            // the wipe plays once and dissolves while the first project runs.
-            onEnter: () => startWipeRef.current(),
+            // the wipe plays once, parked on the first work.
+            onEnter: () => {
+              startWipeRef.current();
+              snapRef.current(activeRef.current);
+            },
+            // Coming back up from below: land parked on the LAST work.
+            onEnterBack: () => {
+              if (activeRef.current !== N - 1) {
+                activeRef.current = N - 1;
+                setActive(N - 1); // fires the wipe via the active effect
+              } else {
+                startWipeRef.current();
+              }
+              snapRef.current(N - 1);
+            },
             onUpdate: (self: any) => {
               const f = self.progress * (N - 1);
               gsap.set(list, { y: -(firstCenter + f * step) });
@@ -214,24 +225,24 @@ export default function SelectedWork({ projects }: { projects: ProjectListItem[]
                 const filled = Math.round(self.progress * 18);
                 fillRef.current.style.width = `${(filled / 18) * 100}%`;
               }
-              // Strict stepping — transitions can never be skipped:
-              // 1) Cooldown: while a transition plays (+1s breather) no new
-              //    change commits, and FORWARD overshoot past the next
-              //    boundary snaps the scroll back — the runway physically
-              //    can't be blown through. (Backwards stays free so users can
-              //    always leave the section upward.)
-              // 2) Steps are clamped to ±1 — even a huge fling advances one
-              //    project per transition.
+              // Sequential stepper:
+              // LOCKED — hard-park the scroll on the active work every frame
+              //   (kills touch momentum; nothing can drift or queue).
+              // IDLE — a deliberate push past half a zone steps EXACTLY one
+              //   work (and immediately parks + locks again).
               const cur = activeRef.current;
-              if (Date.now() < coolUntilRef.current) {
-                if (f - cur > 0.55) snapRef.current(cur + 0.55);
+              if (Date.now() < lockUntilRef.current) {
+                if (Math.abs(f - cur) > 0.03) snapRef.current(cur);
                 return;
               }
-              const idx = Math.round(f);
-              if (idx !== cur && Math.abs(f - idx) < 0.4) {
-                const next = cur + Math.sign(idx - cur);
-                activeRef.current = next;
-                setActive(next);
+              if (f - cur > 0.5 && cur < N - 1) {
+                activeRef.current = cur + 1;
+                setActive(cur + 1);       // fires the wipe (locks + parks)
+                snapRef.current(cur + 1);
+              } else if (f - cur < -0.5 && cur > 0) {
+                activeRef.current = cur - 1;
+                setActive(cur - 1);
+                snapRef.current(cur - 1);
               }
             },
           });
