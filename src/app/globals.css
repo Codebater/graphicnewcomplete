@@ -749,6 +749,12 @@ html body {
   gap: calc(var(--pxt) * 2);
   padding: 0.2rem 0;
 }
+/* phones: smaller tiles so even PORTFOLIO fits with air on both sides */
+@media (max-width: 1023px) {
+  .main-menu__link .pixel-text {
+    --pxt: clamp(0.26rem, 0.85vw + 0.04rem, 0.38rem);
+  }
+}
 /* generous letter tracking inside each word so letters never touch */
 .main-menu__link .pixel-text__word { gap: calc(var(--pxt) * 1.6); }
 .main-menu__link .pixel-text__cell { border-radius: 20%; }
