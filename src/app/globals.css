@@ -420,6 +420,33 @@ html body {
   pointer-events: none;
 }
 .mxd-menu__contain .hamburger__base::after { display: none; }
+
+/* to-top button: the template's mix-blend-mode:difference + backdrop-filter
+   renders as a black blob on mobile browsers and is invisible-ish on the
+   light theme — restyle it as one of our pixel chips instead.
+   (#id selector so it beats main.css, which loads after globals) */
+#to-top.btn-to-top {
+  mix-blend-mode: normal;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  border-radius: 0 !important;
+  clip-path: polygon(
+    0 0.8rem, 0.4rem 0.8rem, 0.4rem 0.4rem, 0.8rem 0.4rem, 0.8rem 0,
+    calc(100% - 0.8rem) 0, calc(100% - 0.8rem) 0.4rem, calc(100% - 0.4rem) 0.4rem,
+    calc(100% - 0.4rem) 0.8rem, 100% 0.8rem,
+    100% calc(100% - 0.8rem), calc(100% - 0.4rem) calc(100% - 0.8rem),
+    calc(100% - 0.4rem) calc(100% - 0.4rem), calc(100% - 0.8rem) calc(100% - 0.4rem),
+    calc(100% - 0.8rem) 100%,
+    0.8rem 100%, 0.8rem calc(100% - 0.4rem), 0.4rem calc(100% - 0.4rem),
+    0.4rem calc(100% - 0.8rem), 0 calc(100% - 0.8rem)
+  );
+  background-color: var(--base-opp-tint);
+  color: var(--t-opp-bright);
+  background-image: linear-gradient(#ddf160, #ddf160);
+  background-size: 0.5rem 0.5rem;
+  background-repeat: no-repeat;
+  background-position: calc(100% - 0.9rem) 0.9rem;
+}
 /* hamburger: a kawaii smiley (same language as the preloader / hero ball).
    The two template "lines" become vertical pixel eyes — AppInitializer
    stretches + crosses them into the X when the menu opens — plus a smile

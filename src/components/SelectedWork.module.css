@@ -1,8 +1,9 @@
 /* ===== Selected Work — pinned editorial showcase ===== */
 .root {
-  --ink: #f2efe8;
-  --muted: rgba(242, 239, 232, 0.44);
-  --faint: rgba(242, 239, 232, 0.12);
+  /* theme-adaptive ink (was hardcoded cream — unreadable on the white theme) */
+  --ink: var(--t-bright, #f2efe8);
+  --muted: color-mix(in srgb, var(--t-bright, #f2efe8) 50%, transparent);
+  --faint: color-mix(in srgb, var(--t-bright, #f2efe8) 12%, transparent);
   position: relative;
   color: var(--ink);
   height: var(--sw-h, 500vh);   /* scroll distance for the sticky pin */
@@ -320,6 +321,8 @@
   color: #ddf160;   /* brand accent */
   margin-bottom: clamp(0.8rem, 1.6vh, 1.3rem);
 }
+/* light theme: green-on-cream is too weak — use the theme ink */
+:global([color-scheme='light']) .cat { color: var(--t-bright); }
 .title {
   font-family: var(--_font-accent, "Funnel Display", sans-serif);
   font-weight: 700;

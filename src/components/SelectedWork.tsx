@@ -81,8 +81,28 @@ export default function SelectedWork({ projects }: { projects: ProjectListItem[]
   useEffect(() => {
     if (firstActive.current) { firstActive.current = false; return; }
     setWipeOn(true);
-    const t = setTimeout(() => setWipeOn(false), 820); // all layers exit by ~760ms
-    return () => clearTimeout(t);
+
+    // On phones, hold the scroll while the transition plays — one flick = one
+    // clean project change; scrolling resumes the moment the wipe is done.
+    // (Prevents mid-transition re-triggers and skipped projects.)
+    const isMobile = window.matchMedia('(max-width: 1023px)').matches;
+    const w = window as unknown as { lenis?: { stop?: () => void; start?: () => void } };
+    const html = document.documentElement;
+    if (isMobile) {
+      w.lenis?.stop?.();
+      html.style.overflow = 'hidden';
+      html.style.touchAction = 'none';
+    }
+    const unlock = () => {
+      if (isMobile) {
+        html.style.overflow = '';
+        html.style.touchAction = '';
+        w.lenis?.start?.();
+      }
+    };
+
+    const t = setTimeout(() => { setWipeOn(false); unlock(); }, 820); // all layers exit by ~760ms
+    return () => { clearTimeout(t); unlock(); };
   }, [active]);
 
   useEffect(() => {
