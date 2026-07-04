@@ -175,10 +175,12 @@ html body {
   row-gap: calc(var(--pxt) * 1.8);
   padding: 0.4rem 0;
 }
-/* letters are grouped per word — wrapping happens between words only */
+/* letters are grouped per word — wrapping happens between words only.
+   (Explicit gap: `gap: inherit` resolves to "normal"/0 here, which glued
+   the letters together.) */
 .pixel-text__word {
   display: flex;
-  gap: inherit;
+  gap: calc(var(--pxt) * 0.85);
 }
 .pixel-text__letter {
   display: grid;
@@ -741,9 +743,11 @@ html body {
    menu card's surface so it adapts to both themes */
 .main-menu__link .pixel-text {
   --pxt: clamp(0.42rem, 1.2vw, 0.6rem);   /* 5×7 glyphs — bigger overall letters */
-  gap: calc(var(--pxt) * 1.2);   /* clear tracking between letters */
+  gap: calc(var(--pxt) * 2);
   padding: 0.2rem 0;
 }
+/* generous letter tracking inside each word so letters never touch */
+.main-menu__link .pixel-text__word { gap: calc(var(--pxt) * 1.6); }
 .main-menu__link .pixel-text__cell { border-radius: 20%; }
 .main-menu__link .pixel-text__cell--on { background: var(--t-opp-bright); }
 .no-touch .main-menu__link:hover .pixel-text__cell--on,

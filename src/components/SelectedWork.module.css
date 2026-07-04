@@ -48,10 +48,12 @@
    tile) or the letters merge into unreadable blobs at this size */
 .pixelTag :global(.pixel-text) {
   --pxt: 0.34rem;
-  gap: calc(var(--pxt) * 1.2);
+  gap: calc(var(--pxt) * 2);
   padding: 0;
   opacity: 0.9;
 }
+/* generous letter tracking inside each word so letters never touch */
+.pixelTag :global(.pixel-text__word) { gap: calc(var(--pxt) * 1.7); }
 .pixelTag :global(.pixel-text__letter) { gap: calc(var(--pxt) * 0.38); }
 .pixelTag :global(.pixel-text__cell) { border-radius: 24%; }
 .pixelTag :global(.pixel-text__cell--on) { background: #ddf160; }
