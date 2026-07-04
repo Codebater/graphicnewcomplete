@@ -58,6 +58,7 @@ const getProjectData = async (id: string) => {
         id: project.id,
         title: project.title,
         description: project.description,
+        video: project.featured_video || null,
         client: project.client || 'GRAPHIQ STUDIO LLC',
         services: project.services || 'Creative Development',
         industries: project.industries || 'Digital',
@@ -95,6 +96,7 @@ const getProjectData = async (id: string) => {
       id: '1',
       title: 'Studio template',
       description: 'Inspiring ideas, creative insights, and the latest in design and tech. Fueling innovation for your digital journey.',
+      video: null,
       client: 'Mix Design',
       services: 'Web development',
       industries: 'HTML template',
@@ -136,6 +138,7 @@ const getProjectData = async (id: string) => {
       id: '2',
       title: 'Mobile app design',
       description: 'Cross-platform mobile application design with modern UI/UX principles.',
+      video: null,
       client: 'Tech Startup',
       services: 'Mobile development',
       industries: 'Mobile app',
@@ -177,6 +180,7 @@ const getProjectData = async (id: string) => {
       id: '3',
       title: 'AI experiments',
       description: 'Exploring the intersection of artificial intelligence and creative design.',
+      video: null,
       client: 'AI Research Lab',
       services: 'AI development',
       industries: 'Technology',
@@ -401,10 +405,23 @@ export default async function ProjectDetails({ params }: { params: Promise<{ id:
               </div>
             </div>
 
-            {/* Project Block - Parallax Fullwidth Image */}
-            <div className="mxd-project__block mxd-grid-item no-margin">
-              
-            </div>
+            {/* Project Block - Fullwidth Project Video (if the project has one) */}
+            {project.video && (
+              <div className="mxd-project__block mxd-grid-item no-margin anim-uni-in-up">
+                <div style={{ borderRadius: '2rem', overflow: 'hidden' }}>
+                  <video
+                    src={project.video}
+                    poster={project.video.replace(/\.(mp4|webm|mov)(\?.*)?$/i, '-poster.webp')}
+                    autoPlay
+                    muted
+                    loop
+                    playsInline
+                    preload="metadata"
+                    style={{ width: '100%', display: 'block' }}
+                  />
+                </div>
+              </div>
+            )}
 
         
 
