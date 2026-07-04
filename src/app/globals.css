@@ -134,14 +134,15 @@ html body {
 .pixel-g-logo {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
-  gap: 7.5%;
+  /* tight gaps (~20% of a tile) — same density/proportions as the preloader G */
+  gap: 3.5%;
   width: 100%;
   aspect-ratio: 1;
 }
 .pixel-g-logo__tile {
-  border-radius: 24%;
-  /* subtle filler tiles; the G itself is high-contrast in both themes */
-  background: var(--base-tint);
+  border-radius: 22%;   /* preloader tile rounding */
+  /* no filler tiles — only the G itself paints, like the preloader */
+  background: transparent;
   transition: background-color 0.3s ease, transform 0.3s ease;
 }
 .pixel-g-logo__tile--on {
