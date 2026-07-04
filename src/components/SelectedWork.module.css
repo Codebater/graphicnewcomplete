@@ -41,6 +41,14 @@
   color: var(--muted);
 }
 .tag i { width: 5px; height: 5px; border-radius: 50%; background: var(--accent, #c9a24b); }
+/* mini tile lettering for the left label */
+.pixelTag :global(.pixel-text) {
+  --pxt: 0.26rem;
+  gap: calc(var(--pxt) * 0.85);
+  padding: 0;
+  opacity: 0.75;
+}
+.pixelTag :global(.pixel-text__cell--on) { background: var(--ink); }
 
 /* accent bloom behind the player */
 .pin::before {
@@ -146,17 +154,30 @@
   width: clamp(460px, 44vw, 660px);
   max-width: 90vw;
 }
+/* shell carries the glow (drop-shadow follows the stepped clip shape) */
+.mediaShell {
+  width: 100%;
+  filter: drop-shadow(0 40px 70px rgba(0, 0, 0, 0.7))
+    drop-shadow(0 0 30px color-mix(in srgb, var(--accent, #c9a24b) 30%, transparent));
+  transition: filter 0.9s ease;
+}
+/* pixel-stepped corners — the brand's 8-bit notch, no rounding */
 .media {
   position: relative;
   width: 100%;
   aspect-ratio: 16 / 11;
-  border-radius: 14px;
   overflow: hidden;
-  border: 1px solid var(--faint);
-  box-shadow: 0 40px 90px -40px rgba(0, 0, 0, 0.85),
-    0 0 0 1px rgba(255, 255, 255, 0.02) inset,
-    0 0 60px -20px color-mix(in srgb, var(--accent, #c9a24b) 40%, transparent);
-  transition: box-shadow 0.9s ease;
+  background: #101010;
+  clip-path: polygon(
+    0 16px, 8px 16px, 8px 8px, 16px 8px, 16px 0,
+    calc(100% - 16px) 0, calc(100% - 16px) 8px, calc(100% - 8px) 8px,
+    calc(100% - 8px) 16px, 100% 16px,
+    100% calc(100% - 16px), calc(100% - 8px) calc(100% - 16px),
+    calc(100% - 8px) calc(100% - 8px), calc(100% - 16px) calc(100% - 8px),
+    calc(100% - 16px) 100%,
+    16px 100%, 16px calc(100% - 8px), 8px calc(100% - 8px),
+    8px calc(100% - 16px), 0 calc(100% - 16px)
+  );
 }
 .frame {
   position: absolute;
@@ -170,6 +191,31 @@
 .frame img, .frame video { width: 100%; height: 100%; object-fit: cover; display: block; }
 .noMedia { position: absolute; inset: 0; background: linear-gradient(135deg, #17171a, #0d0d0f); }
 .frameActive { opacity: 1; transform: scale(1); filter: none; }
+/* checkerboard tile wipe over the media on project change */
+.wipe {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  grid-template-columns: repeat(16, 1fr);
+  grid-template-rows: repeat(11, 1fr);
+  pointer-events: none;
+  z-index: 1;
+}
+.wipe i {
+  display: block;
+  background: #131313;
+  opacity: 0;
+  animation: sw-wipe 0.62s steps(1) both;
+}
+/* brand accent only (preloader palette), not the per-project theme color */
+.wipe .wipeAccent { background: #ddf160; }
+@keyframes sw-wipe {
+  0% { opacity: 0; }
+  18% { opacity: 1; }
+  72% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
 .mediaBar {
   position: absolute;
   left: 1.1rem;
@@ -196,10 +242,32 @@
   display: inline-flex;
   align-items: center;
   gap: 0.7rem;
-  font-size: clamp(0.62rem, 0.9vw, 0.76rem);
-  letter-spacing: 0.18em;
 }
-.counter i { width: 1.6rem; height: 1px; background: rgba(255, 255, 255, 0.5); }
+/* tile-font digits */
+.pixelNum :global(.pixel-text) {
+  --pxt: 0.24rem;
+  gap: calc(var(--pxt) * 0.7);
+  padding: 0;
+  filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.7));
+}
+.pixelNum :global(.pixel-text__cell--on) { background: #fff; }
+/* tile progress strip — fills tile-by-tile with scroll progress */
+.progress {
+  position: relative;
+  display: inline-block;
+  width: clamp(4.4rem, 7vw, 6.4rem);
+  height: 0.42rem;
+  background-image: repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.22) 0 0.42rem, transparent 0.42rem 0.74rem);
+  overflow: hidden;
+}
+.progressFill {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 0;
+  background-image: repeating-linear-gradient(90deg, var(--accent, #c9a24b) 0 0.42rem, transparent 0.42rem 0.74rem);
+}
 
 /* info below media */
 .info {
@@ -314,5 +382,6 @@
 
 @media (prefers-reduced-motion: reduce) {
   .mouse::after { animation: none; }
+  .wipe i { animation: none; }
   .frame, .infoBlock, .itemName, .item::before { transition-duration: 0.2s; }
 }
