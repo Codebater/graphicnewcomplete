@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import styles from './FreelancersList.module.css';
 import KingCard from './KingCard';
 import CodeCard from './CodeCard';
@@ -47,9 +47,77 @@ const FREELANCERS: Freelancer[] = [
   },
 ];
 
+const N = FREELANCERS.length;
+
 export default function FreelancersList() {
   const [active, setActive] = useState(0);
+  const activeRef = useRef(0);
+  const deckRef = useRef<HTMLDivElement | null>(null);
   const current = FREELANCERS[active];
+
+  // Mobile: pin the deck and step the active card with scroll (same pattern
+  // as Selected Work — CSS sticky pin + ScrollTrigger progress + hysteresis).
+  useEffect(() => {
+    const w = window as unknown as { gsap?: any; ScrollTrigger?: any; lenis?: any };
+    let mm: any;
+    let cancelled = false;
+    let tries = 0;
+
+    const setup = () => {
+      if (cancelled) return;
+      const gsap = w.gsap;
+      const ScrollTrigger = w.ScrollTrigger;
+      // Wait for GSAP/ScrollTrigger AND for AppInitializer to finish its init
+      // (window.lenis is created last — after that our trigger won't be killed).
+      if (!gsap || !ScrollTrigger || (!w.lenis && tries < 40)) {
+        tries += 1;
+        setTimeout(setup, 100);
+        return;
+      }
+      mm = gsap.matchMedia();
+      mm.add('(max-width: 1199px)', () => {
+        const deck = deckRef.current;
+        if (!deck) return;
+
+        let st: any = null;
+        const create = () => {
+          st = ScrollTrigger.create({
+            trigger: deck,
+            start: 'top top',
+            end: 'bottom bottom',
+            scrub: 1,
+            onUpdate: (self: any) => {
+              const f = self.progress * (N - 1);
+              const idx = Math.round(f);
+              // hysteresis: only commit near the centre of a zone
+              if (idx !== activeRef.current && Math.abs(f - idx) < 0.4) {
+                activeRef.current = idx;
+                setActive(idx);
+              }
+            },
+          });
+          requestAnimationFrame(() => ScrollTrigger.refresh());
+        };
+        create();
+
+        // AppInitializer's killAll() sweeps triggers on re-init — recreate ours.
+        const guard = setInterval(() => {
+          if (st && !ScrollTrigger.getAll().includes(st)) create();
+        }, 1200);
+
+        return () => {
+          clearInterval(guard);
+          if (st) st.kill();
+        };
+      });
+    };
+
+    setup();
+    return () => {
+      cancelled = true;
+      if (mm) mm.revert();
+    };
+  }, []);
 
   const renderVisual = (person: Freelancer) =>
     person.card === 'king' ? (
@@ -69,40 +137,81 @@ export default function FreelancersList() {
     );
 
   return (
-    <div className={styles.wrap}>
-      {/* Names list */}
-      <ul className={styles.list}>
-        {FREELANCERS.map((person, i) => (
-          <li
-            key={`${person.first}-${i}`}
-            className={`${styles.item} ${i === active ? styles.itemActive : ''}`}
-            onMouseEnter={() => setActive(i)}
-            onFocus={() => setActive(i)}
-            tabIndex={0}
-          >
-            <p className={styles.name}>
-              <span className={styles.first}>{person.first}</span>
-              {person.last && <span className={styles.last}> {person.last}</span>}
-              <span className={styles.dot} aria-hidden="true" />
-            </p>
-            <p className={styles.meta}>
-              <span className={styles.role}>{person.role},</span>{' '}
-              <span className={styles.note}>{person.note}</span>
-            </p>
-            {/* Expanding visual — mobile only, mirrors the desktop panel */}
-            <div className={styles.thumbWrap} aria-hidden="true">
-              {renderVisual(person)}
-            </div>
-          </li>
-        ))}
-      </ul>
+    <>
+      {/* ---------- desktop: names list + sticky panel ---------- */}
+      <div className={styles.wrap}>
+        <ul className={styles.list}>
+          {FREELANCERS.map((person, i) => (
+            <li
+              key={`${person.first}-${i}`}
+              className={`${styles.item} ${i === active ? styles.itemActive : ''}`}
+              onMouseEnter={() => setActive(i)}
+              onFocus={() => setActive(i)}
+              tabIndex={0}
+            >
+              <p className={styles.name}>
+                <span className={styles.first}>{person.first}</span>
+                {person.last && <span className={styles.last}> {person.last}</span>}
+                <span className={styles.dot} aria-hidden="true" />
+              </p>
+              <p className={styles.meta}>
+                <span className={styles.role}>{person.role},</span>{' '}
+                <span className={styles.note}>{person.note}</span>
+              </p>
+            </li>
+          ))}
+        </ul>
 
-      {/* Sticky panel — desktop only. Shows the active member's card or photo. */}
-      <div className={styles.photoCol}>
-        <div key={active} className={styles.reveal}>
-          {renderVisual(current)}
+        {/* Sticky panel — desktop only. Shows the active member's card or photo. */}
+        <div className={styles.photoCol}>
+          <div key={active} className={styles.reveal}>
+            {renderVisual(current)}
+          </div>
         </div>
       </div>
-    </div>
+
+      {/* ---------- mobile: pinned card deck — the card stays centred in the
+           screen and scrolling steps to the next member ---------- */}
+      <div
+        ref={deckRef}
+        className={styles.deck}
+        style={{ ['--fl-h' as string]: `${N * 85}vh` }}
+      >
+        <div className={styles.deckPin}>
+          <div className={styles.deckCards}>
+            {FREELANCERS.map((person, i) => (
+              <div
+                key={`slot-${i}`}
+                className={`${styles.deckSlot} ${i === active ? styles.deckSlotActive : ''}`}
+              >
+                {renderVisual(person)}
+              </div>
+            ))}
+          </div>
+          <div className={styles.deckInfo}>
+            {FREELANCERS.map((person, i) => (
+              <div
+                key={`info-${i}`}
+                className={`${styles.deckName} ${i === active ? styles.deckNameActive : ''}`}
+              >
+                <p className={styles.name}>
+                  <span className={styles.first}>{person.first}</span>
+                  {person.last && <span className={styles.last}> {person.last}</span>}
+                </p>
+                <p className={styles.deckMeta}>
+                  <span className={styles.role}>{person.role}</span>
+                </p>
+              </div>
+            ))}
+          </div>
+          {/* tile progress dots */}
+          <div className={styles.deckDots} aria-hidden="true">
+            {FREELANCERS.map((_, i) => (
+              <i key={i} className={i === active ? styles.deckDotOn : undefined} />
+            ))}
+          </div>
+        </div>
+      </div>
+    </>
   );
 }
