@@ -71,127 +71,39 @@ export default function SelectedWork({ projects }: { projects: ProjectListItem[]
   const fillRef = useRef<HTMLSpanElement | null>(null);
   const [active, setActive] = useState(0);
   const activeRef = useRef(0);
-  // The wipe only exists in the DOM for a short window (React removes it — no
-  // reliance on CSS animation fill states, so tiles can never get stuck).
-  // It fires on project changes AND once on section entry, with a cooldown:
-  // a new transition can only START 1s after the previous one finished, so
-  // fast scrolling can't chain transitions back to back.
-  // ---- sequential stepper: Transition → Work → Transition → Work ----
-  // Each step parks the scroll ON the new work and hard-locks it through the
-  // transition plus a viewing beat. Scroll intent is only read while IDLE, so
-  // steps can never chain, skip, or double-fire — one gesture, one work.
-  const WIPE_MS = 820;  // transition length (all wipe layers exit by ~760ms)
-  const HOLD_MS = 500;  // viewing beat after the transition before unlocking
+  // The wipe only exists in the DOM for a short window after a REAL project
+  // change (never on initial load), then React removes it — no reliance on
+  // CSS animation fill states, so tiles can never get stuck on screen.
   const [wipeOn, setWipeOn] = useState(false);
-  // Nothing is active/loaded until the section's ENTRY transition plays — the
-  // first work (and its video) only appears once the viewer is locked.
-  const [revealed, setRevealed] = useState(false);
-  const revealedRef = useRef(false);
-  const wipeOnRef = useRef(false);
-  const skipWipeRef = useRef(false); // backward scrub changes skip the wipe/lock
-  const freeRideUntilRef = useRef(0); // stepper fully off (to-top ride etc.)
-  const parkNextRef = useRef(0);      // throttle for the mid-lock backstop park
   const firstActive = useRef(true);
   const inViewRef = useRef(false);
-  const lockUntilRef = useRef(0);
-  const wipeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const lockTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const unlockRef = useRef<() => void>(() => {});
-  const stRef = useRef<any>(null);
-
-  // Park the page scroll at an exact step on the section's runway.
-  const snapToF = (fTarget: number) => {
-    const st = stRef.current;
-    if (!st) return;
-    const total = Math.max(1, projects.length - 1);
-    const y = st.start + (fTarget / total) * (st.end - st.start);
-    const l = (window as unknown as { lenis?: any }).lenis;
-    if (l?.scrollTo && !l.isStopped) l.scrollTo(y, { immediate: true });
-    else window.scrollTo(0, y); // lenis stopped during the lock — park natively
-  };
-  const snapRef = useRef(snapToF);
-  snapRef.current = snapToF;
-
-  const startWipe = () => {
-    unlockRef.current(); // release any previous blockers first (never leak them)
-    lockUntilRef.current = Date.now() + WIPE_MS + HOLD_MS;
-    setWipeOn(true);
-    wipeOnRef.current = true;
-
-    // Freeze the scroll for the whole step (transition + viewing beat) by
-    // blocking the input events — NOT by toggling overflow on <html>, which
-    // shifts the viewport on iOS mid-gesture, invalidates ScrollTrigger's
-    // measurements (parking then lands wrong and steps become unreachable)
-    // and forces full-page reflows every step.
-    const w = window as unknown as { lenis?: { stop?: () => void; start?: () => void } };
-    const prevent = (ev: Event) => ev.preventDefault();
-    window.addEventListener('touchmove', prevent, { passive: false });
-    window.addEventListener('wheel', prevent, { passive: false });
-    w.lenis?.stop?.();
-    unlockRef.current = () => {
-      window.removeEventListener('touchmove', prevent);
-      window.removeEventListener('wheel', prevent);
-      w.lenis?.start?.();
-    };
-
-    if (wipeTimer.current) clearTimeout(wipeTimer.current);
-    if (lockTimer.current) clearTimeout(lockTimer.current);
-    wipeTimer.current = setTimeout(() => {
-      setWipeOn(false);
-      wipeOnRef.current = false;
-      syncVideosRef.current(); // work becomes active NOW — video starts here
-    }, WIPE_MS);
-    lockTimer.current = setTimeout(() => {
-      unlockRef.current();
-      snapRef.current(activeRef.current); // release exactly parked on the work
-    }, WIPE_MS + HOLD_MS);
-  };
-  const startWipeRef = useRef(startWipe);
-  startWipeRef.current = startWipe;
 
   useEffect(() => {
     if (firstActive.current) { firstActive.current = false; return; }
-    if (skipWipeRef.current) { skipWipeRef.current = false; return; } // free backward scrub
-    startWipeRef.current();
-  }, [active]);
+    setWipeOn(true);
 
-  // teardown safety: never leave the page scroll-locked
-  useEffect(() => () => {
-    if (wipeTimer.current) clearTimeout(wipeTimer.current);
-    if (lockTimer.current) clearTimeout(lockTimer.current);
-    unlockRef.current();
-  }, []);
-
-  // The to-top button is an escape hatch: it takes over the click entirely
-  // (capture + stopImmediatePropagation — the template's gsap ScrollTo fights
-  // Lenis frame-by-frame, and the resulting scroll jitter read as a forward
-  // step, locking the user back onto a work). It releases any lock, suppresses
-  // the stepper for the ride, and drives a clean Lenis trip to the top.
-  useEffect(() => {
-    const toTop = document.getElementById('to-top');
-    if (!toTop) return;
-    const onToTop = (e: Event) => {
-      e.preventDefault();
-      e.stopImmediatePropagation();
-      lockUntilRef.current = 0;
-      freeRideUntilRef.current = Date.now() + 2200; // stepper off for the trip
-      if (wipeTimer.current) clearTimeout(wipeTimer.current);
-      if (lockTimer.current) clearTimeout(lockTimer.current);
-      setWipeOn(false);
-      wipeOnRef.current = false;
-      unlockRef.current();
-      skipWipeRef.current = true;
-      activeRef.current = 0;
-      setActive(0);
-      requestAnimationFrame(() => {
-        const l = (window as unknown as { lenis?: any }).lenis;
-        if (l?.scrollTo) l.scrollTo(0, { duration: 1.2 });
-        else window.scrollTo({ top: 0, behavior: 'smooth' });
-      });
+    // On phones, hold the scroll while the transition plays — one flick = one
+    // clean project change; scrolling resumes the moment the wipe is done.
+    // (Prevents mid-transition re-triggers and skipped projects.)
+    const isMobile = window.matchMedia('(max-width: 1023px)').matches;
+    const w = window as unknown as { lenis?: { stop?: () => void; start?: () => void } };
+    const html = document.documentElement;
+    if (isMobile) {
+      w.lenis?.stop?.();
+      html.style.overflow = 'hidden';
+      html.style.touchAction = 'none';
+    }
+    const unlock = () => {
+      if (isMobile) {
+        html.style.overflow = '';
+        html.style.touchAction = '';
+        w.lenis?.start?.();
+      }
     };
-    toTop.addEventListener('click', onToTop, { capture: true });
-    return () => toTop.removeEventListener('click', onToTop, { capture: true } as any);
-  }, []);
+
+    const t = setTimeout(() => { setWipeOn(false); unlock(); }, 820); // all layers exit by ~760ms
+    return () => { clearTimeout(t); unlock(); };
+  }, [active]);
 
   useEffect(() => {
     if (!projects.length) return;
@@ -245,18 +157,6 @@ export default function SelectedWork({ projects }: { projects: ProjectListItem[]
             scrub: 1,
             invalidateOnRefresh: true,
             onRefresh: measure,
-            // Entry transition: the moment the section pins (viewer centred),
-            // the wipe plays once, parked on the first work — and only then is
-            // the work revealed (image under the cover, video after the wipe).
-            onEnter: () => {
-              revealedRef.current = true;
-              setRevealed(true);
-              startWipeRef.current();
-              snapRef.current(activeRef.current);
-            },
-            // NOTE: no onEnterBack hijack — scrolling up from below must stay
-            // completely free (it was grabbing/locking the scroll and broke
-            // the to-top button).
             onUpdate: (self: any) => {
               const f = self.progress * (N - 1);
               gsap.set(list, { y: -(firstCenter + f * step) });
@@ -265,38 +165,17 @@ export default function SelectedWork({ projects }: { projects: ProjectListItem[]
                 const filled = Math.round(self.progress * 18);
                 fillRef.current.style.width = `${(filled / 18) * 100}%`;
               }
-              // Sequential stepper (forward only):
-              // LOCKED — hard-park the scroll on the active work every frame
-              //   (kills touch momentum; nothing can drift or queue).
-              // IDLE forward — a deliberate push past half a zone steps
-              //   EXACTLY one work (and immediately parks + locks again).
-              // BACKWARD — always free: plain crossfade scrub, no wipe, no
-              //   lock, no parking, so users (and the to-top button) can
-              //   always get back up without fighting the section.
-              const cur = activeRef.current;
-              if (Date.now() < freeRideUntilRef.current) return; // to-top ride: stepper off
-              if (Date.now() < lockUntilRef.current) {
-                // backstop against leftover momentum — throttled single parks,
-                // never a per-frame scroll fight
-                if (f - cur > 0.06 && Date.now() > parkNextRef.current) {
-                  parkNextRef.current = Date.now() + 180;
-                  snapRef.current(cur);
-                }
-                return;
-              }
-              if (f - cur > 0.3 && cur < N - 1) {
-                activeRef.current = cur + 1;
-                setActive(cur + 1);       // fires the wipe (locks + parks)
-                snapRef.current(cur + 1);
-              } else if (f - cur < -0.35 && cur > 0) {
-                skipWipeRef.current = true;
-                const next = Math.max(0, Math.round(f));
-                activeRef.current = next;
-                setActive(next);
+              // Hysteresis: only commit to a new project once we're clearly
+              // inside its zone (not hovering the .5 boundary). Stops the tile
+              // wipe from flip-flopping / re-firing on jittery mobile scroll,
+              // so the checkerboard only appears on a real transition.
+              const idx = Math.round(f);
+              if (idx !== activeRef.current && Math.abs(f - idx) < 0.4) {
+                activeRef.current = idx;
+                setActive(idx);
               }
             },
           });
-          stRef.current = st;
           requestAnimationFrame(() => ScrollTrigger.refresh());
         };
         create();
@@ -322,26 +201,23 @@ export default function SelectedWork({ projects }: { projects: ProjectListItem[]
     };
   }, [projects]);
 
-  // Play the active frame's video ONLY once the section has been revealed
-  // (entry transition done) and no wipe is covering it — videos are
-  // preload="none", so nothing downloads, decodes or plays while the user is
-  // still scrolling toward the section.
+  // Play the active frame's video ONLY while the section is near the viewport
+  // (videos are preload="none", so nothing downloads or decodes during the
+  // initial hero scroll on mobile). Pause everything else.
   const syncVideos = () => {
     const root = rootRef.current;
     if (!root) return;
     root.querySelectorAll<HTMLVideoElement>('video').forEach((v) => {
       const isActive = !!v.closest(`.${styles.frameActive}`);
       v.muted = true;
-      if (isActive && inViewRef.current && revealedRef.current && !wipeOnRef.current) {
+      if (isActive && inViewRef.current) {
         v.play().catch(() => {});
       } else if (!v.paused) {
         v.pause();
       }
     });
   };
-  const syncVideosRef = useRef(syncVideos);
-  syncVideosRef.current = syncVideos;
-  useEffect(syncVideos, [active, revealed, projects]);
+  useEffect(syncVideos, [active, projects]);
   useEffect(() => {
     const root = rootRef.current;
     if (!root) return;
@@ -399,7 +275,7 @@ export default function SelectedWork({ projects }: { projects: ProjectListItem[]
             <div className={styles.mediaShell}>
               <div className={styles.media}>
                 {projects.map((p, i) => (
-                  <div key={p.id} className={`${styles.frame} ${i === active && revealed ? styles.frameActive : ''}`}>
+                  <div key={p.id} className={`${styles.frame} ${i === active ? styles.frameActive : ''}`}>
                     {p.video ? (
                       <video src={p.video} muted loop playsInline preload="none" />
                     ) : p.image ? (
