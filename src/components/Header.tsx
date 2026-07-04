@@ -100,20 +100,18 @@ export default function Header() {
         
         {/* header controls */}
         <div className="mxd-header__controls loading__fade">
-          <button 
-            id="color-switcher" 
-            className="mxd-color-switcher" 
-            type="button" 
-            role="switch" 
-            aria-label="light/dark mode" 
+          <button
+            id="color-switcher"
+            className="mxd-color-switcher"
+            type="button"
+            role="switch"
+            aria-label="light/dark mode"
             aria-checked="true"
           >
             <i className="ph-bold ph-moon-stars"></i>
           </button>
-          <Link className="btn btn-anim btn-default btn-mobile-icon btn-outline slide-right-up" href="/contact">
-            <span className="btn-caption">Let&apos;s Work</span>
-            <i className="ph-bold ph-arrow-up-right"></i>
-          </Link>
+          {/* "Let's Work" CTA removed from the header — the hamburger menu +
+              Contact page cover it, and it clutters the bar. */}
         </div>
       </header>
     </>
