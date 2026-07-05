@@ -198,8 +198,8 @@
   visibility: hidden;   /* hidden frames cost the compositor nothing */
   transform: scale(1.09);
   filter: blur(16px) brightness(0.7);
-  transition: opacity 0.7s ease, transform 0.85s cubic-bezier(0.22, 1, 0.36, 1),
-    filter 0.7s ease, visibility 0s linear 0.7s;   /* stay visible while fading out */
+  transition: opacity 0.22s ease, transform 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+    filter 0.22s ease, visibility 0s linear 0.22s;   /* stay visible while fading out */
   will-change: opacity, transform;
 }
 .frame img, .frame video { width: 100%; height: 100%; object-fit: cover; display: block; }
@@ -225,10 +225,10 @@
 /* Exit choreography (premium, no lingering): the MOTIF lifts off first — a
    smooth scale-up + fade — then the dark field drops, revealing the finished
    work with nothing left on top. */
-.wipeDarkLayer { animation: sw-layer-out 0.12s steps(3, end) forwards; animation-delay: 340ms; }
+.wipeDarkLayer { animation: sw-layer-out 0.08s steps(3, end) forwards; animation-delay: 160ms; }
 .wipeShapeLayer {
-  animation: sw-shape-exit 0.2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-  animation-delay: 240ms;
+  animation: sw-shape-exit 0.11s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  animation-delay: 110ms;
   transform-origin: center;
   will-change: opacity, transform;
 }
@@ -322,7 +322,7 @@
   top: 0;
   opacity: 0;
   transform: translateY(16px);
-  transition: opacity 0.7s ease, transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: opacity 0.3s ease, transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
   pointer-events: none;
 }
 .infoActive { opacity: 1; transform: none; pointer-events: auto; }

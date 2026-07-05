@@ -118,7 +118,7 @@ export default function SelectedWork({ projects }: { projects: ProjectListItem[]
       }
     };
 
-    const t = setTimeout(() => { setWipeOn(false); unlock(); }, 500); // motif gone ~440ms, field ~460ms
+    const t = setTimeout(() => { setWipeOn(false); unlock(); }, 260); // motif gone ~220ms, field ~240ms
     return () => { clearTimeout(t); unlock(); };
   }, [active]);
 
@@ -358,7 +358,7 @@ export default function SelectedWork({ projects }: { projects: ProjectListItem[]
                   </div>
                 ))}
 
-                {/* checkerboard tile wipe — only exists in the DOM for ~1.15s
+                {/* checkerboard tile wipe — only exists in the DOM for ~260ms
                     after a real project change (React removes it, so tiles can
                     never linger). The tiles draw a heart / trophy / 1UP
                     mid-transition: tiles pop in staggered (sweep), each LAYER
@@ -367,7 +367,7 @@ export default function SelectedWork({ projects }: { projects: ProjectListItem[]
                   const shape = WIPE_SHAPES[active % WIPE_SHAPES.length];
                   const rowOff = Math.floor((WIPE_ROWS - shape.length) / 2);
                   const colOff = Math.floor((WIPE_COLS - shape[0].length) / 2);
-                  const delay = (c: number, r: number) => c * 7 + ((r + c) % 2) * 35;
+                  const delay = (c: number, r: number) => c * 3 + ((r + c) % 2) * 18;
                   // only the shape's own cells get DOM nodes (placed on the grid)
                   const shapeCells: { c: number; r: number; ch: string }[] = [];
                   shape.forEach((row, sr) =>
