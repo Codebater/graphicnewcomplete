@@ -222,8 +222,20 @@
 /* real durations (not 1ms) so throttled compositors can't skip the final
    frame; steps keep the binary pixel pop. The motif leaves just a beat after
    the field — a quick flash, gone before the transition even finishes. */
-.wipeDarkLayer { animation: sw-layer-out 0.14s steps(3, end) forwards; animation-delay: 320ms; }
-.wipeShapeLayer { animation: sw-layer-out 0.14s steps(3, end) forwards; animation-delay: 430ms; }
+/* Exit choreography (premium, no lingering): the MOTIF lifts off first — a
+   smooth scale-up + fade — then the dark field drops, revealing the finished
+   work with nothing left on top. */
+.wipeDarkLayer { animation: sw-layer-out 0.12s steps(3, end) forwards; animation-delay: 340ms; }
+.wipeShapeLayer {
+  animation: sw-shape-exit 0.2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  animation-delay: 240ms;
+  transform-origin: center;
+  will-change: opacity, transform;
+}
+@keyframes sw-shape-exit {
+  from { opacity: 1; transform: scale(1); }
+  to   { opacity: 0; transform: scale(1.14); }
+}
 .wipe i {
   display: block;
   opacity: 0;
