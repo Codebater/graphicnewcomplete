@@ -80,6 +80,13 @@ export default function SelectedWork({ projects }: { projects: ProjectListItem[]
   // change (never on initial load), then React removes it — no reliance on
   // CSS animation fill states, so tiles can never get stuck on screen.
   const [wipeOn, setWipeOn] = useState(false);
+  // Direction of the last step (+1 down / -1 up) and a monotonic transition
+  // counter — both set at commit time (before setActive) so the wipe render
+  // reads stable values: down sweeps left→right, up sweeps right→left, and
+  // the motif cycles heart→trophy→1UP per TRANSITION (not per index, which
+  // made back-and-forth steps repeat the same icon and feel direction-blind).
+  const dirRef = useRef(1);
+  const wipeSeqRef = useRef(0);
   // Video elements mount only once the viewer is pinned — until then video
   // works show a poster image (zero network/decoder cost on the way down).
   // Armed from the ScrollTrigger (progress > 0 = pin engaged); IO delivery is
@@ -193,6 +200,8 @@ export default function SelectedWork({ projects }: { projects: ProjectListItem[]
               // so the checkerboard only appears on a real transition.
               const idx = Math.round(f);
               if (idx !== activeRef.current && Math.abs(f - idx) < 0.4) {
+                dirRef.current = idx > activeRef.current ? 1 : -1;
+                wipeSeqRef.current += 1;
                 activeRef.current = idx;
                 setActive(idx);
               }
@@ -364,10 +373,13 @@ export default function SelectedWork({ projects }: { projects: ProjectListItem[]
                     mid-transition: tiles pop in staggered (sweep), each LAYER
                     pops out as one — dark field first, motif a beat later. */}
                 {wipeOn && (() => {
-                  const shape = WIPE_SHAPES[active % WIPE_SHAPES.length];
+                  const dir = dirRef.current;
+                  const shape = WIPE_SHAPES[wipeSeqRef.current % WIPE_SHAPES.length];
                   const rowOff = Math.floor((WIPE_ROWS - shape.length) / 2);
                   const colOff = Math.floor((WIPE_COLS - shape[0].length) / 2);
-                  const delay = (c: number, r: number) => c * 3 + ((r + c) % 2) * 18;
+                  // scroll down: sweep left→right; scroll up: mirrored right→left
+                  const delay = (c: number, r: number) =>
+                    (dir === 1 ? c : WIPE_COLS - 1 - c) * 3 + ((r + c) % 2) * 18;
                   // only the shape's own cells get DOM nodes (placed on the grid)
                   const shapeCells: { c: number; r: number; ch: string }[] = [];
                   shape.forEach((row, sr) =>
@@ -377,14 +389,14 @@ export default function SelectedWork({ projects }: { projects: ProjectListItem[]
                   );
                   return (
                     <>
-                      <div key={`d${active}`} className={`${styles.wipe} ${styles.wipeDarkLayer}`} aria-hidden="true">
+                      <div key={`d${wipeSeqRef.current}`} className={`${styles.wipe} ${styles.wipeDarkLayer}`} aria-hidden="true">
                         {Array.from({ length: WIPE_COLS * WIPE_ROWS }).map((_, i) => {
                           const c = i % WIPE_COLS;
                           const r = (i / WIPE_COLS) | 0;
                           return <i key={i} className={styles.wipeDark} style={{ animationDelay: `${delay(c, r)}ms` }} />;
                         })}
                       </div>
-                      <div key={`s${active}`} className={`${styles.wipe} ${styles.wipeShapeLayer}`} aria-hidden="true">
+                      <div key={`s${wipeSeqRef.current}`} className={`${styles.wipe} ${styles.wipeShapeLayer} ${dir === -1 ? styles.wipeUp : ''}`} aria-hidden="true">
                         {shapeCells.map(({ c, r, ch }, i) => (
                           <i
                             key={i}

@@ -216,9 +216,9 @@
   z-index: 1;
 }
 /* One animation per element (composite-order safe): tiles pop IN staggered
-   (sweep, delay inline); each LAYER pops OUT as a whole — the dark field at
-   620ms, the motif layer at 1050ms. Cover phase = motif on dark tile field
-   (preloader language); hold phase = motif floating over the new project. */
+   (sweep, delay inline); each LAYER pops OUT as a whole — motif first, then
+   the dark field. Cover phase = motif on dark tile field (preloader
+   language); the field drop reveals the finished work, nothing lingering. */
 /* real durations (not 1ms) so throttled compositors can't skip the final
    frame; steps keep the binary pixel pop. The motif leaves just a beat after
    the field — a quick flash, gone before the transition even finishes. */
@@ -235,6 +235,13 @@
 @keyframes sw-shape-exit {
   from { opacity: 1; transform: scale(1); }
   to   { opacity: 0; transform: scale(1.14); }
+}
+/* scrolling back up: the motif RECEDES (scale-down) instead of lifting off —
+   together with the mirrored sweep this reads unmistakably as "reverse" */
+.wipeShapeLayer.wipeUp { animation-name: sw-shape-exit-rev; }
+@keyframes sw-shape-exit-rev {
+  from { opacity: 1; transform: scale(1); }
+  to   { opacity: 0; transform: scale(0.86); }
 }
 .wipe i {
   display: block;
