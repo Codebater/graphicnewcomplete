@@ -158,7 +158,6 @@ export default function HeroMarqueeLens() {
       io.observe(marquee as HTMLElement);
 
       let frameNo = 0;
-      let lastMask = '';
       let lastClip = '';
       const tick = () => {
         if (!overlay || !onScreen) return;
@@ -168,8 +167,12 @@ export default function HeroMarqueeLens() {
         strip.style.transform = `translate3d(${x}px,0,0)`;
 
         // Lens tracking every 3rd frame; rects are cheap here (only transforms
-        // change between frames, so layout stays clean) and clip/mask writes
-        // are guarded so nothing repaints unless the lens really moved.
+        // change between frames, so layout stays clean) and the clip write is
+        // guarded so nothing repaints unless the lens really moved.
+        // NOTE: the text is hidden under the ball by the overlay's OPAQUE
+        // page-coloured backing (see CSS) — the old per-move mask-image on
+        // the text marquee re-rasterised that whole layer during scroll and
+        // caused the hero→next-section freeze.
         if (frameNo++ % 3 === 0) {
           const or = (marquee as HTMLElement).getBoundingClientRect();
           const sr = smiley.getBoundingClientRect();
@@ -180,23 +183,6 @@ export default function HeroMarqueeLens() {
           if (clip !== lastClip) {
             lastClip = clip;
             overlay.style.clipPath = clip;
-          }
-
-          // Matching hole in the text marquee so ONLY icons show inside the
-          // ball (the ball is slightly translucent).
-          if (maskedEl) {
-            const mr = maskedEl.getBoundingClientRect();
-            const mx = Math.round(sr.left + sr.width / 2 - mr.left);
-            const my = Math.round(sr.top + sr.height / 2 - mr.top);
-            const mask =
-              r > 4
-                ? `radial-gradient(circle at ${mx}px ${my}px, transparent ${Math.round(r) - 1}px, #000 ${Math.round(r)}px)`
-                : '';
-            if (mask !== lastMask) {
-              lastMask = mask;
-              maskedEl.style.webkitMaskImage = mask;
-              maskedEl.style.maskImage = mask;
-            }
           }
         }
 

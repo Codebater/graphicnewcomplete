@@ -98,19 +98,22 @@ export default function SelectedWork({ projects }: { projects: ProjectListItem[]
 
     // On phones, hold the scroll while the transition plays — one flick = one
     // clean project change; scrolling resumes the moment the wipe is done.
-    // (Prevents mid-transition re-triggers and skipped projects.)
+    // The hold blocks the INPUT EVENTS (preventDefault on touchmove/wheel)
+    // instead of toggling overflow on <html>: the overflow toggle forced a
+    // full-page reflow right at the transition — the freeze users felt when
+    // scrolling from the hero into this section.
     const isMobile = window.matchMedia('(max-width: 1023px)').matches;
     const w = window as unknown as { lenis?: { stop?: () => void; start?: () => void } };
-    const html = document.documentElement;
+    const prevent = (ev: Event) => ev.preventDefault();
     if (isMobile) {
       w.lenis?.stop?.();
-      html.style.overflow = 'hidden';
-      html.style.touchAction = 'none';
+      window.addEventListener('touchmove', prevent, { passive: false });
+      window.addEventListener('wheel', prevent, { passive: false });
     }
     const unlock = () => {
       if (isMobile) {
-        html.style.overflow = '';
-        html.style.touchAction = '';
+        window.removeEventListener('touchmove', prevent);
+        window.removeEventListener('wheel', prevent);
         w.lenis?.start?.();
       }
     };

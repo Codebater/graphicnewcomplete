@@ -298,6 +298,11 @@ html body {
   pointer-events: none;
   overflow: hidden;
   clip-path: circle(0 at 50% 50%);
+  /* Opaque page-coloured backing: hides the marquee text under the ball
+     WITHOUT the old per-move mask-image on the text layer (which
+     re-rasterised the whole marquee during scroll = hero jank). The hero
+     background is flat, so this is visually identical in both themes. */
+  background: var(--base);
 }
 .marquee-lens__strip {
   position: absolute;
