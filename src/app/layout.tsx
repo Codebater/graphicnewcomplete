@@ -15,8 +15,20 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "GRAPHIQ STUDIO LLC creative web design agency",
-  description: "GRAPHIQ STUDIO LLC creative web design agency",
+  metadataBase: new URL("https://www.graphiq.art"),
+  title: "GRAPHIQ STUDIO LLC — Creative Web Design Agency",
+  description:
+    "GRAPHIQ STUDIO LLC — creative web design agency. Premium websites, brands and digital products. Powering next gen projects, no creative limits.",
+  applicationName: "GRAPHIQ STUDIO LLC",
+  openGraph: {
+    siteName: "GRAPHIQ STUDIO LLC",
+    type: "website",
+    url: "https://www.graphiq.art",
+    title: "GRAPHIQ STUDIO LLC — Creative Web Design Agency",
+    description:
+      "Premium websites, brands and digital products. Powering next gen projects, no creative limits.",
+    images: ["/favicon.png"],
+  },
 };
 
 export default function RootLayout({
