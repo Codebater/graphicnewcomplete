@@ -166,30 +166,32 @@ export default function AppInitializer() {
         startLoader();
       }
 
-      // Initialize images loaded for page appearance
+      // Initialize images loaded for page appearance.
+      // The preloader must NEVER strand the visitor: 'always' fires whether
+      // images load OR break (the old 'done' only fired on all-success, so a
+      // single blocked/404 image froze the site on the loader), and a hard
+      // timeout backstops even hung requests that never resolve at all.
+      let loadingFinished = false;
+      const finishLoading = () => {
+        if (loadingFinished) return;
+        loadingFinished = true;
+        if (document.querySelector(".loader__wrapper")) {
+          hideLoader();
+        }
+        pageAppearance();
+        // Recalculate ScrollTrigger positions now that images have settled.
+        // Pinned/stacking sections (e.g. the card stack) measure their height
+        // up front; before images load that height is wrong, so on mobile the
+        // section scrolls without stacking until a later resize forces a
+        // refresh. Refreshing here makes it stack correctly from the start.
+        requestAnimationFrame(() => ScrollTrigger.refresh());
+      };
       if (imagesLoaded && content) {
-        const imgLoad = imagesLoaded(content);
-        imgLoad.on('done', () => {
-          if (document.querySelector(".loader__wrapper")) {
-            hideLoader();
-          }
-          pageAppearance();
-          // Recalculate ScrollTrigger positions now that every image has loaded.
-          // Pinned/stacking sections (e.g. the card stack) measure their height
-          // up front; before images load that height is wrong, so on mobile the
-          // section scrolls without stacking until a later resize forces a
-          // refresh. Refreshing here makes it stack correctly from the start.
-          requestAnimationFrame(() => ScrollTrigger.refresh());
-        });
+        imagesLoaded(content).on('always', finishLoading);
+        setTimeout(finishLoading, 4000); // hard backstop — never stuck
       } else {
         // Fallback if imagesLoaded is not available
-        setTimeout(() => {
-          if (document.querySelector(".loader__wrapper")) {
-            hideLoader();
-          }
-          pageAppearance();
-          requestAnimationFrame(() => ScrollTrigger.refresh());
-        }, 1000);
+        setTimeout(finishLoading, 1000);
       }
 
       // Initialize Lenis Scroll Plugin
