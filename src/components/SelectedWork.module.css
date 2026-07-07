@@ -52,6 +52,11 @@
   padding: 0;
   opacity: 0.9;
 }
+/* very narrow phones (<360px CSS width): smaller tiles so the tag
+   never runs into the fixed header buttons */
+@media (max-width: 379px) {
+  .pixelTag :global(.pixel-text) { --pxt: 0.26rem; }
+}
 /* generous letter tracking inside each word so letters never touch */
 .pixelTag :global(.pixel-text__word) { gap: calc(var(--pxt) * 1.7); }
 .pixelTag :global(.pixel-text__letter) { gap: calc(var(--pxt) * 0.38); }

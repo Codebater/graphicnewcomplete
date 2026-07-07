@@ -911,3 +911,21 @@ html body {
 .mxd-services-stack__number .pixel-text__cell--on {
   background: currentColor;
 }
+
+/* ------------------------------------------------------------------ */
+/* Narrow Android fix: the Rayo template hard-codes min-width:360px on
+   body/section/.mxd-* while body is overflow-x:hidden — on phones whose
+   CSS width is under 360px (small devices, or Android "Display size:
+   Large" which shrinks it to ~320-340) the page renders 360px wide,
+   can't be panned, and the right edge is cropped — it reads as "zoomed
+   in". Let the layout follow the real viewport instead. !important
+   because /css/main.css loads AFTER this file. */
+@media (max-width: 379px) {
+  body,
+  section,
+  .mxd-wrapper,
+  .mxd-section,
+  .mxd-project {
+    min-width: 0 !important;
+  }
+}
