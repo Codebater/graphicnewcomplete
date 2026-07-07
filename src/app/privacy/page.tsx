@@ -5,10 +5,10 @@ import Loader from '@/components/Loader';
 
 export const metadata = {
   title: 'Privacy Policy - GRAPHIQ STUDIO LLC',
-  description: 'Privacy policy for graphiq.art and GRAPHIQ STUDIO LLC\'s mobile apps, including RoboPenguin.',
+  description: 'Privacy policy for graphiq.art and GRAPHIQ STUDIO LLC\'s products, including Clausign, Fregio, and the mobile game RoboPenguin.',
   openGraph: {
     title: 'Privacy Policy - GRAPHIQ STUDIO LLC',
-    description: 'Privacy policy for graphiq.art and GRAPHIQ STUDIO LLC\'s mobile apps, including RoboPenguin.',
+    description: 'Privacy policy for graphiq.art and GRAPHIQ STUDIO LLC\'s products, including Clausign, Fregio, and the mobile game RoboPenguin.',
     url: '/privacy',
     siteName: 'GRAPHIQ STUDIO LLC',
     type: 'website',
@@ -86,9 +86,15 @@ export default function Privacy() {
                     <p className="t-xsmall t-muted" style={{ marginBottom: '1rem' }}>Last updated: {LAST_UPDATED}</p>
                     <p className="t-bright t-large">
                       GRAPHIQ STUDIO LLC (&quot;Graphiq,&quot; &quot;we,&quot; &quot;us&quot;) operates graphiq.art
-                      and builds software products, including the mobile game RoboPenguin. This policy explains
-                      what we collect, why, and the choices you have. It covers both this website and our apps
-                      unless a section says otherwise.
+                      and builds software products, including the mobile game RoboPenguin. We also operate,
+                      as doing-business-as (DBA) brands,{' '}
+                      <a href="https://www.clausign.com/" target="_blank" rel="noopener noreferrer">Clausign</a>{' '}
+                      (clausign.com) and{' '}
+                      <a href="https://www.fregio.ai/" target="_blank" rel="noopener noreferrer">Fregio</a>{' '}
+                      (fregio.ai), a tool for creating and hosting WordPress websites. This policy explains
+                      what we collect, why, and the choices you have. It covers this website and our apps
+                      unless a section says otherwise; where one of our products publishes its own privacy
+                      policy on its own site, that policy governs for that product.
                     </p>
                   </div>
                 </div>
@@ -165,6 +171,14 @@ export default function Privacy() {
                       offered by the platform, opt out of interest-based advertising through your device&apos;s
                       ad settings, or contact us to ask what data we hold about a leaderboard entry and have it
                       removed.
+                    </p>
+
+                    <h2 style={sectionHeadingStyle}>Ownership &amp; intellectual property</h2>
+                    <p className="t-bright" style={{ marginBottom: '1.5rem' }}>
+                      All content, branding, designs, and software on graphiq.art, clausign.com, fregio.ai,
+                      and in our apps — including the Clausign and Fregio products themselves — is the
+                      intellectual property of GRAPHIQ STUDIO LLC (including its DBA brands) unless stated
+                      otherwise, and may not be reproduced or used without our permission.
                     </p>
 
                     <h2 style={sectionHeadingStyle}>Changes to this policy</h2>
