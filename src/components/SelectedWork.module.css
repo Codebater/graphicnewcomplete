@@ -448,6 +448,25 @@
   .hint { display: none; }
   .metaTag { display: none; }            /* was colliding with the hamburger */
 
+  /* drop-shadow() FILTERS force the whole subtree — including every frame of
+     the playing video — through the filter, so mobile GPUs re-render two big
+     shadows continuously while scrolling. box-shadow paints once on the shell
+     (the video is its own layer and never invalidates it); at 40-60px blur
+     the missing stepped notches in the shadow are imperceptible. */
+  .mediaShell {
+    filter: none;
+    transition: box-shadow 0.9s ease;
+    box-shadow:
+      0 30px 60px rgba(0, 0, 0, 0.6),
+      0 0 30px color-mix(in srgb, var(--accent, #c9a24b) 26%, transparent);
+  }
+  /* the radial gradient already fades softly — the extra blur(30px) just
+     rasterized a huge 60vw layer for nothing on phones */
+  .pin::before { filter: none; }
+  /* don't pre-promote six full-size frames to GPU layers on phones; the
+     opacity/transform transitions promote the two that animate on their own */
+  .frame { will-change: auto; }
+
   /* dynamic viewport height → no jump when the mobile toolbar shows/hides
      (that's what made it feel "not fixed"). */
   .pin { height: 100dvh; min-height: 0; }

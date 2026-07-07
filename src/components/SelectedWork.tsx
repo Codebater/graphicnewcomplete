@@ -129,6 +129,28 @@ export default function SelectedWork({ projects }: { projects: ProjectListItem[]
     return () => { clearTimeout(t); unlock(); };
   }, [active]);
 
+  // Mount the <video> elements while the browser is idle after load — they
+  // are preload="none" and only play() once active AND in view, so mounting
+  // costs no network. Mounting them mid-scroll (the old 150px-before-the-pin
+  // trigger alone) put a React commit + layout right at the hero→viewer
+  // boundary: the hitch felt on the first flick down. The scroll trigger
+  // stays as a fallback for users who scroll before idle fires.
+  useEffect(() => {
+    const arm = () => {
+      if (!videoArmedRef.current) { videoArmedRef.current = true; setVideoArmed(true); }
+    };
+    const w = window as unknown as {
+      requestIdleCallback?: (cb: () => void, opts?: { timeout: number }) => number;
+      cancelIdleCallback?: (id: number) => void;
+    };
+    if (w.requestIdleCallback) {
+      const id = w.requestIdleCallback(arm, { timeout: 4000 });
+      return () => w.cancelIdleCallback?.(id);
+    }
+    const t = setTimeout(arm, 2500);
+    return () => clearTimeout(t);
+  }, []);
+
   useEffect(() => {
     if (!projects.length) return;
     const w = window as unknown as { gsap?: any; ScrollTrigger?: any; lenis?: any };
@@ -223,11 +245,15 @@ export default function SelectedWork({ projects }: { projects: ProjectListItem[]
         // scroll, no IO/ST delivery quirks). Until then video works show
         // only their poster: zero network/decoder cost on the way down.
         const armOnScroll = () => {
-          if (videoArmedRef.current || !st) return;
+          if (!st) return;
           if (window.scrollY > st.start - 150) {
-            videoArmedRef.current = true;
             inViewRef.current = true; // this close, the section fills the screen
-            setVideoArmed(true);
+            if (!videoArmedRef.current) {
+              videoArmedRef.current = true;
+              setVideoArmed(true);
+            } else {
+              syncVideos(); // already mounted at idle — just start the active one
+            }
             window.removeEventListener('scroll', armOnScroll);
           }
         };
