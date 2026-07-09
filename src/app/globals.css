@@ -471,104 +471,90 @@ html body {
   background: #ddf160;
 }
 
-/* ---- Pixel header controls — the theme toggle and hamburger become 8-bit
-   chips (stepped corners + a green accent pixel), same language as the
-   pixel buttons / pixel-G logo. ---- */
-.mxd-color-switcher,
-.hamburger__base {
-  border-radius: 0 !important;   /* beat main.css's circle (it loads later) */
-  clip-path: polygon(
-    0 0.8rem, 0.4rem 0.8rem, 0.4rem 0.4rem, 0.8rem 0.4rem, 0.8rem 0,
-    calc(100% - 0.8rem) 0, calc(100% - 0.8rem) 0.4rem, calc(100% - 0.4rem) 0.4rem,
-    calc(100% - 0.4rem) 0.8rem, 100% 0.8rem,
-    100% calc(100% - 0.8rem), calc(100% - 0.4rem) calc(100% - 0.8rem),
-    calc(100% - 0.4rem) calc(100% - 0.4rem), calc(100% - 0.8rem) calc(100% - 0.4rem),
-    calc(100% - 0.8rem) 100%,
-    0.8rem 100%, 0.8rem calc(100% - 0.4rem), 0.4rem calc(100% - 0.4rem),
-    0.4rem calc(100% - 0.8rem), 0 calc(100% - 0.8rem)
-  );
-}
-/* theme toggle: give it a visible chip base to pair with the hamburger,
-   plus the hopping green accent pixel (.mxd-header__controls prefix wins the
-   cascade over main.css, which loads after globals) */
-.mxd-header__controls .mxd-color-switcher {
-  color: var(--t-opp-bright);   /* icon in the chip's opposite ink (the chip
-                                   itself is base-opp-tint) — visible in both themes */
-  background-color: var(--base-opp-tint);
+/* ---- Header chip buttons — soft-glass squircles (user reference): dark
+   translucent base, thin metallic outline (1px), inner highlight, soft
+   ambient shadow; off-white icons with the neon-lime accent pixel. The chip
+   look applies ONLY while the base is the small chip — once it flips into
+   the open menu it returns to the template's round card. ---- */
+.mxd-header__controls .mxd-color-switcher,
+.mxd-nav__hamburger .hamburger__base {
+  border-radius: 18px !important;
+  background-color: rgba(20, 20, 20, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  box-shadow:
+    inset 0 1px rgba(255, 255, 255, 0.06),
+    0 10px 30px rgba(0, 0, 0, 0.35);
+  /* neon-lime accent pixel (hops on hover) */
   background-image: linear-gradient(#ddf160, #ddf160);
-  background-size: 0.5rem 0.5rem;
+  background-size: 0.4rem 0.4rem;
   background-repeat: no-repeat;
-  background-position: calc(100% - 0.9rem) 0.9rem;
-  transition: background-position 0.18s steps(2, end);
+  background-position: calc(100% - 0.85rem) 0.85rem;
+  transition:
+    transform 0.3s ease,
+    border-color 0.3s ease,
+    box-shadow 0.3s ease,
+    background-position 0.25s steps(2, end);
 }
-.mxd-header__controls .mxd-color-switcher:hover,
-.mxd-header__controls .mxd-color-switcher:focus-visible {
-  background-position: calc(100% - 1.5rem) 0.9rem;
+/* icon ink: fixed off-white — the chip is dark glass in BOTH themes */
+.mxd-header__controls .mxd-color-switcher { color: rgba(255, 255, 255, 0.92); }
+/* kill the template's round hover-fill so the glass stays clean */
+.mxd-header__controls .mxd-color-switcher::before { display: none; }
+/* hover micro-interactions: gentle 1.04 lift + lime border glow */
+.no-touch .mxd-header__controls .mxd-color-switcher:hover,
+.mxd-header__controls .mxd-color-switcher:focus-visible,
+.no-touch .mxd-nav__hamburger:hover .hamburger__base,
+.mxd-nav__hamburger:focus-visible .hamburger__base {
+  transform: scale(1.04);
+  border-color: rgba(221, 241, 96, 0.45);
+  box-shadow:
+    inset 0 1px rgba(255, 255, 255, 0.08),
+    0 10px 30px rgba(0, 0, 0, 0.35),
+    0 0 16px rgba(221, 241, 96, 0.22);
+  background-position: calc(100% - 1.45rem) 0.85rem;
 }
-/* hover fill: subtle same-ink tint instead of the template's base-tint
-   (which would swallow the opposite-ink icon on the tinted chip) */
-.no-touch .mxd-header__controls .mxd-color-switcher:hover::before {
-  background-color: color-mix(in srgb, var(--t-opp-bright) 10%, transparent);
-}
-.mxd-color-switcher::before { border-radius: 0 !important; }   /* hover fill follows the chip */
-/* hollow inset bezel — a stepped inner frame so the chips read as carved
-   face-plates (hidden once the base has morphed into the big menu card) */
-.mxd-header__controls .mxd-color-switcher::after,
-.mxd-nav__hamburger .hamburger__base::after {
-  content: '';
-  position: absolute;
-  inset: 0.55rem;
-  border: 2px solid color-mix(in srgb, var(--t-opp-bright) 20%, transparent);
-  clip-path: polygon(
-    0 0.4rem, 0.2rem 0.4rem, 0.2rem 0.2rem, 0.4rem 0.2rem, 0.4rem 0,
-    calc(100% - 0.4rem) 0, calc(100% - 0.4rem) 0.2rem, calc(100% - 0.2rem) 0.2rem,
-    calc(100% - 0.2rem) 0.4rem, 100% 0.4rem,
-    100% calc(100% - 0.4rem), calc(100% - 0.2rem) calc(100% - 0.4rem),
-    calc(100% - 0.2rem) calc(100% - 0.2rem), calc(100% - 0.4rem) calc(100% - 0.2rem),
-    calc(100% - 0.4rem) 100%,
-    0.4rem 100%, 0.4rem calc(100% - 0.2rem), 0.2rem calc(100% - 0.2rem),
-    0.2rem calc(100% - 0.4rem), 0 calc(100% - 0.4rem)
-  );
-  pointer-events: none;
-}
-.mxd-menu__contain .hamburger__base::after { display: none; }
-
-/* to-top button: the template's mix-blend-mode:difference + backdrop-filter
-   renders as a black blob on mobile browsers and is invisible-ish on the
-   light theme — restyle it as one of our pixel chips instead.
-   (#id selector so it beats main.css, which loads after globals) */
-#to-top.btn-to-top {
-  mix-blend-mode: normal;
+/* once flipped into the open menu, the base is the big card again —
+   the template's ROUND card, no glass-chip styling */
+.mxd-menu__contain .hamburger__base {
+  border-radius: var(--_radius-l) !important;
+  border: none;
   -webkit-backdrop-filter: none;
   backdrop-filter: none;
-  border-radius: 0 !important;
-  clip-path: polygon(
-    0 0.8rem, 0.4rem 0.8rem, 0.4rem 0.4rem, 0.8rem 0.4rem, 0.8rem 0,
-    calc(100% - 0.8rem) 0, calc(100% - 0.8rem) 0.4rem, calc(100% - 0.4rem) 0.4rem,
-    calc(100% - 0.4rem) 0.8rem, 100% 0.8rem,
-    100% calc(100% - 0.8rem), calc(100% - 0.4rem) calc(100% - 0.8rem),
-    calc(100% - 0.4rem) calc(100% - 0.4rem), calc(100% - 0.8rem) calc(100% - 0.4rem),
-    calc(100% - 0.8rem) 100%,
-    0.8rem 100%, 0.8rem calc(100% - 0.4rem), 0.4rem calc(100% - 0.4rem),
-    0.4rem calc(100% - 0.8rem), 0 calc(100% - 0.8rem)
-  );
+  box-shadow: none;
   background-color: var(--base-opp-tint);
-  color: var(--t-opp-bright);
+  transform: none;
+}
+
+/* to-top button: same glass squircle (the template's mix-blend-mode:
+   difference rendered as a black blob on mobile and was invisible-ish on
+   the light theme). #id selector so it beats main.css. */
+#to-top.btn-to-top {
+  mix-blend-mode: normal;
+  border-radius: 18px !important;
+  background-color: rgba(20, 20, 20, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  color: rgba(255, 255, 255, 0.92);
+  box-shadow:
+    inset 0 1px rgba(255, 255, 255, 0.06),
+    0 10px 30px rgba(0, 0, 0, 0.35);
   background-image: linear-gradient(#ddf160, #ddf160);
-  background-size: 0.5rem 0.5rem;
+  background-size: 0.4rem 0.4rem;
   background-repeat: no-repeat;
-  background-position: calc(100% - 0.9rem) 0.9rem;
+  background-position: calc(100% - 0.85rem) 0.85rem;
 }
 /* hidden on phones — its scroll ride conflicts with the section snapping/
    holds there (and thumbs have the native fast-scroll anyway) */
 @media (max-width: 1023px) {
   #to-top.btn-to-top { display: none !important; }
 }
+
 /* hamburger: a kawaii smiley (same language as the preloader / hero ball).
-   The two template "lines" become vertical pixel eyes — AppInitializer
-   stretches + crosses them into the X when the menu opens — plus a smile
-   mouth that fades out. Its own accent pixel too (the base morphs into
-   the opened menu card, taking the pixel language with it). */
+   The two template "lines" become bead eyes — AppInitializer stretches +
+   crosses them into the X when the menu opens — plus a smile mouth that
+   fades out. */
 .mxd-nav__contain .mxd-nav__hamburger {
   flex-direction: row;   /* eyes side by side (beats main.css's column) */
   gap: 0.6rem;
@@ -583,19 +569,22 @@ html body {
   position: relative;
 }
 /* round bead eyes with a life cycle: they blink, glance left, glance right
-   (stop-motion turns), blink again, return — all in one steps() loop */
+   (stop-motion turns), blink again, return — all in one steps() loop.
+   Off-white: they sit on the dark glass chip in both themes. */
 .mxd-nav__hamburger .hamburger__line::before {
   content: '';
   position: absolute;
   inset: 0;
   border-radius: 50%;
-  background-color: var(--t-opp-bright);
+  background-color: rgba(255, 255, 255, 0.92);
   animation: hamburger-eye-life 7.5s steps(1) infinite;
 }
-/* while the menu is open the eyes are the X — hold the pose */
+/* while the menu is open the eyes are the X on the ROUND CARD (theme-tinted,
+   not the dark chip) — hold the pose and switch to the card's ink */
 .mxd-nav__hamburger.nav-open .hamburger__line::before {
   animation: none;
   border-radius: 0.2rem;
+  background-color: var(--t-opp-bright);
 }
 @keyframes hamburger-eye-life {
   0%, 17% { transform: none; }
@@ -614,7 +603,7 @@ html body {
   transform: translateX(-50%);
   width: 1.5rem;
   height: 0.75rem;
-  border: 0.3rem solid var(--t-opp-bright);
+  border: 0.3rem solid rgba(255, 255, 255, 0.92);
   border-top: none;
   border-radius: 0 0 1.5rem 1.5rem;
   z-index: 2;
@@ -622,14 +611,3 @@ html body {
 @media (prefers-reduced-motion: reduce) {
   .mxd-nav__hamburger .hamburger__line::before { animation: none; }
 }
-.hamburger__base {
-  background-image: linear-gradient(#ddf160, #ddf160);
-  background-size: 0.5rem 0.5rem;
-  background-repeat: no-repeat;
-  background-position: calc(100% - 0.9rem) 0.9rem;
-}
-.no-touch .mxd-nav__hamburger:hover .hamburger__base {
-  background-position: calc(100% - 1.5rem) 0.9rem;
-  transition: background-position 0.18s steps(2, end);
-}
-
