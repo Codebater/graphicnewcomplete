@@ -218,41 +218,51 @@ export default function AppInitializer() {
         });
       }
 
-      // Header Scroll Behavior
+      // Header Scroll Behavior — cached element + state guard so the class
+      // only flips when crossing the threshold (the old jQuery handler
+      // re-queried the DOM and rewrote the class on EVERY scroll frame).
+      const headerEl = document.querySelector(".mxd-header");
+      let headerHidden: boolean | null = null;
       const handleHeaderScroll = () => {
-        if ($(window).scrollTop() > 10) {
-          $(".mxd-header").addClass("is-hidden");
-        } else {
-          $(".mxd-header").removeClass("is-hidden");
+        const hidden = window.scrollY > 10;
+        if (hidden !== headerHidden && headerEl) {
+          headerHidden = hidden;
+          headerEl.classList.toggle("is-hidden", hidden);
         }
       };
-      $(window).on("scroll", handleHeaderScroll);
+      const prevHeaderScroll = (window as any).__headerScrollHandler;
+      if (prevHeaderScroll) window.removeEventListener("scroll", prevHeaderScroll);
+      (window as any).__headerScrollHandler = handleHeaderScroll;
+      window.addEventListener("scroll", handleHeaderScroll, { passive: true });
+      handleHeaderScroll();
 
-      // Hero #02 Scroll Out Animation
-      const hero02FadeOutEl = document.querySelectorAll(".hero-02-static-anim-el"); 
-      hero02FadeOutEl.forEach((element) => {
+      // Hero #02 Scroll Out Animation — ONE timeline for all elements (the
+      // template built an identical timeline + ScrollTrigger per element;
+      // same trigger, same values → same rendering with a third of the work)
+      const hero02FadeOutEl = document.querySelectorAll(".hero-02-static-anim-el");
+      if (hero02FadeOutEl.length) {
         const hero02fadeOutTl = gsap.timeline({
           scrollTrigger: {
             trigger: ".hero-02-static__tl-trigger",
             start: "top 14%",
             end: "top 0.2%",
             scrub: {
-              scrub: true, 
+              scrub: true,
               ease: "sine",
             },
           },
         });
-        hero02fadeOutTl.fromTo(element, {
+        hero02fadeOutTl.fromTo(hero02FadeOutEl, {
           transform: "translate3d(0, 0, 0)",
           scaleY: 1,
           opacity: 1
-        }, 
+        },
         {
           transform: "translate3d(0, -5rem, 0)",
           scaleY: 1.3,
           opacity: 0
         });
-      });
+      }
 
       // Hero #02 pinned screen
       const fadeOutEl = document.querySelectorAll(".hero-02-fade-out-scroll"); 
@@ -1061,10 +1071,12 @@ export default function AppInitializer() {
         });
       });
 
-      // Swiper Sliders
+      // Swiper Sliders — only build an instance when the slider actually
+      // exists on the page. (The template checked for nonexistent TAG names
+      // like <testimonials-slider>, which is always null — so all three
+      // Swipers + their resize/mutation observers spun up on every page.)
       if (Swiper) {
-        const testimonialsSlider = document.querySelector("testimonials-slider");
-        if (!testimonialsSlider) {
+        if (document.querySelector('.swiper-testimonials')) {
           new Swiper('.swiper-testimonials', {
             slidesPerView: 'auto',
             grabCursor: true,
@@ -1086,8 +1098,7 @@ export default function AppInitializer() {
           });
         }
 
-        const testimonialsSlider2 = document.querySelector("testimonials-slider-2");
-        if (!testimonialsSlider2) {
+        if (document.querySelector('.swiper-testimonials-2')) {
           new Swiper('.swiper-testimonials-2', {
             slidesPerView: 1,
             grabCursor: true,
@@ -1110,8 +1121,7 @@ export default function AppInitializer() {
           });
         }
 
-        const innerDemoSlider = document.querySelector("mxd-demo-swiper");
-        if (!innerDemoSlider) {
+        if (document.querySelector('.mxd-demo-swiper')) {
           new Swiper('.mxd-demo-swiper', {
             breakpoints: {
               640: {
@@ -1366,17 +1376,21 @@ export default function AppInitializer() {
         });
       }
 
-      // Parallax Universal
-      gsap.to("[data-speed]", {
-        y: (i: number, el: any) => (1 - parseFloat(el.getAttribute("data-speed"))) * ScrollTrigger.maxScroll(window) ,
-        ease: "none",
-        scrollTrigger: {
-          start: 0,
-          end: "max",
-          invalidateOnRefresh: true,
-          scrub: 0
-        }
-      });
+      // Parallax Universal — skip entirely when nothing carries data-speed
+      // (otherwise a whole-page scrubbed trigger updates on every frame for
+      // zero targets)
+      if (document.querySelector("[data-speed]")) {
+        gsap.to("[data-speed]", {
+          y: (i: number, el: any) => (1 - parseFloat(el.getAttribute("data-speed"))) * ScrollTrigger.maxScroll(window) ,
+          ease: "none",
+          scrollTrigger: {
+            start: 0,
+            end: "max",
+            invalidateOnRefresh: true,
+            scrub: 0
+          }
+        });
+      }
 
       // Emoji Logo Rotation
       // Absolute paths (leading slash) so the rotating logo resolves from the
@@ -1457,6 +1471,11 @@ export default function AppInitializer() {
       }
       ScrollTrigger.killAll();
       
+      // Remove the native header-scroll listener
+      if ((window as any).__headerScrollHandler) {
+        window.removeEventListener("scroll", (window as any).__headerScrollHandler);
+        (window as any).__headerScrollHandler = null;
+      }
       // Remove jQuery event handlers
       if (typeof (window as any).$ !== 'undefined') {
         const $ = (window as any).$;
