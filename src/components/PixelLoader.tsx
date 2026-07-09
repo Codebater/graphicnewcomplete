@@ -117,9 +117,9 @@ const FACES: string[][] = [
   ],
 ];
 
-// Frame sequence — expressive frames lead (the loader window is short on fast
-// loads), morphing into the G logo mid-cycle, then back.
-const SEQ = [0, 2, 2, 3, 3, 0, 4, 4, 1, 0, 6, 6, 7, 7, 8, 8, 0, 2, 2, 5, 5, 1, 0, 3, 3, 0];
+// Frame sequence — expressive faces lead, morph into the G logo, and STOP
+// there (the G is the finale; no loop back to faces).
+const SEQ = [0, 2, 2, 3, 3, 0, 4, 4, 1, 0, 6, 6, 7, 7, 8, 8];
 
 const FACE_H = 9;
 const FACE_W = 13;
@@ -133,7 +133,12 @@ export default function PixelLoader() {
   useEffect(() => {
     let id: ReturnType<typeof setInterval> | undefined;
     if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      id = setInterval(() => setStep((s) => (s + 1) % SEQ.length), 150);
+      // advance to the final G frame and hold it — the sequence plays once
+      id = setInterval(() => setStep((s) => {
+        const next = Math.min(s + 1, SEQ.length - 1);
+        if (next === SEQ.length - 1 && id) clearInterval(id);
+        return next;
+      }), 150);
     }
 
     // Once the loader has finished (hideLoader adds .loaded), stop the frame

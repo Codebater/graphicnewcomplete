@@ -1022,11 +1022,55 @@ export default function AppInitializer() {
         ScrollTrigger.addEventListener("refreshInit", () => gsap.set(".animate-card-5", {y: 0, opacity: 1}));
       }
 
-      // Zoom In / Zoom Out container animations REMOVED (the promo band's
-      // pill-to-rect morph): mid-scroll it read as an unwanted "lens" bulge,
-      // and scrubbing border-radius repainted the whole band on every frame —
-      // one of the heaviest per-frame costs on the site. The bands now render
-      // static at their natural radius.
+      // Zoom In / Zoom Out Container Animations (the promo band's
+      // pill-to-rect scroll morph — user explicitly wants this kept)
+      const docStyle = getComputedStyle(document.documentElement);
+      const zoomInContainer = document.querySelectorAll(".anim-zoom-in-container");
+      const zoomOutContainer = document.querySelectorAll(".anim-zoom-out-container");
+
+      zoomInContainer.forEach((element: Element) => {
+        const zoomInBlockTl = gsap.timeline({
+          scrollTrigger: {
+            trigger: element,
+            start: "top 82%",
+            end: "top 14%",
+            scrub: {
+              scrub: true,
+              ease: "power4.inOut"
+            },
+          },
+        });
+        zoomInBlockTl.fromTo(element, {
+          borderRadius: '200px',
+          transform: "scale3d(0.94, 1, 1)"
+        },
+        {
+          borderRadius: docStyle.getPropertyValue("--_radius-l"),
+          transform: "scale3d(1, 1, 1)"
+        });
+      });
+
+      zoomOutContainer.forEach((element: Element) => {
+        const zoomOutBlockTl = gsap.timeline({
+          scrollTrigger: {
+            trigger: element,
+            start: "top 82%",
+            end: "top 14%",
+            scrub: {
+              scrub: true,
+              ease: "power4.inOut"
+            },
+          },
+        });
+        zoomOutBlockTl.fromTo(element, {
+          borderRadius: '200px',
+          transform: "scale3d(1.14, 1, 1)"
+        },
+        {
+          borderRadius: docStyle.getPropertyValue("--_radius-l"),
+          transform: "scale3d(1, 1, 1)",
+        });
+      });
 
       // Swiper Sliders — only build an instance when the slider actually
       // exists on the page. (The template checked for nonexistent TAG names
