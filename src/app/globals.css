@@ -491,21 +491,23 @@ html body {
   background-size: 0.4rem 0.4rem;
   background-repeat: no-repeat;
   background-position: calc(100% - 0.85rem) 0.85rem;
+}
+/* icon ink: fixed off-white — the chip is dark glass in BOTH themes */
+.mxd-header__controls .mxd-color-switcher { color: rgba(255, 255, 255, 0.92); }
+/* kill the template's round hover-fill so the glass stays clean */
+.mxd-header__controls .mxd-color-switcher::before { display: none; }
+
+/* The TOGGLE never flips, so it owns the full tactile micro-interaction
+   (incl. the transform scale). */
+.mxd-header__controls .mxd-color-switcher {
   transition:
     transform 0.3s ease,
     border-color 0.3s ease,
     box-shadow 0.3s ease,
     background-position 0.25s steps(2, end);
 }
-/* icon ink: fixed off-white — the chip is dark glass in BOTH themes */
-.mxd-header__controls .mxd-color-switcher { color: rgba(255, 255, 255, 0.92); }
-/* kill the template's round hover-fill so the glass stays clean */
-.mxd-header__controls .mxd-color-switcher::before { display: none; }
-/* hover micro-interactions: gentle 1.04 lift + lime border glow */
 .no-touch .mxd-header__controls .mxd-color-switcher:hover,
-.mxd-header__controls .mxd-color-switcher:focus-visible,
-.no-touch .mxd-nav__hamburger:hover .hamburger__base,
-.mxd-nav__hamburger:focus-visible .hamburger__base {
+.mxd-header__controls .mxd-color-switcher:focus-visible {
   transform: scale(1.04);
   border-color: rgba(221, 241, 96, 0.45);
   box-shadow:
@@ -514,8 +516,29 @@ html body {
     0 0 16px rgba(221, 241, 96, 0.22);
   background-position: calc(100% - 1.45rem) 0.85rem;
 }
-/* once flipped into the open menu, the base is the big card again —
-   the template's ROUND card, no glass-chip styling */
+
+/* The HAMBURGER base is what GSAP Flip morphs into the menu card, so it must
+   carry NO css transform (a transform transition would fight Flip's per-frame
+   transform writes — that was the open/close jump) and NO transform-based
+   hover. Its hover is a pure glow + accent hop. */
+.mxd-nav__hamburger .hamburger__base {
+  transition:
+    border-color 0.3s ease,
+    box-shadow 0.3s ease,
+    background-position 0.25s steps(2, end);
+}
+.no-touch .mxd-nav__hamburger:hover .hamburger__base,
+.mxd-nav__hamburger:focus-visible .hamburger__base {
+  border-color: rgba(221, 241, 96, 0.45);
+  box-shadow:
+    inset 0 1px rgba(255, 255, 255, 0.08),
+    0 10px 30px rgba(0, 0, 0, 0.35),
+    0 0 16px rgba(221, 241, 96, 0.22);
+  background-position: calc(100% - 1.45rem) 0.85rem;
+}
+/* once flipped into the open menu, the base is the big card again — the
+   template's ROUND card, no glass-chip styling. transition:none so nothing
+   CSS-animates while Flip drives the morph (keeps the open/close clean). */
 .mxd-menu__contain .hamburger__base {
   border-radius: var(--_radius-l) !important;
   border: none;
@@ -523,7 +546,7 @@ html body {
   backdrop-filter: none;
   box-shadow: none;
   background-color: var(--base-opp-tint);
-  transform: none;
+  transition: none;
 }
 
 /* to-top button: same glass squircle (the template's mix-blend-mode:
