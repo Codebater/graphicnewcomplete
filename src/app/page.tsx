@@ -6,6 +6,7 @@ import Statistics from '@/components/Statistics';
 import { supabase } from '@/lib/supabase';
 import { ProjectListItem } from '@/components/ProjectsList';
 import SelectedWork from '@/components/SelectedWork';
+import PromoWork from '@/components/PromoWork';
 import HeroMarqueeLens from '@/components/HeroMarqueeLens';
 import Loader from '@/components/Loader';
 
@@ -514,12 +515,12 @@ export default async function Home() {
               <div className="mxd-promo">
                 <div className="mxd-promo__inner anim-zoom-out-container">
                   <div className="mxd-promo__content">
-                    <p className="mxd-promo__title anim-uni-in-up">
-                      <Link className="promo-cta" href="/contact">
-                        <i className="promo-cta__arrow ph-bold ph-arrow-right" aria-hidden="true"></i>
-                        <span className="mxd-promo__caption reveal-type promo-cta__text">Let&apos;s talk about your project!</span>
-                      </Link>
-                    </p>
+                    {/* LET'S WORK wordmark in the brand tile font w/ 3D tilt
+                        (full width — the template caps __title at 70% which
+                        would left-anchor the centred wordmark) */}
+                    <div className="mxd-promo__title anim-uni-in-up" style={{ width: '100%' }}>
+                      <PromoWork />
+                    </div>
                     {/* <div className="mxd-promo__controls anim-uni-in-up">
                       <Link className="btn btn-anim btn-default btn-large btn-additional slide-right-up" href="/contact">
                         <span className="btn-caption">Contact Us</span>

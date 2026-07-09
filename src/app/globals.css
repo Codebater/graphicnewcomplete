@@ -382,3 +382,92 @@ html body {
   }
 }
 
+/* menu links in the brand tile lettering (SELECTED WORK style) — ink of the
+   menu card's surface so it adapts to both themes */
+.main-menu__link .pixel-text {
+  --pxt: clamp(0.42rem, 1.2vw, 0.6rem);   /* 5×7 glyphs — bigger overall letters */
+  gap: calc(var(--pxt) * 2);
+  padding: 0.2rem 0;
+}
+/* phones: smaller tiles so even PORTFOLIO fits with air on both sides */
+@media (max-width: 1023px) {
+  .main-menu__link .pixel-text {
+    --pxt: clamp(0.26rem, 0.85vw + 0.04rem, 0.38rem);
+  }
+}
+/* generous letter tracking inside each word so letters never touch */
+.main-menu__link .pixel-text__word { gap: calc(var(--pxt) * 1.6); }
+.main-menu__link .pixel-text__cell { border-radius: 20%; }
+.main-menu__link .pixel-text__cell--on { background: var(--t-opp-bright); }
+.no-touch .main-menu__link:hover .pixel-text__cell--on,
+.main-menu__link:focus-visible .pixel-text__cell--on {
+  background: #ddf160;   /* the whole word lights up green on hover */
+}
+
+/* menu links: a green tile bullet steps in on hover — pixel cursor language.
+   inline-flex + line-height 1 so the anchor box hugs the tile lettering —
+   the template's 4rem line box floated the hitbox ~44px ABOVE the visible
+   text, making taps land on the link below. */
+.main-menu__item .main-menu__link {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  line-height: 1;
+  padding: 0.6rem 0;   /* comfortable tap target around the lettering */
+}
+.main-menu__link::before {
+  content: '';
+  display: inline-block;
+  width: 0.32em;
+  height: 0.32em;
+  margin-right: 0;
+  background: #ddf160;
+  opacity: 0;
+  transform: translateY(-0.06em);
+  transition: opacity 0.15s steps(2, end), width 0.15s steps(2, end), margin-right 0.15s steps(2, end);
+}
+.main-menu__link:hover::before,
+.main-menu__link:focus-visible::before {
+  opacity: 1;
+  margin-right: 0.28em;
+}
+
+/* rotating menu caption — lines are absolutely stacked in a fixed-height box
+   so swapping them never moves the menu below */
+.rotating-caption {
+  position: relative;
+  display: block;
+  min-height: 3.2em;   /* room for the tallest line at two rows */
+}
+.rotating-caption__line {
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: 0;
+  opacity: 0;
+  transition: opacity 0.35s ease;
+  pointer-events: none;
+}
+.rotating-caption__line.is-on { opacity: 1; }
+/* ink of the menu card's surface — a base span rule was forcing black,
+   invisible on the dark card in the light theme */
+.mxd-menu__caption .rotating-caption__line { color: var(--t-opp-medium); }
+
+/* menu caption + bottom data line: small green lead-in tiles */
+.mxd-menu__caption::before {
+  content: '';
+  display: block;
+  width: 0.9rem;
+  height: 0.9rem;
+  margin-bottom: 1.2rem;
+  background: #ddf160;
+}
+.mxd-menu__data p:first-child::before {
+  content: '';
+  display: inline-block;
+  width: 0.6rem;
+  height: 0.6rem;
+  margin-right: 0.7rem;
+  background: #ddf160;
+}
+

@@ -1,0 +1,79 @@
+/* ===== LET'S WORK graffiti wordmark in the promo band ===== */
+.root {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  perspective: 900px;
+  text-decoration: none;
+  padding: clamp(2.5rem, 7vh, 5rem) 0;
+}
+
+/* the "enter" arrow — steps in on hover, pushing the word aside */
+.arrow {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: clamp(3rem, 6vw, 5.4rem);
+  color: #ddf160;
+  width: 0;
+  margin-right: 0;
+  opacity: 0;
+  overflow: hidden;
+  transform: translateX(-1.4rem);
+  filter: drop-shadow(0 6px 14px rgba(0, 0, 0, 0.45));
+  transition:
+    width 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+    margin-right 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 0.4s ease,
+    transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.root:hover .arrow,
+.root:focus-visible .arrow {
+  width: 1.15em;
+  margin-right: clamp(1.2rem, 2.5vw, 2.4rem);
+  opacity: 1;
+  transform: none;
+}
+
+/* 3D stage — tilt follows the cursor across the promo band */
+.stage {
+  display: block;
+  transform-style: preserve-3d;
+  transform: rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
+  will-change: transform;
+}
+
+/* the wordmark floats above the card; on hover it pops closer and nudges
+   aside to make room for the arrow. Set in the brand tile font — cells in
+   the band's opposite ink (band is base-opp), cursor stays pixel green. */
+.word {
+  display: block;
+  transform: translateZ(50px);
+  filter: drop-shadow(0 20px 30px rgba(0, 0, 0, 0.45));
+  transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1), filter 0.55s ease;
+  animation: promo-word-float 5.4s ease-in-out infinite;
+}
+.word :global(.pixel-text) {
+  --pxt: clamp(0.5rem, 2vw, 1.35rem);
+  justify-content: center;
+}
+.word :global(.pixel-text__cell--on) {
+  background: var(--t-opp-bright);
+}
+.root:hover .word,
+.root:focus-visible .word {
+  transform: translateZ(74px) translateX(clamp(0.8rem, 2vw, 2rem));
+  filter: drop-shadow(0 30px 40px rgba(0, 0, 0, 0.5));
+}
+
+/* idle bob so it reads as "hovering" even without the cursor */
+@keyframes promo-word-float {
+  0%, 100% { translate: 0 0; }
+  50% { translate: 0 -9px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .word { animation: none; }
+  .stage { transform: none; }
+}
