@@ -157,33 +157,38 @@ export default function HeroMarqueeLens() {
       });
       io.observe(marquee as HTMLElement);
 
-      let frameNo = 0;
       let lastClip = '';
       const tick = () => {
         if (!overlay || !onScreen) return;
-        // Mirror the real track's x-position (style read only — no layout).
-        const m = new DOMMatrixReadOnly(getComputedStyle(track).transform);
-        const x = -((-m.m41 % stripPeriod + stripPeriod) % stripPeriod);
-        strip.style.transform = `translate3d(${x}px,0,0)`;
 
-        // Lens tracking every 3rd frame; rects are cheap here (only transforms
-        // change between frames, so layout stays clean) and the clip write is
-        // guarded so nothing repaints unless the lens really moved.
+        // --- READS FIRST (batched so no write below forces a sync re-layout) ---
+        // Mirror the real track's x-position (style read, no layout).
+        const m = new DOMMatrixReadOnly(getComputedStyle(track).transform);
+        // The smiley BOBS vertically (CSS mxd-move, ±1rem @1.2s), so the lens
+        // circle must follow it EVERY frame at sub-pixel precision. Updating
+        // only every 3rd frame + rounding to whole px made the circle jump in
+        // ~5px steps = the "framey" look. These two rects are the only layout
+        // reads; taking them before any style write keeps layout clean.
+        const or = (marquee as HTMLElement).getBoundingClientRect();
+        const sr = smiley.getBoundingClientRect();
+
+        // --- COMPUTE ---
+        const x = -((-m.m41 % stripPeriod + stripPeriod) % stripPeriod);
+        const cx = sr.left + sr.width / 2 - or.left;
+        const cy = sr.top + sr.height / 2 - or.top;
+        const r = Math.min(sr.width, sr.height) * 0.36;
+        // sub-pixel (no Math.round) so the circle glides with the ball
+        const clip = r > 4 ? `circle(${r}px at ${cx}px ${cy}px)` : 'circle(0 at 50% 50%)';
+
+        // --- WRITES ---
         // NOTE: the text is hidden under the ball by the overlay's OPAQUE
-        // page-coloured backing (see CSS) — the old per-move mask-image on
-        // the text marquee re-rasterised that whole layer during scroll and
-        // caused the hero→next-section freeze.
-        if (frameNo++ % 3 === 0) {
-          const or = (marquee as HTMLElement).getBoundingClientRect();
-          const sr = smiley.getBoundingClientRect();
-          const cx = sr.left + sr.width / 2 - or.left;
-          const cy = sr.top + sr.height / 2 - or.top;
-          const r = Math.min(sr.width, sr.height) * 0.36;
-          const clip = r > 4 ? `circle(${Math.round(r)}px at ${Math.round(cx)}px ${Math.round(cy)}px)` : 'circle(0 at 50% 50%)';
-          if (clip !== lastClip) {
-            lastClip = clip;
-            overlay.style.clipPath = clip;
-          }
+        // page-coloured backing (CSS) — the old per-move mask-image on the
+        // text marquee re-rasterised that whole layer and caused the
+        // hero→next-section freeze; clip-path on this one overlay is cheap.
+        strip.style.transform = `translate3d(${x}px,0,0)`;
+        if (clip !== lastClip) {
+          lastClip = clip;
+          overlay.style.clipPath = clip;
         }
 
         raf = requestAnimationFrame(tick);
