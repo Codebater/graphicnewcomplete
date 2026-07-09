@@ -15,8 +15,11 @@ export default function Header() {
             aria-label="Toggle menu"
           >
             <div className="hamburger__base"></div>
+            {/* kawaii smiley — the two "lines" are the eyes (they stretch and
+                cross into the X when the menu opens), plus a smile mouth */}
             <div className="hamburger__line"></div>
             <div className="hamburger__line"></div>
+            <div className="hamburger__mouth"></div>
           </button>
         </div>
 
@@ -112,10 +115,8 @@ export default function Header() {
           >
             <i className="ph-bold ph-moon-stars"></i>
           </button>
-          <Link className="btn btn-anim btn-default btn-mobile-icon btn-outline slide-right-up" href="/contact">
-            <span className="btn-caption">Let&apos;s Work</span>
-            <i className="ph-bold ph-arrow-up-right"></i>
-          </Link>
+          {/* "Let's Work" CTA removed — the reference bar has just the two
+              chips; the menu + Contact page cover the CTA */}
         </div>
       </header>
     </>

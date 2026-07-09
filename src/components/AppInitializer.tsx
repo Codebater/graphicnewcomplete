@@ -437,10 +437,12 @@ export default function AppInitializer() {
             flip(true);
           }
         });
-        tl.to(navLineEl.eq(0), { y: 5, duration: 0.16 }, "<")
-        tl.to(navLineEl.eq(1), { y: -5, duration: 0.16 }, "<")
-        tl.to(navLineEl.eq(0), { rotate: 45, duration: 0.16 }, 0.2)
-        tl.to(navLineEl.eq(1), { rotate: -45, duration: 0.16 }, 0.2)
+        // smiley → X: the mouth fades, the eyes stretch and cross
+        const mouthEl = $(element).find(".hamburger__mouth");
+        tl.to(mouthEl, { opacity: 0, scale: 0.4, duration: 0.16 }, "<")
+        tl.to(navLineEl, { height: "1.7rem", y: 5, duration: 0.16 }, "<")
+        tl.to(navLineEl.eq(0), { x: 5.7, rotate: 45, duration: 0.16 }, 0.2)
+        tl.to(navLineEl.eq(1), { x: -5.7, rotate: -45, duration: 0.16 }, 0.2)
         tl.add("fade-in-up")
         .from(menuItem, {
           opacity: 0,
