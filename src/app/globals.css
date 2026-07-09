@@ -525,6 +525,8 @@ html body {
   transition:
     border-color 0.3s ease,
     box-shadow 0.3s ease,
+    background-color 0.25s ease,
+    border-radius 0.25s ease,
     background-position 0.25s steps(2, end);
 }
 .no-touch .mxd-nav__hamburger:hover .hamburger__base,
@@ -536,18 +538,23 @@ html body {
     0 0 16px rgba(221, 241, 96, 0.22);
   background-position: calc(100% - 1.45rem) 0.85rem;
 }
-/* once flipped into the open menu, the base is the big card again — the
-   template's ROUND card, no glass-chip styling. transition:none so nothing
-   CSS-animates while Flip drives the morph (keeps the open/close clean). */
-.mxd-menu__contain .hamburger__base {
+/* while flipping into the open menu, the base is the big card. On CLOSE it is
+   reparented back into the button while still card-sized — keep the light
+   card look for the whole morph (.is-flipping, set by AppInitializer) so the
+   base retracts as one seamless motion instead of snapping to a dark chip and
+   shrinking after the menu (the "second menu closing"). It settles to the
+   chip only once the morph completes. */
+.mxd-menu__contain .hamburger__base,
+.mxd-nav__hamburger.is-flipping .hamburger__base {
   border-radius: var(--_radius-l) !important;
   border: none;
   -webkit-backdrop-filter: none;
   backdrop-filter: none;
   box-shadow: none;
   background-color: var(--base-opp-tint);
-  transition: none;
 }
+/* no CSS animation while Flip drives the morph inside the menu */
+.mxd-menu__contain .hamburger__base { transition: none; }
 
 /* to-top button: same glass squircle (the template's mix-blend-mode:
    difference rendered as a black blob on mobile and was invisible-ish on

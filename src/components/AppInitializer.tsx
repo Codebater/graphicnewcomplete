@@ -424,7 +424,19 @@ export default function AppInitializer() {
           } else {
             flipItemEl.appendTo(hamburgerEl);
           }
-          Flip.from(state, { ease: "power4.inOut", duration: 0.8 });
+          // Mark the hamburger as flipping for the whole morph. On CLOSE the
+          // base is reparented back into the button, where CSS would snap it
+          // to the small dark-glass chip look while it is still card-sized —
+          // that dark card shrinking after the menu content is gone read as
+          // "a second menu closing". The .is-flipping class keeps the base in
+          // its light card look until the morph completes (then it settles to
+          // the chip), so the close is one seamless retract.
+          hamburgerEl.addClass("is-flipping");
+          Flip.from(state, {
+            ease: "power4.inOut",
+            duration: 0.8,
+            onComplete: () => hamburgerEl.removeClass("is-flipping"),
+          });
         }
 
         const tl = gsap.timeline({ paused: true });
