@@ -150,7 +150,7 @@ export default function Contact() {
                 {[
                   { name: 'Dribbble', url: 'https://dribbble.com/' },
                   { name: 'Behance', url: 'https://www.behance.net/' },
-                  { name: 'Instagram', url: 'https://www.instagram.com/' },
+                  { name: 'Instagram', url: 'https://www.instagram.com/n_drjj' },
                   { name: 'Github', url: 'https://github.com/' },
                   { name: 'Codepen', url: 'https://codepen.io/' },
                   { name: 'Figma community', url: 'https://www.figma.com/community' }
