@@ -214,7 +214,7 @@ export default async function Home() {
                           </div>
                           <div className="mxd-services-stack__works">
                             <Link className="mxd-services-stack__work" href="/portfolio">
-                              <Image className="mxd-services" src="/porthomeimages/digitalproduct4.webp" alt="Work Preview" width={1200} height={960} priority quality={95} />
+                              <Image className="mxd-services" src="/porthomeimages/digitalproduct4.webp" alt="Work Preview" width={1200} height={960} quality={95} />
                               <div className="mxd-services-stack__tags tags-absolute">
                                
                               </div>

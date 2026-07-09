@@ -929,3 +929,17 @@ html body {
     min-width: 0 !important;
   }
 }
+
+/* Stacking cards: the scrub timeline translates each card every frame — give
+   them their own compositor layers so the big work previews inside aren't
+   repainted per frame (desktop already got layers from the ≥1024px
+   drop-shadow outline; phones had none, which is why the section stuttered). */
+.stack-item {
+  will-change: transform;
+}
+
+/* The promo band used to receive its final border-radius from the (removed)
+   zoom-out scroll morph — give it that end-state statically. */
+.mxd-promo__inner {
+  border-radius: var(--_radius-l);
+}
