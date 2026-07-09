@@ -1154,6 +1154,23 @@ export default function AppInitializer() {
         }
       }
 
+      // Velocity-reactive marquees run their onUpdate on EVERY scroll frame.
+      // With start:0/end:max that fired across the WHOLE page even when the
+      // marquee was far off-screen — invalidate().restart() on a tween every
+      // frame, for every marquee, during all scrolling. That was the site-wide
+      // slowdown. Gate each reactor on an IntersectionObserver flag so it only
+      // computes while its marquee is actually on screen (rootMargin arms it a
+      // touch early so there's no visible pop entering the section).
+      const marqueeOnScreen = (el: Element) => {
+        let visible = true;
+        const io = new IntersectionObserver(
+          ([e]) => { visible = e.isIntersecting; },
+          { rootMargin: '200px 0px' }
+        );
+        io.observe(el);
+        return () => visible;
+      };
+
       // Marquee Animations
       const initMarquees = () => {
         const items = [...document.querySelectorAll(".marquee--gsap")];
@@ -1187,10 +1204,12 @@ export default function AppInitializer() {
               paused: true 
             });
             const timeScaleClamp = gsap.utils.clamp(1, 6);
+            const isVisible = marqueeOnScreen(itemBlock);
             ScrollTrigger.create({
               start: 0,
               end: "max",
               onUpdate: (self: any) => {
+                if (!isVisible()) return;
                 master.timeScale(timeScaleClamp(Math.abs(self.getVelocity() / 200)));
                 tween.invalidate().restart();
               }
@@ -1237,10 +1256,12 @@ export default function AppInitializer() {
                 paused: true 
               });
               const timeScaleClamp = gsap.utils.clamp(1, 6);
+              const isVisible = marqueeOnScreen(itemBlock);
               ScrollTrigger.create({
                 start: 0,
                 end: "max",
                 onUpdate: (self: any) => {
+                  if (!isVisible()) return;
                   master.timeScale(timeScaleClamp(Math.abs(self.getVelocity() / 200)));
                   tween.invalidate().restart();
                 }
@@ -1288,10 +1309,12 @@ export default function AppInitializer() {
                 paused: true 
               });
               const timeScaleClamp = gsap.utils.clamp(1, 6);
+              const isVisible = marqueeOnScreen(itemBlock);
               ScrollTrigger.create({
                 start: 0,
                 end: "max",
                 onUpdate: (self: any) => {
+                  if (!isVisible()) return;
                   master.timeScale(timeScaleClamp(Math.abs(self.getVelocity() / 200)));
                   tween.invalidate().restart();
                 }
