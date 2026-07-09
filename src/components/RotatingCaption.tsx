@@ -3,8 +3,6 @@
 import { useEffect, useState } from 'react';
 
 // Sales-pitch one-liners shown in the open menu — rotates every few seconds.
-// All lines are absolutely stacked inside a fixed-height box, so swapping
-// them never reflows the menu (different line lengths used to shift it).
 const LINES = [
   '🚀 Warning: we cause sales spikes',
   '📈 We turn clicks into paying customers',
@@ -12,26 +10,36 @@ const LINES = [
 ];
 
 const INTERVAL_MS = 3500;
+const FADE_MS = 350;
 
 export default function RotatingCaption() {
   const [index, setIndex] = useState(0);
+  const [visible, setVisible] = useState(true);
 
   useEffect(() => {
-    const id = setInterval(() => setIndex((prev) => (prev + 1) % LINES.length), INTERVAL_MS);
+    const id = setInterval(() => {
+      // fade out, swap text, fade back in
+      setVisible(false);
+      setTimeout(() => {
+        setIndex((prev) => (prev + 1) % LINES.length);
+        setVisible(true);
+      }, FADE_MS);
+    }, INTERVAL_MS);
     return () => clearInterval(id);
   }, []);
 
   return (
-    <span className="rotating-caption">
-      {LINES.map((line, i) => (
-        <span
-          key={line}
-          className={`rotating-caption__line${i === index ? ' is-on' : ''}`}
-          aria-hidden={i === index ? undefined : 'true'}
-        >
-          {line}
-        </span>
-      ))}
+    <span
+      style={{
+        display: 'inline-block',
+        // Inherit the menu caption's themed color so the text stays readable
+        // in both light and dark themes (a base span style was forcing white).
+        color: 'inherit',
+        opacity: visible ? 1 : 0,
+        transition: `opacity ${FADE_MS}ms ease`,
+      }}
+    >
+      {LINES[index]}
     </span>
   );
 }

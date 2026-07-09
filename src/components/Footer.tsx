@@ -37,11 +37,6 @@ const Footer = () => {
                     <span className="btn-caption">Contact</span>
                   </Link>
                 </li>
-                <li className="footer-nav__item anim-uni-in-up">
-                  <Link href="/privacy" className="footer-nav__link btn-anim">
-                    <span className="btn-caption">Privacy</span>
-                  </Link>
-                </li>
               </ul>
             </div>
             {/* links */}

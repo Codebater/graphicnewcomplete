@@ -103,7 +103,7 @@ const Statistics = () => {
                       <p className="mxd-counter__descr t-140 t-bright">Successfully<br/>completed projects</p>
                     </div>
                     <div className="mxd-stats-cards__btngroup">
-                      <Link className="btn btn-anim btn-default btn-outline slide-right-up" href="/portfolio">
+                      <Link className="btn btn-anim btn-default btn-outline slide-right-up" href="/works-masonry">
                         <span className="btn-caption">Works</span>
                         <i className="ph-bold ph-arrow-up-right"></i>
                       </Link>

@@ -4,12 +4,9 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import Statistics from '@/components/Statistics';
 import { supabase } from '@/lib/supabase';
-import type { ProjectListItem } from '@/components/ProjectsList';
+import { ProjectListItem } from '@/components/ProjectsList';
 import SelectedWork from '@/components/SelectedWork';
 import HeroMarqueeLens from '@/components/HeroMarqueeLens';
-import PixelRunnerLazy from '@/components/PixelRunnerLazy';
-import PixelText from '@/components/PixelText';
-import PromoWork from '@/components/PromoWork';
 import Loader from '@/components/Loader';
 
 // Re-render the home page at most once a minute so newly published projects
@@ -20,26 +17,19 @@ async function getProjects(): Promise<ProjectListItem[]> {
   try {
     const { data, error } = await supabase
       .from('projects')
-      .select('id, title, services, client, description, featured_image, featured_video')
+      .select('id, title, services, client, featured_image, featured_video')
       .eq('is_published', true)
       .order('sort_order', { ascending: true })
       .order('created_at', { ascending: false })
       .limit(12);
     if (error) throw error;
-    return (data || []).map((p) => {
-      const raw = (p.description || '').replace(/\s+/g, ' ').trim();
-      // first ~2 sentences, capped for the showcase player
-      const desc = raw ? raw.slice(0, 150).replace(/[,;:\s]+\S*$/, '') + (raw.length > 150 ? '…' : '') : '';
-      return {
-        id: p.id,
-        title: p.title,
-        subtitle: p.services || p.client || '',
-        category: (p.services || p.client || 'Project') as string,
-        desc,
-        image: p.featured_image || undefined,
-        video: p.featured_video || undefined,
-      };
-    });
+    return (data || []).map((p) => ({
+      id: p.id,
+      title: p.title,
+      subtitle: p.services || p.client || '',
+      image: p.featured_image || undefined,
+      video: p.featured_video || undefined,
+    }));
   } catch (e) {
     console.error('Home projects fetch failed:', e);
     return [];
@@ -86,7 +76,7 @@ export default async function Home() {
               <div className="mxd-hero-02-static__center">
                 <div className="mxd-hero-02-marquee">
                   <div className="mxd-hero-02-marquee__image loading__item">
-                    <Image className="mxd-move" src="/porthomeimages/smiley.png" alt="Hero Image" width={400} height={400} priority />
+                    <Image className="mxd-move" src="/porthomeimages/smiley.png" alt="Hero Image" width={400} height={400} />
                   </div>
                   <div className="mxd-hero-02-marquee__line loading__item">
                     <div className="marquee marquee-left--gsap">
@@ -206,21 +196,21 @@ export default async function Home() {
                         <div className="mxd-services-stack__container">
                           <div className="mxd-services-stack__title showcase-title">
                             <h3 className="opposite">Digital products</h3>
-                            <span className="mxd-services-stack__number t-opp-muted" aria-label="/01"><PixelText text="01" cursor={false} /></span>
+                            <span className="mxd-services-stack__number t-opp-muted">/01</span>
                           </div>
                           <div className="mxd-services-stack__info showcase-info">
                             <p className="t-opposite">We create visually compelling designs that enhance user experience. 
                               We make sure your brand&apos;s visuals resonate with your audience.</p>
                           </div>
                           <div className="mxd-services-stack__works">
-                            <Link className="mxd-services-stack__work" href="/portfolio">
-                              <Image className="mxd-services" src="/porthomeimages/digitalproduct4.webp" alt="Work Preview" width={1200} height={960} quality={95} />
+                            <Link className="mxd-services-stack__work" href="/project-details">
+                              <Image className="mxd-services" src="/porthomeimages/digitalproduct4.webp" alt="Work Preview" width={1200} height={960} priority quality={95} />
                               <div className="mxd-services-stack__tags tags-absolute">
                                
                               </div>
                               
                             </Link>
-                            <Link className="mxd-services-stack__work" href="/portfolio">
+                            <Link className="mxd-services-stack__work" href="/project-details">
                               <Image className="mxd-services" src="/porthomeimages/digitalproduct3.webp" alt="Work Preview" width={1200} height={960} quality={95} />
                               <div className="mxd-services-stack__tags tags-absolute">
                              
@@ -237,21 +227,21 @@ export default async function Home() {
                       <div className="mxd-services-stack__inner showcase-inner bg-accent">
                         <div className="mxd-services-stack__title showcase-title">
                           <h3 className="opposite">Corporate websites</h3>
-                          <span className="mxd-services-stack__number t-opp-brigth" aria-label="/02"><PixelText text="02" cursor={false} /></span>
+                          <span className="mxd-services-stack__number t-opp-brigth">/02</span>
                         </div>
                         <div className="mxd-services-stack__info showcase-info">
                           <p className="t-opposite">We create visually compelling designs that enhance user experience. 
                             We make sure your brand&apos;s visuals resonate with your audience.</p>
                         </div>
                         <div className="mxd-services-stack__works">
-                          <Link className="mxd-services-stack__work" href="/portfolio">
+                          <Link className="mxd-services-stack__work" href="/project-details">
                             <Image className="mxd-services" src="/porthomeimages/corpweb1.webp" alt="Work Preview" width={1200} height={960} quality={95} />
                             <div className="mxd-services-stack__tags tags-absolute">
                               
                             </div>
                         
                           </Link>
-                          <Link className="mxd-services-stack__work" href="/portfolio">
+                          <Link className="mxd-services-stack__work" href="/project-details">
                             <Image className="mxd-services" src="/porthomeimages/corpweb2.webp" alt="Work Preview" width={1200} height={960} quality={95} />
                             <div className="mxd-services-stack__tags tags-absolute">
                              
@@ -267,21 +257,21 @@ export default async function Home() {
                       <div className="mxd-services-stack__inner radius-dark showcase-inner bg-base-tint">
                         <div className="mxd-services-stack__title showcase-title">
                           <h3>eCommerce</h3>
-                          <span className="mxd-services-stack__number t-muted-extra" aria-label="/03"><PixelText text="03" cursor={false} /></span>
+                          <span className="mxd-services-stack__number t-muted-extra">/03</span>
                         </div>
                         <div className="mxd-services-stack__info showcase-info">
                           <p>We create visually compelling designs that enhance user experience. We make sure 
                             your brand&apos;s visuals resonate with your audience.</p>
                         </div>
                         <div className="mxd-services-stack__works">
-                          <Link className="mxd-services-stack__work" href="/portfolio">
+                          <Link className="mxd-services-stack__work" href="/project-details">
                             <Image className="mxd-services" src="/porthomeimages/ecom1.png" alt="Work Preview" width={1200} height={960} quality={95} />
                             <div className="mxd-services-stack__tags tags-absolute">
                              
                             </div>
                           
                           </Link>
-                          <Link className="mxd-services-stack__work" href="/portfolio">
+                          <Link className="mxd-services-stack__work" href="/project-details">
                             <Image className="mxd-services" src="/porthomeimages/ecom2.png" alt="Work Preview" width={1200} height={960} quality={95} />
                             <div className="mxd-services-stack__tags tags-absolute">
                              
@@ -297,15 +287,19 @@ export default async function Home() {
                       <div className="mxd-services-stack__inner showcase-inner bg-base-opp">
                         <div className="mxd-services-stack__title showcase-title">
                           <h3 className="opposite">Brand identity</h3>
-                          <span className="mxd-services-stack__number t-opp-muted" aria-label="/04"><PixelText text="04" cursor={false} /></span>
+                          <span className="mxd-services-stack__number t-opp-muted">/04</span>
                         </div>
                         <div className="mxd-services-stack__info showcase-info">
                           <p className="t-opposite">We create visually compelling designs that enhance user experience. 
                             We make sure your brand&apos;s visuals resonate with your audience.</p>
                         </div>
-                        <div className="mxd-services-stack__works game-works">
-                          <div className="mxd-services-stack__work game-work">
-                            <PixelRunnerLazy />
+                        <div className="mxd-services-stack__works">
+                          <div className="mxd-services-stack__work">
+                            <Image className="mxd-services" src="/porthomeimages/brand1.png" alt="Work Preview" width={1200} height={960} quality={95} />
+                            <div className="mxd-services-stack__tags tags-absolute"></div>
+                          </div>
+                          <div className="mxd-services-stack__work">
+                            <Image className="mxd-services" src="/porthomeimages/brand2.png" alt="Work Preview" width={1200} height={960} quality={95} />
                             <div className="mxd-services-stack__tags tags-absolute"></div>
                           </div>
                         </div>
@@ -340,7 +334,7 @@ export default async function Home() {
                     </div>
                     <div className="col-12 col-xl-3 mxd-grid-item no-margin">
                       <div className="mxd-section-title__hrcontrols anim-uni-in-up">
-                        <Link className="btn btn-anim btn-default btn-outline slide-right-up" href="/portfolio">
+                        <Link className="btn btn-anim btn-default btn-outline slide-right-up" href="/works-masonry">
                           <span className="btn-caption">Works</span>
                           <i className="ph-bold ph-arrow-up-right"></i>
                         </Link>
@@ -520,12 +514,12 @@ export default async function Home() {
               <div className="mxd-promo">
                 <div className="mxd-promo__inner anim-zoom-out-container">
                   <div className="mxd-promo__content">
-                    {/* tile-font LET'S WORK wordmark instead of the text CTA
-                        (full width — the template caps __title at 70% which
-                        would left-anchor the centred wordmark) */}
-                    <div className="mxd-promo__title anim-uni-in-up" style={{ width: '100%' }}>
-                      <PromoWork />
-                    </div>
+                    <p className="mxd-promo__title anim-uni-in-up">
+                      <Link className="promo-cta" href="/contact">
+                        <i className="promo-cta__arrow ph-bold ph-arrow-right" aria-hidden="true"></i>
+                        <span className="mxd-promo__caption reveal-type promo-cta__text">Let&apos;s talk about your project!</span>
+                      </Link>
+                    </p>
                     {/* <div className="mxd-promo__controls anim-uni-in-up">
                       <Link className="btn btn-anim btn-default btn-large btn-additional slide-right-up" href="/contact">
                         <span className="btn-caption">Contact Us</span>

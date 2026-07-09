@@ -100,7 +100,7 @@ export default function AboutUs() {
                   <div className="row g-0">
                     <div className="col-12 col-xl-8 mxd-grid-item no-margin">
                       <div className="mxd-section-title__title">
-                        <h2 className="reveal-type">Building with passionate talents</h2>
+                        <h2 className="reveal-type">The best freelancers</h2>
                       </div>
                     </div>
                     <div className="col-12 col-xl-4 mxd-grid-item no-margin">
@@ -235,7 +235,7 @@ export default function AboutUs() {
                     <div className="col-12 col-xl-3 mxd-grid-item no-margin"></div>
                     <div className="col-12 col-xl-3 mxd-grid-item no-margin">
                       <div className="mxd-section-title__hrcontrols pre-title anim-uni-in-up">
-                        <Link className="btn btn-anim btn-default btn-outline slide-right-up" href="/portfolio">
+                        <Link className="btn btn-anim btn-default btn-outline slide-right-up" href="/blog">
                           <span className="btn-caption">View More</span>
                           <i className="ph-bold ph-arrow-up-right"></i>
                         </Link>

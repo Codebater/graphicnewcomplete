@@ -218,51 +218,41 @@ export default function AppInitializer() {
         });
       }
 
-      // Header Scroll Behavior — cached element + state guard so the class
-      // only flips when crossing the threshold (the old jQuery handler
-      // re-queried the DOM and rewrote the class on EVERY scroll frame).
-      const headerEl = document.querySelector(".mxd-header");
-      let headerHidden: boolean | null = null;
+      // Header Scroll Behavior
       const handleHeaderScroll = () => {
-        const hidden = window.scrollY > 10;
-        if (hidden !== headerHidden && headerEl) {
-          headerHidden = hidden;
-          headerEl.classList.toggle("is-hidden", hidden);
+        if ($(window).scrollTop() > 10) {
+          $(".mxd-header").addClass("is-hidden");
+        } else {
+          $(".mxd-header").removeClass("is-hidden");
         }
       };
-      const prevHeaderScroll = (window as any).__headerScrollHandler;
-      if (prevHeaderScroll) window.removeEventListener("scroll", prevHeaderScroll);
-      (window as any).__headerScrollHandler = handleHeaderScroll;
-      window.addEventListener("scroll", handleHeaderScroll, { passive: true });
-      handleHeaderScroll();
+      $(window).on("scroll", handleHeaderScroll);
 
-      // Hero #02 Scroll Out Animation — ONE timeline for all elements (the
-      // template built an identical timeline + ScrollTrigger per element;
-      // same trigger, same values → same rendering with a third of the work)
-      const hero02FadeOutEl = document.querySelectorAll(".hero-02-static-anim-el");
-      if (hero02FadeOutEl.length) {
+      // Hero #02 Scroll Out Animation
+      const hero02FadeOutEl = document.querySelectorAll(".hero-02-static-anim-el"); 
+      hero02FadeOutEl.forEach((element) => {
         const hero02fadeOutTl = gsap.timeline({
           scrollTrigger: {
             trigger: ".hero-02-static__tl-trigger",
             start: "top 14%",
             end: "top 0.2%",
             scrub: {
-              scrub: true,
+              scrub: true, 
               ease: "sine",
             },
           },
         });
-        hero02fadeOutTl.fromTo(hero02FadeOutEl, {
+        hero02fadeOutTl.fromTo(element, {
           transform: "translate3d(0, 0, 0)",
           scaleY: 1,
           opacity: 1
-        },
+        }, 
         {
           transform: "translate3d(0, -5rem, 0)",
           scaleY: 1.3,
           opacity: 0
         });
-      }
+      });
 
       // Hero #02 pinned screen
       const fadeOutEl = document.querySelectorAll(".hero-02-fade-out-scroll"); 
@@ -447,12 +437,10 @@ export default function AppInitializer() {
             flip(true);
           }
         });
-        // smiley → X: the mouth fades, the eyes stretch and cross
-        const mouthEl = $(element).find(".hamburger__mouth");
-        tl.to(mouthEl, { opacity: 0, scale: 0.4, duration: 0.16 }, "<")
-        tl.to(navLineEl, { height: "1.7rem", y: 5, duration: 0.16 }, "<")
-        tl.to(navLineEl.eq(0), { x: 5.7, rotate: 45, duration: 0.16 }, 0.2)
-        tl.to(navLineEl.eq(1), { x: -5.7, rotate: -45, duration: 0.16 }, 0.2)
+        tl.to(navLineEl.eq(0), { y: 5, duration: 0.16 }, "<")
+        tl.to(navLineEl.eq(1), { y: -5, duration: 0.16 }, "<")
+        tl.to(navLineEl.eq(0), { rotate: 45, duration: 0.16 }, 0.2)
+        tl.to(navLineEl.eq(1), { rotate: -45, duration: 0.16 }, 0.2)
         tl.add("fade-in-up")
         .from(menuItem, {
           opacity: 0,
@@ -1022,8 +1010,7 @@ export default function AppInitializer() {
         ScrollTrigger.addEventListener("refreshInit", () => gsap.set(".animate-card-5", {y: 0, opacity: 1}));
       }
 
-      // Zoom In / Zoom Out Container Animations (the promo band's
-      // pill-to-rect scroll morph — user explicitly wants this kept)
+      // Zoom In / Zoom Out Container Animations
       const docStyle = getComputedStyle(document.documentElement);
       const zoomInContainer = document.querySelectorAll(".anim-zoom-in-container");
       const zoomOutContainer = document.querySelectorAll(".anim-zoom-out-container");
@@ -1043,7 +1030,7 @@ export default function AppInitializer() {
         zoomInBlockTl.fromTo(element, {
           borderRadius: '200px',
           transform: "scale3d(0.94, 1, 1)"
-        },
+        }, 
         {
           borderRadius: docStyle.getPropertyValue("--_radius-l"),
           transform: "scale3d(1, 1, 1)"
@@ -1065,19 +1052,17 @@ export default function AppInitializer() {
         zoomOutBlockTl.fromTo(element, {
           borderRadius: '200px',
           transform: "scale3d(1.14, 1, 1)"
-        },
+        }, 
         {
           borderRadius: docStyle.getPropertyValue("--_radius-l"),
           transform: "scale3d(1, 1, 1)",
         });
       });
 
-      // Swiper Sliders — only build an instance when the slider actually
-      // exists on the page. (The template checked for nonexistent TAG names
-      // like <testimonials-slider>, which is always null — so all three
-      // Swipers + their resize/mutation observers spun up on every page.)
+      // Swiper Sliders
       if (Swiper) {
-        if (document.querySelector('.swiper-testimonials')) {
+        const testimonialsSlider = document.querySelector("testimonials-slider");
+        if (!testimonialsSlider) {
           new Swiper('.swiper-testimonials', {
             slidesPerView: 'auto',
             grabCursor: true,
@@ -1099,7 +1084,8 @@ export default function AppInitializer() {
           });
         }
 
-        if (document.querySelector('.swiper-testimonials-2')) {
+        const testimonialsSlider2 = document.querySelector("testimonials-slider-2");
+        if (!testimonialsSlider2) {
           new Swiper('.swiper-testimonials-2', {
             slidesPerView: 1,
             grabCursor: true,
@@ -1122,7 +1108,8 @@ export default function AppInitializer() {
           });
         }
 
-        if (document.querySelector('.mxd-demo-swiper')) {
+        const innerDemoSlider = document.querySelector("mxd-demo-swiper");
+        if (!innerDemoSlider) {
           new Swiper('.mxd-demo-swiper', {
             breakpoints: {
               640: {
@@ -1377,21 +1364,17 @@ export default function AppInitializer() {
         });
       }
 
-      // Parallax Universal — skip entirely when nothing carries data-speed
-      // (otherwise a whole-page scrubbed trigger updates on every frame for
-      // zero targets)
-      if (document.querySelector("[data-speed]")) {
-        gsap.to("[data-speed]", {
-          y: (i: number, el: any) => (1 - parseFloat(el.getAttribute("data-speed"))) * ScrollTrigger.maxScroll(window) ,
-          ease: "none",
-          scrollTrigger: {
-            start: 0,
-            end: "max",
-            invalidateOnRefresh: true,
-            scrub: 0
-          }
-        });
-      }
+      // Parallax Universal
+      gsap.to("[data-speed]", {
+        y: (i: number, el: any) => (1 - parseFloat(el.getAttribute("data-speed"))) * ScrollTrigger.maxScroll(window) ,
+        ease: "none",
+        scrollTrigger: {
+          start: 0,
+          end: "max",
+          invalidateOnRefresh: true,
+          scrub: 0
+        }
+      });
 
       // Emoji Logo Rotation
       // Absolute paths (leading slash) so the rotating logo resolves from the
@@ -1472,11 +1455,6 @@ export default function AppInitializer() {
       }
       ScrollTrigger.killAll();
       
-      // Remove the native header-scroll listener
-      if ((window as any).__headerScrollHandler) {
-        window.removeEventListener("scroll", (window as any).__headerScrollHandler);
-        (window as any).__headerScrollHandler = null;
-      }
       // Remove jQuery event handlers
       if (typeof (window as any).$ !== 'undefined') {
         const $ = (window as any).$;

@@ -1,8 +1,6 @@
 import Link from 'next/link';
 import RotatingCaption from '@/components/RotatingCaption';
 import PixelGLogo from '@/components/PixelGLogo';
-import PixelSky from '@/components/PixelSky';
-import PixelText from '@/components/PixelText';
 
 export default function Header() {
   return (
@@ -11,18 +9,13 @@ export default function Header() {
       <nav className="mxd-nav__wrap" data-lenis-prevent="">
         {/* Hamburger */}
         <div className="mxd-nav__contain loading__fade">
-          <button
+          <button 
             className="mxd-nav__hamburger"
             aria-label="Toggle menu"
           >
-            {/* the base morphs into the menu card; the pixel sky inside it only
-                shows once it's the card (hidden while it's the small chip) */}
-            <div className="hamburger__base"><PixelSky /></div>
-            {/* kawaii smiley — the two "lines" are the eyes (they stretch and
-                cross into the X when the menu opens), plus a smile mouth */}
+            <div className="hamburger__base"></div>
             <div className="hamburger__line"></div>
             <div className="hamburger__line"></div>
-            <div className="hamburger__mouth"></div>
           </button>
         </div>
 
@@ -36,31 +29,30 @@ export default function Header() {
                 <p className="mxd-menu__caption menu-fade-in"><RotatingCaption /></p>
                 <div className="main-menu">
                   <nav className="main-menu__content">
-                    {/* links set in the brand tile lettering (SELECTED WORK style) */}
                     <ul id="main-menu" className="main-menu__accordion">
                       <li className="main-menu__item">
-                        <Link className="main-menu__link btn" href="/" aria-label="Home">
-                          <PixelText text="HOME" cursor={false} font="5x7" />
+                        <Link className="main-menu__link btn btn-anim" href="/">
+                          <span className="btn-caption">Home</span>
                         </Link>
                       </li>
                       <li className="main-menu__item">
-                        <Link className="main-menu__link btn" href="/about-us" aria-label="About Us">
-                          <PixelText text="ABOUT US" cursor={false} font="5x7" />
+                        <Link className="main-menu__link btn btn-anim" href="/about-us">
+                          <span className="btn-caption">About Us</span>
                         </Link>
                       </li>
                       <li className="main-menu__item">
-                        <Link className="main-menu__link btn" href="/pricing" aria-label="Pricing">
-                          <PixelText text="PRICING" cursor={false} font="5x7" />
+                        <Link className="main-menu__link btn btn-anim" href="/pricing">
+                          <span className="btn-caption">Pricing</span>
                         </Link>
                       </li>
                       <li className="main-menu__item">
-                        <Link className="main-menu__link btn" href="/portfolio" aria-label="Portfolio">
-                          <PixelText text="PORTFOLIO" cursor={false} font="5x7" />
+                        <Link className="main-menu__link btn btn-anim" href="/portfolio">
+                          <span className="btn-caption">Portfolio</span>
                         </Link>
                       </li>
                       <li className="main-menu__item">
-                        <Link className="main-menu__link btn" href="/contact" aria-label="Contact">
-                          <PixelText text="CONTACT" cursor={false} font="5x7" />
+                        <Link className="main-menu__link btn btn-anim" href="/contact">
+                          <span className="btn-caption">Contact</span>
                         </Link>
                       </li>
                     </ul>
@@ -108,18 +100,20 @@ export default function Header() {
         
         {/* header controls */}
         <div className="mxd-header__controls loading__fade">
-          <button
-            id="color-switcher"
-            className="mxd-color-switcher"
-            type="button"
-            role="switch"
-            aria-label="light/dark mode"
+          <button 
+            id="color-switcher" 
+            className="mxd-color-switcher" 
+            type="button" 
+            role="switch" 
+            aria-label="light/dark mode" 
             aria-checked="true"
           >
             <i className="ph-bold ph-moon-stars"></i>
           </button>
-          {/* "Let's Work" CTA removed from the header — the hamburger menu +
-              Contact page cover it, and it clutters the bar. */}
+          <Link className="btn btn-anim btn-default btn-mobile-icon btn-outline slide-right-up" href="/contact">
+            <span className="btn-caption">Let&apos;s Work</span>
+            <i className="ph-bold ph-arrow-up-right"></i>
+          </Link>
         </div>
       </header>
     </>

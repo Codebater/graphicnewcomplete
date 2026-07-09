@@ -15,20 +15,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://www.graphiq.art"),
-  title: "GRAPHIQ STUDIO LLC — Creative Web Design Agency",
-  description:
-    "GRAPHIQ STUDIO LLC — creative web design agency. Premium websites, brands and digital products. Powering next gen projects, no creative limits.",
-  applicationName: "GRAPHIQ STUDIO LLC",
-  openGraph: {
-    siteName: "GRAPHIQ STUDIO LLC",
-    type: "website",
-    url: "https://www.graphiq.art",
-    title: "GRAPHIQ STUDIO LLC — Creative Web Design Agency",
-    description:
-      "Premium websites, brands and digital products. Powering next gen projects, no creative limits.",
-    images: ["/favicon.png"],
-  },
+  title: "GRAPHIQ STUDIO LLC creative web design agency",
+  description: "GRAPHIQ STUDIO LLC creative web design agency",
 };
 
 export default function RootLayout({
@@ -39,9 +27,6 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        {/* project media (posters, covers, videos) live on Vercel Blob —
-            preconnect so the first fetch mid-scroll skips DNS+TLS setup */}
-        <link rel="preconnect" href="https://zu5qvxcujdfyikfz.public.blob.vercel-storage.com" crossOrigin="anonymous" />
         <link rel="icon" href="/favicon.ico" type="image/x-icon" />
         <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
         <link rel="icon" href="/favicon.png" type="image/png" />
