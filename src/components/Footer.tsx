@@ -110,7 +110,7 @@ const Footer = () => {
                     <a href="https://www.instagram.com/n_drjj" className="footer-socials__link" target="_blank" rel="noopener noreferrer">Instagram</a>
                   </li>
                   <li className="footer-socials__item anim-uni-in-up">
-                    <a href="https://github.com/" className="footer-socials__link" target="_blank" rel="noopener noreferrer">Github</a>
+                    <a href="https://github.com/Codebater" className="footer-socials__link" target="_blank" rel="noopener noreferrer">Github</a>
                   </li>
                   <li className="footer-socials__item anim-uni-in-up">
                     <a href="https://www.linkedin.com/in/andrej-lisal-67620341a/" className="footer-socials__link" target="_blank" rel="noopener noreferrer">LinkedIn</a>
