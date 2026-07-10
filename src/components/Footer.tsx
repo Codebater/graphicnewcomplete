@@ -107,22 +107,13 @@ const Footer = () => {
               <div className="footer-blocks__socials">
                 <ul className="footer-socials">
                   <li className="footer-socials__item anim-uni-in-up">
-                    <a href="https://dribbble.com/" className="footer-socials__link" target="_blank" rel="noopener noreferrer">Dribbble</a>
-                  </li>
-                  <li className="footer-socials__item anim-uni-in-up">
-                    <a href="https://www.behance.net/" className="footer-socials__link" target="_blank" rel="noopener noreferrer">Behance</a>
-                  </li>
-                  <li className="footer-socials__item anim-uni-in-up">
                     <a href="https://www.instagram.com/n_drjj" className="footer-socials__link" target="_blank" rel="noopener noreferrer">Instagram</a>
                   </li>
                   <li className="footer-socials__item anim-uni-in-up">
                     <a href="https://github.com/" className="footer-socials__link" target="_blank" rel="noopener noreferrer">Github</a>
                   </li>
                   <li className="footer-socials__item anim-uni-in-up">
-                    <a href="https://codepen.io/" className="footer-socials__link" target="_blank" rel="noopener noreferrer">Codepen</a>
-                  </li>
-                  <li className="footer-socials__item anim-uni-in-up">
-                    <a href="https://www.figma.com/community" className="footer-socials__link" target="_blank" rel="noopener noreferrer">Figma Community</a>
+                    <a href="https://www.linkedin.com/in/andrej-lisal-67620341a/" className="footer-socials__link" target="_blank" rel="noopener noreferrer">LinkedIn</a>
                   </li>
                 </ul>
               </div>
