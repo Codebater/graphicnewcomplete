@@ -205,14 +205,14 @@ export default async function Home() {
                           </div>
                           <div className="mxd-services-stack__works">
                             <Link className="mxd-services-stack__work" href="/project-details">
-                              <Image className="mxd-services" src="/porthomeimages/digitalproduct4.webp" alt="Work Preview" width={1200} height={960} priority quality={95} />
+                              <Image className="mxd-services" src="/porthomeimages/digitalproduct4.webp" alt="Work Preview" width={1200} height={960} />
                               <div className="mxd-services-stack__tags tags-absolute">
                                
                               </div>
                               
                             </Link>
                             <Link className="mxd-services-stack__work" href="/project-details">
-                              <Image className="mxd-services" src="/porthomeimages/digitalproduct3.webp" alt="Work Preview" width={1200} height={960} quality={95} />
+                              <Image className="mxd-services" src="/porthomeimages/digitalproduct3.webp" alt="Work Preview" width={1200} height={960} />
                               <div className="mxd-services-stack__tags tags-absolute">
                              
                               </div>
@@ -236,14 +236,14 @@ export default async function Home() {
                         </div>
                         <div className="mxd-services-stack__works">
                           <Link className="mxd-services-stack__work" href="/project-details">
-                            <Image className="mxd-services" src="/porthomeimages/corpweb1.webp" alt="Work Preview" width={1200} height={960} quality={95} />
+                            <Image className="mxd-services" src="/porthomeimages/corpweb1.webp" alt="Work Preview" width={1200} height={960} />
                             <div className="mxd-services-stack__tags tags-absolute">
                               
                             </div>
                         
                           </Link>
                           <Link className="mxd-services-stack__work" href="/project-details">
-                            <Image className="mxd-services" src="/porthomeimages/corpweb2.webp" alt="Work Preview" width={1200} height={960} quality={95} />
+                            <Image className="mxd-services" src="/porthomeimages/corpweb2.webp" alt="Work Preview" width={1200} height={960} />
                             <div className="mxd-services-stack__tags tags-absolute">
                              
                             </div>
@@ -266,14 +266,14 @@ export default async function Home() {
                         </div>
                         <div className="mxd-services-stack__works">
                           <Link className="mxd-services-stack__work" href="/project-details">
-                            <Image className="mxd-services" src="/porthomeimages/ecom1.png" alt="Work Preview" width={1200} height={960} quality={95} />
+                            <Image className="mxd-services" src="/porthomeimages/ecom1.webp" alt="Work Preview" width={1200} height={960} />
                             <div className="mxd-services-stack__tags tags-absolute">
                              
                             </div>
                           
                           </Link>
                           <Link className="mxd-services-stack__work" href="/project-details">
-                            <Image className="mxd-services" src="/porthomeimages/ecom2.png" alt="Work Preview" width={1200} height={960} quality={95} />
+                            <Image className="mxd-services" src="/porthomeimages/ecom2.webp" alt="Work Preview" width={1200} height={960} />
                             <div className="mxd-services-stack__tags tags-absolute">
                              
                             </div>
@@ -296,11 +296,11 @@ export default async function Home() {
                         </div>
                         <div className="mxd-services-stack__works">
                           <div className="mxd-services-stack__work">
-                            <Image className="mxd-services" src="/porthomeimages/brand1.png" alt="Work Preview" width={1200} height={960} quality={95} />
+                            <Image className="mxd-services" src="/porthomeimages/brand1.webp" alt="Work Preview" width={1200} height={960} />
                             <div className="mxd-services-stack__tags tags-absolute"></div>
                           </div>
                           <div className="mxd-services-stack__work">
-                            <Image className="mxd-services" src="/porthomeimages/brand2.png" alt="Work Preview" width={1200} height={960} quality={95} />
+                            <Image className="mxd-services" src="/porthomeimages/brand2.webp" alt="Work Preview" width={1200} height={960} />
                             <div className="mxd-services-stack__tags tags-absolute"></div>
                           </div>
                         </div>
