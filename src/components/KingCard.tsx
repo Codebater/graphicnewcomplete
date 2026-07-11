@@ -77,7 +77,7 @@ export default function KingCard() {
           {/* clipped inner frame */}
           <div className={styles.frame}>
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img loading="lazy" decoding="async" className={styles.portrait} src="/king/andrej-real.webp" alt="Andrej — The King of Design" />
+            <img decoding="async" className={styles.portrait} src="/king/andrej-real.webp" alt="Andrej — The King of Design" />
             <div className={styles.tint} />
             <div className={styles.shine} />
             <div className={styles.vignette} />
@@ -92,13 +92,13 @@ export default function KingCard() {
 
           {/* foreground art that breaks the frame */}
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img loading="lazy" decoding="async" className={styles.crown} src="/king/crown.webp" alt="" aria-hidden="true" />
+          <img decoding="async" className={styles.crown} src="/king/crown.webp" alt="" aria-hidden="true" />
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img loading="lazy" decoding="async" className={`${styles.splash} ${styles.splashA}`} src="/king/splat-violet.webp" alt="" aria-hidden="true" />
+          <img decoding="async" className={`${styles.splash} ${styles.splashA}`} src="/king/splat-violet.webp" alt="" aria-hidden="true" />
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img loading="lazy" decoding="async" className={`${styles.splash} ${styles.splashB}`} src="/king/splat-gold.webp" alt="" aria-hidden="true" />
+          <img decoding="async" className={`${styles.splash} ${styles.splashB}`} src="/king/splat-gold.webp" alt="" aria-hidden="true" />
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img loading="lazy" decoding="async" className={`${styles.splash} ${styles.splashC}`} src="/king/splat-gold2.webp" alt="" aria-hidden="true" />
+          <img decoding="async" className={`${styles.splash} ${styles.splashC}`} src="/king/splat-gold2.webp" alt="" aria-hidden="true" />
 
           {/* floating dust particles */}
           <div className={styles.dust} aria-hidden="true">
@@ -111,9 +111,9 @@ export default function KingCard() {
           <div className={styles.type}>
             <div className={styles.wordWrap}>
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img loading="lazy" decoding="async" className={styles.word} src="/king/king-word.webp" alt="KING" />
+              <img decoding="async" className={styles.word} src="/king/king-word.webp" alt="KING" />
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img loading="lazy" decoding="async" className={styles.designs} src="/king/designs-word.webp" alt="DESIGNS" />
+              <img decoding="async" className={styles.designs} src="/king/designs-word.webp" alt="DESIGNS" />
             </div>
             <div className={styles.sub}>DESIGN LEAD</div>
           </div>

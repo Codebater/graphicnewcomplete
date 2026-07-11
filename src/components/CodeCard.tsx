@@ -77,7 +77,7 @@ export default function CodeCard() {
           {/* clipped inner frame */}
           <div className={styles.frame}>
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img loading="lazy" decoding="async" className={styles.portrait} src="/king/asad-real.webp" alt="Asad — The Code Genius" />
+            <img decoding="async" className={styles.portrait} src="/king/asad-real.webp" alt="Asad — The Code Genius" />
             <div className={styles.tint} />
             <div className={styles.shine} />
             <div className={styles.vignette} />
@@ -92,13 +92,13 @@ export default function CodeCard() {
 
           {/* foreground art that breaks the frame — the Midas touch */}
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img loading="lazy" decoding="async" className={styles.hand} src="/king/midas-hand.webp" alt="" aria-hidden="true" />
+          <img decoding="async" className={styles.hand} src="/king/midas-hand.webp" alt="" aria-hidden="true" />
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img loading="lazy" decoding="async" className={`${styles.splash} ${styles.splashA}`} src="/king/splat-violet.webp" alt="" aria-hidden="true" />
+          <img decoding="async" className={`${styles.splash} ${styles.splashA}`} src="/king/splat-violet.webp" alt="" aria-hidden="true" />
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img loading="lazy" decoding="async" className={`${styles.splash} ${styles.splashB}`} src="/king/splat-gold.webp" alt="" aria-hidden="true" />
+          <img decoding="async" className={`${styles.splash} ${styles.splashB}`} src="/king/splat-gold.webp" alt="" aria-hidden="true" />
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img loading="lazy" decoding="async" className={`${styles.splash} ${styles.splashC}`} src="/king/splat-gold2.webp" alt="" aria-hidden="true" />
+          <img decoding="async" className={`${styles.splash} ${styles.splashC}`} src="/king/splat-gold2.webp" alt="" aria-hidden="true" />
 
           {/* floating dust particles */}
           <div className={styles.dust} aria-hidden="true">
@@ -111,9 +111,9 @@ export default function CodeCard() {
           <div className={styles.type}>
             <div className={styles.wordWrap}>
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img loading="lazy" decoding="async" className={styles.word} src="/king/genius-word.webp" alt="GENIUS" />
+              <img decoding="async" className={styles.word} src="/king/genius-word.webp" alt="GENIUS" />
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img loading="lazy" decoding="async" className={styles.codeTag} src="/king/code-word.webp" alt="CODE" />
+              <img decoding="async" className={styles.codeTag} src="/king/code-word.webp" alt="CODE" />
             </div>
             <div className={styles.sub}>DEV LEAD</div>
           </div>
