@@ -420,27 +420,9 @@
 }
 @keyframes sw-scroll { 0%,100% { opacity: 0; transform: translate(-50%, 0); } 40% { opacity: 1; transform: translate(-50%, 5px); } }
 
-/* ---- native scroll-snap detents (phones): the page scroller snaps to one
-   invisible point per work, giving the iOS date-picker "wheel" feel — the
-   browser's own physics settle each project into place. Proximity (not
-   mandatory) so scrolling elsewhere on the page stays completely free, and
-   snap-stop makes a big fling still land on the very next work. ---- */
-.snapPoint {
-  position: absolute;
-  left: 0;
-  width: 100%;
-  height: 2px;
-  pointer-events: none;
-}
-@media (max-width: 1023px) {
-  :global(html) {
-    scroll-snap-type: y proximity;
-  }
-  .snapPoint {
-    scroll-snap-align: start;
-    scroll-snap-stop: always;
-  }
-}
+/* Scroll-snap detents removed: on phones the snap + a per-transition input
+   block made scrolling feel "stepped/stateful". Mobile now uses the same
+   smooth continuous scrub as desktop (see SelectedWork.tsx). */
 
 /* ---- mobile / tablet: viewer centred in the screen, title beneath ---- */
 @media (max-width: 1023px) {

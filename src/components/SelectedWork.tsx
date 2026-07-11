@@ -99,34 +99,17 @@ export default function SelectedWork({ projects }: { projects: ProjectListItem[]
   useEffect(() => {
     if (firstActive.current) { firstActive.current = false; return; }
     setWipeOn(true);
-    // haptic tick on each detent (Android Chrome; iOS Safari has no vibration
-    // API — there the native scroll-snap physics provide the tactile feel)
+    // subtle haptic tick on Android when the project changes (iOS has no API)
     try { (navigator as Navigator & { vibrate?: (ms: number) => void }).vibrate?.(12); } catch { /* noop */ }
 
-    // On phones, hold the scroll while the transition plays — one flick = one
-    // clean project change; scrolling resumes the moment the wipe is done.
-    // The hold blocks the INPUT EVENTS (preventDefault on touchmove/wheel)
-    // instead of toggling overflow on <html>: the overflow toggle forced a
-    // full-page reflow right at the transition — the freeze users felt when
-    // scrolling from the hero into this section.
-    const isMobile = window.matchMedia('(max-width: 1023px)').matches;
-    const w = window as unknown as { lenis?: { stop?: () => void; start?: () => void } };
-    const prevent = (ev: Event) => ev.preventDefault();
-    if (isMobile) {
-      w.lenis?.stop?.();
-      window.addEventListener('touchmove', prevent, { passive: false });
-      window.addEventListener('wheel', prevent, { passive: false });
-    }
-    const unlock = () => {
-      if (isMobile) {
-        window.removeEventListener('touchmove', prevent);
-        window.removeEventListener('wheel', prevent);
-        w.lenis?.start?.();
-      }
-    };
-
-    const t = setTimeout(() => { setWipeOn(false); unlock(); }, 260); // motif gone ~220ms, field ~240ms
-    return () => { clearTimeout(t); unlock(); };
+    // Mobile no longer blocks the scroll during the wipe. The old input-block
+    // (preventDefault on touchmove/wheel + lenis.stop for 260ms per step) plus
+    // the scroll-snap detents made phone scrolling feel "stepped/stateful" —
+    // every swipe locked for a beat and snapped. Desktop has neither and feels
+    // perfect, so mobile now uses the SAME smooth continuous scrub: the wipe is
+    // just a visual overlay over the project that's already changing underneath.
+    const t = setTimeout(() => setWipeOn(false), 260); // motif gone ~220ms, field ~240ms
+    return () => clearTimeout(t);
   }, [active]);
 
   // Mount the <video> elements while the browser is idle after load — they
@@ -321,19 +304,7 @@ export default function SelectedWork({ projects }: { projects: ProjectListItem[]
       style={{ ['--sw-h' as string]: `${N * 90}vh` }}
       aria-label="Selected work"
     >
-      {/* Native scroll-snap detents (mobile) — one invisible snap point per
-          work at its exact runway position, so the phone's own scroll physics
-          settles each project into place like the iOS date-picker wheel. */}
-      {Array.from({ length: N }).map((_, i) => (
-        <div
-          key={`snap-${i}`}
-          className={styles.snapPoint}
-          aria-hidden="true"
-          style={{ top: `calc((${N * 90}vh - 100vh) * ${N > 1 ? i / (N - 1) : 0})` }}
-        />
-      ))}
-
-      {/* ---------- desktop: sticky-pinned showcase ---------- */}
+      {/* ---------- sticky-pinned showcase (all sizes) ---------- */}
       <div className={styles.pin} style={{ ['--accent' as string]: accent }}>
         <div className={styles.topbar}>
           <span className={`${styles.tag} ${styles.pixelTag}`}>
