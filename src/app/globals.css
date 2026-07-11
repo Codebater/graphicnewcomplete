@@ -641,3 +641,17 @@ html body {
 @media (prefers-reduced-motion: reduce) {
   .mxd-nav__hamburger .hamburger__line::before { animation: none; }
 }
+
+/* Stacking cards (home "Services" section): the pinned scrub timeline
+   translates each card's Y every frame. Without its own compositor layer the
+   browser repaints the big work-preview image inside each card on every scrub
+   frame = the jank. Promote each card to a GPU layer so scrubbing just moves a
+   pre-rendered layer. (This promotion existed in an earlier build and was lost
+   in a reset — it's what made the stack feel smooth before.) */
+.stack-item {
+  will-change: transform;
+}
+.stack-item .mxd-services-stack__inner {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
