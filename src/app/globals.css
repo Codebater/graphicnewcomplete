@@ -641,14 +641,3 @@ html body {
 @media (prefers-reduced-motion: reduce) {
   .mxd-nav__hamburger .hamburger__line::before { animation: none; }
 }
-
-/* Stacking cards (home "Services" section): the pinned scrub timeline
-   translates each card's Y every frame. will-change promotes each card to its
-   own compositor layer so scrubbing moves a pre-rendered layer instead of
-   repainting. NOTE: the real weight was the work-preview images being served
-   at 1504px for a ~280px display — fixed with `sizes` on the <Image>s in
-   page.tsx. We deliberately DON'T also translateZ the inner: double-promoting
-   4 cards each holding two big images blew up GPU texture memory on phones. */
-.stack-item {
-  will-change: transform;
-}
