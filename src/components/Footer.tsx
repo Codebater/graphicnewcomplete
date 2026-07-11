@@ -120,6 +120,11 @@ const Footer = () => {
             </div>
             {/* links */}
             <div className="footer-blocks__links anim-uni-in-up">
+              <p className="t-xsmall t-muted" style={{ marginBottom: '0.6rem' }}>
+                <Link className="no-effect" href="/privacy">Privacy Policy</Link>
+                <span style={{ margin: '0 0.5rem', opacity: 0.5 }}>·</span>
+                <Link className="no-effect" href="/imprint">Imprint</Link>
+              </p>
               <p className="t-xsmall t-muted">
                 <a className="no-effect" href="" target="_blank" rel="noopener noreferrer">GRAPHIQ_ART</a>
                 <i className="ph-bold ph-copyright"></i>
