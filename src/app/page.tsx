@@ -65,8 +65,7 @@ export default async function Home() {
                     <div className="row g-0">
                       <div className="col-12 col-xl-6 mxd-grid-item no-margin">
                         <div className="hero-02-static__caption loading__item">
-                          <p className="t-large t-medium t-120 t-bright">We build websites, apps, AI automations,<br />and digital products that grow businesses.</p>
-                          <p className="t-large t-medium t-120 t-muted">Design. Development. Launch. Scale.</p>
+                          <p className="t-large t-medium t-120 t-bright">We build websites, apps, AI automations.</p>
                         </div>
                       </div>
                     </div>
