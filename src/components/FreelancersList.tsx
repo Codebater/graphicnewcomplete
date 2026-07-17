@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import styles from './FreelancersList.module.css';
-import KingCard from './KingCard';
+import VisorCard from './VisorCard';
 import CodeCard from './CodeCard';
 
 type Freelancer = {
@@ -121,7 +121,7 @@ export default function FreelancersList() {
 
   const renderVisual = (person: Freelancer) =>
     person.card === 'king' ? (
-      <KingCard />
+      <VisorCard />
     ) : person.card === 'code' ? (
       <CodeCard />
     ) : (
