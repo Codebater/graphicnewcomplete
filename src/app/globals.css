@@ -665,6 +665,10 @@ html body {
 .mxd-hero-02-marquee__image img {
   width: 100%;
   height: auto;
+  /* reserve the final box before decode: a late-decoding hero image must not
+     change document height — that fired a global ScrollTrigger.refresh that
+     could land as a visible stutter while already scrolling the card stack */
+  aspect-ratio: 720 / 1040;
 }
 /* clip the character's coat at the hero's edge so the figure stands into
    the fold instead of spilling into the next section */

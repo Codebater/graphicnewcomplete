@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
 import type { ProjectListItem } from './ProjectsList';
 import PixelText from './PixelText';
@@ -71,6 +71,56 @@ export default function SelectedWork({ projects }: { projects: ProjectListItem[]
     return () => clearTimeout(t);
   }, [active]);
 
+  // Aurora tile styles, computed ONCE per transition (176 unique inline
+  // styles incl. color-mix). The wipe mount lands exactly while the next
+  // section's pin engages, so recomputing them on every render during the
+  // 260ms window was paid main-thread time at the worst possible moment.
+  // active is the dep (not just wipeOn): a fast multi-step scroll keeps
+  // wipeOn true across transitions but must still recolour for the new seq.
+  const wipeTiles = useMemo(() => {
+    if (!wipeOn) return null;
+    const dir = dirRef.current;
+    const seq = wipeSeqRef.current;
+    // scroll down: sweep left→right; scroll up: mirrored right→left
+    const delay = (c: number, r: number) =>
+      (dir === 1 ? c : WIPE_COLS - 1 - c) * 3 + ((r + c) % 2) * 18;
+    // subtle per-transition hue drift (kept small — big rotations would drag
+    // the palette through greens the artwork avoids)
+    const hueDrift = ((seq * 37) % 81) - 40;
+    const tiles: React.CSSProperties[] = [];
+    for (let i = 0; i < WIPE_COLS * WIPE_ROWS; i++) {
+      const c = i % WIPE_COLS;
+      const r = (i / WIPE_COLS) | 0;
+      // aurora flows WITH the scroll: mirrored when stepping back
+      const dx = (dir === 1 ? c / (WIPE_COLS - 1) : 1 - c / (WIPE_COLS - 1)) - 0.5;
+      const dy = r / (WIPE_ROWS - 1) - 0.5;
+      const d = Math.min(1, Math.hypot(dx, dy) * 1.9);
+      // long-way hue lerp 215° → 390° (blue → violet core → orange),
+      // never crossing green; top rows lean magenta
+      const hue = (215 + (dx + 0.5) * 175 - dy * 35 + hueDrift + 360) % 360;
+      const sat = Math.round(92 - d * 48);
+      const light = Math.round(27 + d * 46);
+      const melt = Math.max(0, Math.min(1, (d - 0.55) / 0.45)); // edges → page colour
+      const vivid = Math.round(100 - melt * 82);
+      const s: React.CSSProperties = {
+        animationDelay: `${delay(c, r)}ms`,
+        backgroundColor: `color-mix(in oklab, hsl(${hue} ${sat}% ${light}%) ${vivid}%, var(--base))`,
+      };
+      // sparse pattern tiles like the artwork (deterministic)
+      const h = (c * 7 + r * 13 + seq * 5) % 23;
+      if (h === 3) {
+        s.backgroundImage =
+          'repeating-linear-gradient(45deg, rgba(255,255,255,0.30) 0 2px, transparent 2px 6px)';
+      } else if (h === 7) {
+        s.backgroundImage = 'radial-gradient(rgba(255,255,255,0.35) 1px, transparent 1.4px)';
+        s.backgroundSize = '6px 6px';
+      }
+      tiles.push(s);
+    }
+    return { seq, styles: tiles };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [wipeOn, active]);
+
   // Mount the <video> elements while the browser is idle after load — they
   // are preload="none" and only play() once active AND in view, so mounting
   // costs no network. Mounting them mid-scroll (the old 150px-before-the-pin
@@ -137,6 +187,13 @@ export default function SelectedWork({ projects }: { projects: ProjectListItem[]
         measure();
 
         let st: any = null;
+        // Dedupe caches: scrub:1 keeps onUpdate firing for ~1s AFTER the pin
+        // releases (catch-up tail overlapping the stacking-cards section below)
+        // with values clamped constant — skip every write whose value hasn't
+        // changed so those tail frames are pure no-ops.
+        let lastY: number | null = null;
+        let lastFilled = -1;
+        let lastDrift = '';
         const create = () => {
           st = ScrollTrigger.create({
             trigger: root,
@@ -152,11 +209,18 @@ export default function SelectedWork({ projects }: { projects: ProjectListItem[]
                 setVideoArmed(true);
               }
               const f = self.progress * (N - 1);
-              gsap.set(list, { y: -(firstCenter + f * step) });
+              const y = -(firstCenter + f * step);
+              if (y !== lastY) {
+                lastY = y;
+                gsap.set(list, { y });
+              }
               // tile progress strip: fills tile-by-tile (18 tiles), binary steps
               if (fillRef.current) {
                 const filled = Math.round(self.progress * 18);
-                fillRef.current.style.width = `${(filled / 18) * 100}%`;
+                if (filled !== lastFilled) {
+                  lastFilled = filled;
+                  fillRef.current.style.width = `${(filled / 18) * 100}%`;
+                }
               }
               // Hysteresis: only commit to a new project once we're clearly
               // inside its zone (not hovering the .5 boundary). Stops the tile
@@ -173,7 +237,11 @@ export default function SelectedWork({ projects }: { projects: ProjectListItem[]
               // the scroll on the way to the next project (CSS moves the
               // media by this var — transform-only, composited)
               const frac = Math.max(-0.5, Math.min(0.5, f - activeRef.current));
-              mediaRef.current?.style.setProperty('--sw-drift', frac.toFixed(4));
+              const drift = frac.toFixed(4);
+              if (drift !== lastDrift && mediaRef.current) {
+                lastDrift = drift;
+                mediaRef.current.style.setProperty('--sw-drift', drift);
+              }
             },
           });
           requestAnimationFrame(() => ScrollTrigger.refresh());
@@ -334,53 +402,16 @@ export default function SelectedWork({ projects }: { projects: ProjectListItem[]
                     a radial aurora field — blue → indigo core → magenta →
                     orange — melting into the page colour at the edges, with a
                     few striped/dotted accent tiles. Tiles pop in staggered
-                    (direction-aware sweep) and the layer pops out as one. */}
-                {wipeOn && (() => {
-                  const dir = dirRef.current;
-                  const seq = wipeSeqRef.current;
-                  // scroll down: sweep left→right; scroll up: mirrored right→left
-                  const delay = (c: number, r: number) =>
-                    (dir === 1 ? c : WIPE_COLS - 1 - c) * 3 + ((r + c) % 2) * 18;
-                  // subtle per-transition hue drift (kept small — big rotations
-                  // would drag the palette through greens the artwork avoids)
-                  const hueDrift = ((seq * 37) % 81) - 40;
-                  const tileStyle = (c: number, r: number): React.CSSProperties => {
-                    // aurora flows WITH the scroll: mirrored when stepping back
-                    const dx = (dir === 1 ? c / (WIPE_COLS - 1) : 1 - c / (WIPE_COLS - 1)) - 0.5;
-                    const dy = r / (WIPE_ROWS - 1) - 0.5;
-                    const d = Math.min(1, Math.hypot(dx, dy) * 1.9);
-                    // long-way hue lerp 215° → 390° (blue → violet core → orange),
-                    // never crossing green; top rows lean magenta
-                    const hue = (215 + (dx + 0.5) * 175 - dy * 35 + hueDrift + 360) % 360;
-                    const sat = Math.round(92 - d * 48);
-                    const light = Math.round(27 + d * 46);
-                    const melt = Math.max(0, Math.min(1, (d - 0.55) / 0.45)); // edges → page colour
-                    const vivid = Math.round(100 - melt * 82);
-                    const s: React.CSSProperties = {
-                      animationDelay: `${delay(c, r)}ms`,
-                      backgroundColor: `color-mix(in oklab, hsl(${hue} ${sat}% ${light}%) ${vivid}%, var(--base))`,
-                    };
-                    // sparse pattern tiles like the artwork (deterministic)
-                    const h = (c * 7 + r * 13 + seq * 5) % 23;
-                    if (h === 3) {
-                      s.backgroundImage =
-                        'repeating-linear-gradient(45deg, rgba(255,255,255,0.30) 0 2px, transparent 2px 6px)';
-                    } else if (h === 7) {
-                      s.backgroundImage = 'radial-gradient(rgba(255,255,255,0.35) 1px, transparent 1.4px)';
-                      s.backgroundSize = '6px 6px';
-                    }
-                    return s;
-                  };
-                  return (
-                    <div key={`d${seq}`} className={`${styles.wipe} ${styles.wipeDarkLayer}`} aria-hidden="true">
-                      {Array.from({ length: WIPE_COLS * WIPE_ROWS }).map((_, i) => {
-                        const c = i % WIPE_COLS;
-                        const r = (i / WIPE_COLS) | 0;
-                        return <i key={i} className={styles.wipeDark} style={tileStyle(c, r)} />;
-                      })}
-                    </div>
-                  );
-                })()}
+                    (direction-aware sweep) and the layer pops out as one.
+                    Styles come from the memo above — computed once per
+                    transition, not on every render while mounted. */}
+                {wipeTiles && (
+                  <div key={`d${wipeTiles.seq}`} className={`${styles.wipe} ${styles.wipeDarkLayer}`} aria-hidden="true">
+                    {wipeTiles.styles.map((s, i) => (
+                      <i key={i} className={styles.wipeDark} style={s} />
+                    ))}
+                  </div>
+                )}
 
                 <div className={styles.mediaBar}>
                   <span className={styles.play} aria-hidden="true">▶</span>

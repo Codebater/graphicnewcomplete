@@ -161,15 +161,39 @@ export default function HeroMarqueeLens() {
         strip.style.height = `${lr.height}px`;
       };
       measureBand();
-      window.addEventListener('resize', measureBand);
 
       // Only animate while the hero is actually on screen — the loop used to
       // run for the entire page life, stealing frames from every section.
       let onScreen = true;
-      const io = new IntersectionObserver(([e]) => {
+      // Resize (mobile URL-bar show/hide fires it mid-scroll) is rAF-debounced,
+      // and while the hero is off-screen the re-measure is DEFERRED to the IO
+      // re-entry below — it runs before the tick restarts, so the hero is
+      // re-measured before a single new frame of it paints (pixel-identical),
+      // and scrolling other sections never pays the 3 forced rect reads.
+      let measureDirty = false;
+      let measureQueued = false;
+      const onResize = () => {
+        if (measureQueued) return;
+        measureQueued = true;
+        requestAnimationFrame(() => {
+          measureQueued = false;
+          if (!onScreen) { measureDirty = true; return; }
+          measureBand();
+        });
+      };
+      window.addEventListener('resize', onResize);
+
+      const io = new IntersectionObserver((entries) => {
+        // latest entry, not the oldest of a batched flicker
+        const e = entries[entries.length - 1];
         const was = onScreen;
         onScreen = e.isIntersecting;
-        if (onScreen && !was) raf = requestAnimationFrame(tick);
+        if (onScreen && !was) {
+          if (measureDirty) { measureDirty = false; measureBand(); }
+          // never stack a second loop on a pending frame
+          cancelAnimationFrame(raf);
+          raf = requestAnimationFrame(tick);
+        }
       });
       io.observe(marquee as HTMLElement);
 
@@ -213,20 +237,34 @@ export default function HeroMarqueeLens() {
       raf = requestAnimationFrame(tick);
 
       cleanupInit = () => {
-        window.removeEventListener('resize', measureBand);
+        window.removeEventListener('resize', onResize);
         io.disconnect();
       };
       return true;
     };
 
+    let disposed = false;
     const tryInit = () => {
+      if (disposed) return;
       // generous retry window (~45s): slow devices/first paints can take a
-      // while before the marquee tween writes its first transform
-      if (!init() && tries++ < 180) retryTimer = setTimeout(tryInit, 250);
+      // while before the marquee tween writes its first transform. Each
+      // retry attempt runs at browser IDLE (not inside a scroll frame) —
+      // the probe build/measure/remove churn of a failed attempt was
+      // landing mid-scroll on slow first loads.
+      if (!init() && tries++ < 180) {
+        retryTimer = setTimeout(() => {
+          const w = window as unknown as {
+            requestIdleCallback?: (cb: () => void, opts?: { timeout: number }) => number;
+          };
+          if (w.requestIdleCallback) w.requestIdleCallback(tryInit, { timeout: 400 });
+          else tryInit();
+        }, 250);
+      }
     };
     tryInit();
 
     return () => {
+      disposed = true;
       cancelAnimationFrame(raf);
       if (retryTimer) clearTimeout(retryTimer);
       cleanupInit?.();

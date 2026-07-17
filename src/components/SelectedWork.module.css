@@ -236,6 +236,9 @@
   gap: 2px;
   pointer-events: none;
   z-index: 1;
+  /* the 176-tile mount/unmount bursts land right as the next section's pin
+     engages — keep their layout+paint invalidation inside this box */
+  contain: layout paint;
 }
 /* Tiles pop IN staggered (direction-aware sweep, delay inline); the whole
    layer pops OUT as one, revealing the finished work with nothing left on

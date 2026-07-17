@@ -1161,10 +1161,24 @@ export default function AppInitializer() {
       // slowdown. Gate each reactor on an IntersectionObserver flag so it only
       // computes while its marquee is actually on screen (rootMargin arms it a
       // touch early so there's no visible pop entering the section).
-      const marqueeOnScreen = (el: Element) => {
+      const marqueeOnScreen = (el: Element, master?: any) => {
         let visible = true;
         const io = new IntersectionObserver(
-          ([e]) => { visible = e.isIntersecting; },
+          ([e]) => {
+            visible = e.isIntersecting;
+            // The infinite master loop keeps writing x-transforms on every
+            // gsap tick even far off-screen — park it there and resume where
+            // it stopped (a uniform loop, so the position is invisible). The
+            // 200px rootMargin restarts it BEFORE the marquee re-enters, so
+            // the hero lens (own IO, no margin, reads the track transform
+            // per frame) always finds it running. Never pause a master that
+            // hasn't ticked yet (totalTime 0): the lens init waits for its
+            // first transform write.
+            if (master) {
+              if (visible) master.play();
+              else if (master.totalTime() > 0) master.pause();
+            }
+          },
           { rootMargin: '200px 0px' }
         );
         io.observe(el);
@@ -1204,7 +1218,7 @@ export default function AppInitializer() {
               paused: true 
             });
             const timeScaleClamp = gsap.utils.clamp(1, 6);
-            const isVisible = marqueeOnScreen(itemBlock);
+            const isVisible = marqueeOnScreen(itemBlock, master);
             ScrollTrigger.create({
               start: 0,
               end: "max",
@@ -1256,7 +1270,7 @@ export default function AppInitializer() {
                 paused: true 
               });
               const timeScaleClamp = gsap.utils.clamp(1, 6);
-              const isVisible = marqueeOnScreen(itemBlock);
+              const isVisible = marqueeOnScreen(itemBlock, master);
               ScrollTrigger.create({
                 start: 0,
                 end: "max",
@@ -1309,7 +1323,7 @@ export default function AppInitializer() {
                 paused: true 
               });
               const timeScaleClamp = gsap.utils.clamp(1, 6);
-              const isVisible = marqueeOnScreen(itemBlock);
+              const isVisible = marqueeOnScreen(itemBlock, master);
               ScrollTrigger.create({
                 start: 0,
                 end: "max",
