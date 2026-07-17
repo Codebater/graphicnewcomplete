@@ -334,13 +334,13 @@ export default function SelectedWork({ projects }: { projects: ProjectListItem[]
       ref={rootRef}
       className={styles.root}
       style={{ ['--sw-h' as string]: `${N * 90}vh` }}
-      aria-label="Selected work"
+      aria-label="Previous projects"
     >
       {/* ---------- sticky-pinned showcase (all sizes) ---------- */}
       <div className={styles.pin} style={{ ['--accent' as string]: accent }}>
         <div className={styles.topbar}>
           <span className={`${styles.tag} ${styles.pixelTag}`}>
-            <PixelText text="SELECTED WORK" cursor={false} />
+            <PixelText text="PREVIOUS PROJECTS" cursor={false} />
             <i />
           </span>
           <span className={`${styles.tag} ${styles.metaTag}`}>2026 — PORTFOLIO</span>

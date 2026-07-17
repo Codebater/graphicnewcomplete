@@ -180,7 +180,7 @@ export default async function Home() {
         </div>
 
         {/* Selected Work — pinned editorial showcase */}
-        <h2 style={{ position: 'absolute', width: 1, height: 1, margin: -1, padding: 0, overflow: 'hidden', clipPath: 'inset(50%)', whiteSpace: 'nowrap' }}>Selected work</h2>
+        <h2 style={{ position: 'absolute', width: 1, height: 1, margin: -1, padding: 0, overflow: 'hidden', clipPath: 'inset(50%)', whiteSpace: 'nowrap' }}>Previous projects</h2>
         <SelectedWork projects={projects} />
 
         {/* Services/Features Stacking Cards Section */}

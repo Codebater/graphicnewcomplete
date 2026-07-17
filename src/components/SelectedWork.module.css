@@ -57,16 +57,20 @@
   padding: 0;
   opacity: 0.9;
 }
-/* phones: as big as fits beside the fixed smiley chip (0.5rem would overlap
-   it on 360-400px screens); a step smaller on very narrow screens */
+/* phones: as big as fits beside the fixed smiley chip. Steps sized for the
+   17-character PREVIOUS PROJECTS tag (each the largest that keeps ~25px+
+   clearance to the chip at its band's narrowest width). */
 @media (max-width: 1023px) {
   .pixelTag :global(.pixel-text) { --pxt: 0.44rem; }
 }
+@media (max-width: 549px) {
+  .pixelTag :global(.pixel-text) { --pxt: 0.31rem; }
+}
 @media (max-width: 419px) {
-  .pixelTag :global(.pixel-text) { --pxt: 0.38rem; }
+  .pixelTag :global(.pixel-text) { --pxt: 0.28rem; }
 }
 @media (max-width: 379px) {
-  .pixelTag :global(.pixel-text) { --pxt: 0.3rem; }
+  .pixelTag :global(.pixel-text) { --pxt: 0.26rem; }
 }
 /* generous letter tracking inside each word so letters never touch */
 .pixelTag :global(.pixel-text__word) { gap: calc(var(--pxt) * 1.7); }
