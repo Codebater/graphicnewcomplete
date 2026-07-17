@@ -100,13 +100,13 @@ export default function AboutUs() {
                   <div className="row g-0">
                     <div className="col-12 col-xl-8 mxd-grid-item no-margin">
                       <div className="mxd-section-title__title">
-                        <h2 className="reveal-type">The best freelancers</h2>
+                        <h2 className="reveal-type">The best talent</h2>
                       </div>
                     </div>
                     <div className="col-12 col-xl-4 mxd-grid-item no-margin">
                       <div className="mxd-section-title__descr">
                         <p className="anim-uni-in-up">
-                          We don&apos;t do average. GRAPHIQ STUDIO LLC works hand in hand with a hand-picked circle of freelancers—people who put their heart, style, and soul into everything they touch.
+                          Average isn&apos;t in our vocabulary. GRAPHIQ STUDIO LLC brings together a carefully curated circle of exceptional creative talent—distinctive minds who bring heart, craft, and unmistakable style to everything they create.
                         </p>
                       </div>
                     </div>
