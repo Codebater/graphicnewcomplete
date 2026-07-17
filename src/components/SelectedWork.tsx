@@ -311,7 +311,7 @@ export default function SelectedWork({ projects }: { projects: ProjectListItem[]
             <PixelText text="SELECTED WORK" cursor={false} />
             <i />
           </span>
-          <span className={`${styles.tag} ${styles.metaTag}`}>2025 — PORTFOLIO</span>
+          <span className={`${styles.tag} ${styles.metaTag}`}>2026 — PORTFOLIO</span>
         </div>
 
         <div className={styles.stage}>
