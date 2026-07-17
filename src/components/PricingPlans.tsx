@@ -262,7 +262,7 @@ export default function PricingPlans() {
             </div>
             <button
               type="button"
-              className="btn btn-anim btn-default btn-opposite btn-fullwidth slide-right-up anim-uni-in-up"
+              className="btn btn-anim btn-default btn-outline btn-fullwidth slide-right-up anim-uni-in-up"
               onClick={() => buy(active.key)}
               disabled={loadingKey === active.key}
             >
@@ -313,7 +313,7 @@ export default function PricingPlans() {
                 <>
                   <button
                     type="button"
-                    className="btn btn-anim btn-default btn-opposite btn-fullwidth slide-right-up anim-uni-in-up"
+                    className="btn btn-anim btn-default btn-outline btn-fullwidth slide-right-up anim-uni-in-up"
                     onClick={() => buy((plan.action as { key: BuyKey }).key)}
                     disabled={loadingKey === plan.action.key}
                   >
