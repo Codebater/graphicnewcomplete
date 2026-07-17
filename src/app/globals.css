@@ -643,6 +643,16 @@ html body {
   .mxd-nav__hamburger .hamburger__line::before { animation: none; }
 }
 
+/* the longer hero caption ("We build websites…") needs one size down in the
+   tablet band — at full t-large its lines run into the character's head on
+   short-and-wide viewports (landscape iPads). Desktop and phones fit. */
+@media (max-width: 1199px) and (min-width: 580px) {
+  .hero-02-static__caption .t-large {
+    font-size: 2rem !important;   /* main.css loads after globals */
+    line-height: 1.35 !important;
+  }
+}
+
 /* ---- Clay hero character (replaces the floating ball): smaller head,
    shifted up — the character floats above the marquee line, the coat drops
    behind the scrolling text. Sizes chosen so the head (52.5% of image width)
