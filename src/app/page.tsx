@@ -77,7 +77,7 @@ export default async function Home() {
               <div className="mxd-hero-02-static__center">
                 <div className="mxd-hero-02-marquee">
                   <div className="mxd-hero-02-marquee__image loading__item">
-                    <Image className="mxd-move" src="/porthomeimages/smiley.png" alt="Hero Image" width={400} height={400} priority fetchPriority="high" />
+                    <Image src="/porthomeimages/clay-hero.webp" alt="The GRAPHIQ smiley in a clay suit" width={720} height={1040} priority fetchPriority="high" />
                   </div>
                   <div className="mxd-hero-02-marquee__line loading__item">
                     <div className="marquee marquee-left--gsap">

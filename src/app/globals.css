@@ -251,8 +251,9 @@ html body {
 }
 .marquee-lens__icon {
   flex: 0 0 auto;
-  width: 5rem;
-  height: 5rem;
+  /* sized from the head by HeroMarqueeLens so icons fit the star eyes */
+  width: var(--lens-icon, 5rem);
+  height: var(--lens-icon, 5rem);
   color: var(--t-bright);
   display: inline-flex;
 }
@@ -269,8 +270,8 @@ html body {
     gap: 5rem;
   }
   .marquee-lens__icon {
-    width: 8rem;
-    height: 8rem;
+    width: var(--lens-icon, 8rem);
+    height: var(--lens-icon, 8rem);
   }
 }
 
@@ -640,4 +641,138 @@ html body {
 }
 @media (prefers-reduced-motion: reduce) {
   .mxd-nav__hamburger .hamburger__line::before { animation: none; }
+}
+
+/* ---- Clay hero character (replaces the floating ball): smaller head,
+   shifted up — the character floats above the marquee line, the coat drops
+   behind the scrolling text. Sizes chosen so the head (52.5% of image width)
+   reads clearly smaller than the old 400px ball. ---- */
+.mxd-hero-02-marquee {
+  /* one size source for the character AND the crown tiles above his head */
+  --hiw: clamp(540px, 58vw, 780px);
+}
+.mxd-hero-02-marquee__image {
+  /* !important: /css/main.css loads AFTER globals and sets 50rem/42rem.
+     Sized so the HEAD (52.5% of image width) matches the old ball, with the
+     head centred ON the marquee line — the text runs through it and becomes
+     icons in the star eyes, exactly the original effect. */
+  width: var(--hiw) !important;
+  /* translateY(-18%) pins the HEAD CENTRE (18% of image height) to the line
+     centre; the body drops toward the fold and is clipped by the hero =
+     grounded, not floating */
+  transform: translateX(-50%) translateY(-18%) !important;
+}
+.mxd-hero-02-marquee__image img {
+  width: 100%;
+  height: auto;
+}
+/* clip the character's coat at the hero's edge so the figure stands into
+   the fold instead of spilling into the next section */
+.mxd-hero-02.mxd-pinned-fullscreen {
+  overflow: hidden;
+}
+
+/* ---- Clay editorial theme (from the GRAPHIQ "Human Technology" posters):
+   the LIGHT theme becomes warm paper cream + warm ink + terracotta accent
+   (replacing the template's cool white + purple). Lime (--additional) stays
+   the brand green. The dark theme is untouched. ---- */
+:root[color-scheme='light'] {
+  /* sampled from the "Human Technology" poster paper — deeper than a plain
+     cream so the page never reads bright-white */
+  --base: #e9e2d5;
+  --base-rgb: 233, 226, 213;
+  --base-tint: #f0ebe0;
+  --base-shade: #d2c7b3;
+  --base-opp: #1d1712;
+  --base-opp-tint: #292118;
+  --accent: #b06a51;
+  --accent-rgb: 176, 106, 81;
+  --t-bright: #1d1712;
+  --t-medium: #3a3128;
+  --t-muted: #6b5f51;
+}
+
+
+/* ---- Clay menu (light theme): the open menu card becomes the poster's
+   terracotta with cream tile lettering — the dark theme menu is untouched.
+   Lime stays the hover/accent language on both. ---- */
+:root[color-scheme='light'] .mxd-menu__contain .hamburger__base {
+  background-color: #a9624b;   /* the coat terracotta */
+}
+:root[color-scheme='light'] .main-menu__link .pixel-text__cell--on {
+  background: #f3ead9;         /* cream tiles on terracotta */
+  box-shadow: 0 1px 3px rgba(60, 30, 15, 0.25);
+}
+/* compound :root.no-touch — .no-touch lives ON <html>, not below it */
+:root[color-scheme='light'].no-touch .main-menu__link:hover .pixel-text__cell--on,
+:root[color-scheme='light'] .main-menu__link:focus-visible .pixel-text__cell--on {
+  background: #ddf160;         /* word lights lime on hover, as everywhere */
+}
+:root[color-scheme='light'] .mxd-menu__caption .rotating-caption__line {
+  color: rgba(243, 234, 217, 0.88);
+}
+:root[color-scheme='light'] .mxd-menu__data p,
+:root[color-scheme='light'] .mxd-menu__data a {
+  color: rgba(243, 234, 217, 0.75);
+}
+/* X eyes on the open terracotta card read cream too */
+:root[color-scheme='light'] .mxd-nav__hamburger.nav-open .hamburger__line::before {
+  background-color: #f3ead9;
+}
+
+/* ---- Clay chips (light theme): the three dark-glass squircles (theme
+   switcher, hamburger, to-top) become terracotta clay glass matching the
+   menu card. rgba(162,84,60,.9) composites over the paper cream to exactly
+   the menu's #a9624b, and the deeper base keeps the chip readable when it
+   floats over the terracotta bg-accent cards. Dark theme untouched. ---- */
+:root[color-scheme='light'] .mxd-header__controls .mxd-color-switcher,
+:root[color-scheme='light'] .mxd-nav__hamburger:not(.is-flipping) .hamburger__base {
+  /* :not(.is-flipping): during the close morph the base is card-sized and
+     must keep the card look, not sprout the glass border/shadow */
+  background-color: rgba(162, 84, 60, 0.9);
+  border-color: rgba(243, 234, 217, 0.3);
+  box-shadow:
+    inset 0 1px rgba(243, 234, 217, 0.12),
+    0 10px 30px rgba(60, 30, 15, 0.28);
+}
+/* chip ink goes cream (was fixed off-white for the dark glass) */
+:root[color-scheme='light'] .mxd-header__controls .mxd-color-switcher {
+  color: #f3ead9;
+}
+:root[color-scheme='light'] .mxd-nav__hamburger .hamburger__line::before {
+  background-color: #f3ead9;
+}
+:root[color-scheme='light'] .hamburger__mouth {
+  border-color: #f3ead9;
+}
+/* hover: the lime accent language stays — only the re-declared ambient
+   shadow warms up so hovering doesn't snap back to the cold black one */
+:root[color-scheme='light'].no-touch .mxd-header__controls .mxd-color-switcher:hover,
+:root[color-scheme='light'] .mxd-header__controls .mxd-color-switcher:focus-visible,
+:root[color-scheme='light'].no-touch .mxd-nav__hamburger:not(.is-flipping):hover .hamburger__base,
+:root[color-scheme='light'] .mxd-nav__hamburger:not(.is-flipping):focus-visible .hamburger__base {
+  box-shadow:
+    inset 0 1px rgba(243, 234, 217, 0.16),
+    0 10px 30px rgba(60, 30, 15, 0.28),
+    0 0 16px rgba(221, 241, 96, 0.3);
+}
+/* close morph: the card shrinking back into the chip stays terracotta —
+   without this it resolves to var(--base-opp-tint) and flashes dark brown */
+:root[color-scheme='light'] .mxd-nav__hamburger.is-flipping .hamburger__base {
+  background-color: #a9624b;
+}
+/* nav logo: the pixel-G goes terracotta like the chips; the traveling pixel
+   stays lime (same accent-pixel language). :not() keeps this higher-
+   specificity rule off the accent tile — path tiles are also --on tiles. */
+:root[color-scheme='light'] .pixel-g-logo__tile--on:not(.pixel-g-logo__tile--accent) {
+  background: #a9624b;
+}
+/* to-top: same clay glass */
+:root[color-scheme='light'] #to-top.btn-to-top {
+  background-color: rgba(162, 84, 60, 0.9);
+  border-color: rgba(243, 234, 217, 0.3);
+  color: #f3ead9;
+  box-shadow:
+    inset 0 1px rgba(243, 234, 217, 0.12),
+    0 10px 30px rgba(60, 30, 15, 0.28);
 }

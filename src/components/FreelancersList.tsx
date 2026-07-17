@@ -3,7 +3,6 @@
 import { useEffect, useRef, useState } from 'react';
 import styles from './FreelancersList.module.css';
 import VisorCard from './VisorCard';
-import CodeCard from './CodeCard';
 
 type Freelancer = {
   first: string;
@@ -11,7 +10,7 @@ type Freelancer = {
   role: string;
   note: string;
   photo: string;
-  card?: 'king' | 'code'; // renders a collectible card instead of a photo
+  card?: 'king' | 'code' | 'anon'; // renders a collectible card instead of a photo
 };
 
 const FREELANCERS: Freelancer[] = [
@@ -37,6 +36,7 @@ const FREELANCERS: Freelancer[] = [
     role: 'Brand & Strategy',
     note: 'Identity classified. The work speaks loudly enough.',
     photo: '/porthomeimages/anon-1.svg',
+    card: 'anon',
   },
   {
     first: 'Anonymous',
@@ -44,6 +44,7 @@ const FREELANCERS: Freelancer[] = [
     role: 'Motion & 3D',
     note: 'Lives somewhere between keyframes. Please don’t ask for a name.',
     photo: '/porthomeimages/anon-2.svg',
+    card: 'anon',
   },
 ];
 
@@ -121,9 +122,11 @@ export default function FreelancersList() {
 
   const renderVisual = (person: Freelancer) =>
     person.card === 'king' ? (
-      <VisorCard />
+      <VisorCard person="andrej" />
     ) : person.card === 'code' ? (
-      <CodeCard />
+      <VisorCard person="asad" />
+    ) : person.card === 'anon' ? (
+      <VisorCard person="anon" sub={person.role.toUpperCase()} />
     ) : (
       <div className={styles.photoFrame}>
         {/* eslint-disable-next-line @next/next/no-img-element */}

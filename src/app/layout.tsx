@@ -25,7 +25,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    // color-scheme="light": the clay editorial theme is the DEFAULT first
+    // paint for every visitor (no dark flash for OS-dark users; JS only
+    // switches if the visitor explicitly toggled dark before).
+    // suppressHydrationWarning: libs.min.js (Modernizr) stamps feature classes
+    // on <html> before React hydrates — expected, not a real mismatch.
+    <html lang="en" suppressHydrationWarning {...{ 'color-scheme': 'light' }}>
       <head>
         <link rel="icon" href="/favicon.ico" type="image/x-icon" />
         <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />

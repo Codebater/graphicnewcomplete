@@ -28,52 +28,11 @@ const posterOf = (videoUrl: string) => videoUrl.replace(/\.(mp4|webm|mov)(\?.*)?
 const WIPE_COLS = 16;
 const WIPE_ROWS = 11;
 
-// Pixel-art motifs drawn BY the wipe tiles: while the dark tiles fade out
-// early, the shape tiles (green, `o` = white highlight) hold a beat so a
-// heart / trophy / 1UP reads mid-transition, then dissolves. Rotates per
-// project so every change feels like a little arcade reward.
-const WIPE_SHAPES: string[][] = [
-  [
-    // heart
-    '..##...##..',
-    '.#o##.####.',
-    '###########',
-    '###########',
-    '.#########.',
-    '..#######..',
-    '...#####...',
-    '....###....',
-    '.....#.....',
-  ],
-  [
-    // trophy
-    '###########',
-    '#.o######.#',
-    '#.#######.#',
-    '.#.#####.#.',
-    '...#####...',
-    '....###....',
-    '.....#.....',
-    '....###....',
-    '..#######..',
-  ],
-  [
-    // 1UP mushroom
-    '...#####...',
-    '..##ooo##..',
-    '.###ooo###.',
-    '#oo#####oo#',
-    '.#########.',
-    '...ooooo...',
-    '...o#o#o...',
-    '....ooo....',
-  ],
-];
-
 export default function SelectedWork({ projects }: { projects: ProjectListItem[] }) {
   const rootRef = useRef<HTMLElement | null>(null);
   const listRef = useRef<HTMLUListElement | null>(null);
   const fillRef = useRef<HTMLSpanElement | null>(null);
+  const mediaRef = useRef<HTMLDivElement | null>(null);
   const [active, setActive] = useState(0);
   const activeRef = useRef(0);
   // The wipe only exists in the DOM for a short window after a REAL project
@@ -210,6 +169,11 @@ export default function SelectedWork({ projects }: { projects: ProjectListItem[]
                 activeRef.current = idx;
                 setActive(idx);
               }
+              // scroll-linked drift: the active work slides gently against
+              // the scroll on the way to the next project (CSS moves the
+              // media by this var — transform-only, composited)
+              const frac = Math.max(-0.5, Math.min(0.5, f - activeRef.current));
+              mediaRef.current?.style.setProperty('--sw-drift', frac.toFixed(4));
             },
           });
           requestAnimationFrame(() => ScrollTrigger.refresh());
@@ -330,7 +294,7 @@ export default function SelectedWork({ projects }: { projects: ProjectListItem[]
           {/* centre player */}
           <div className={styles.player}>
             <div className={styles.mediaShell}>
-              <div className={styles.media}>
+              <div className={styles.media} ref={mediaRef}>
                 {projects.map((p, i) => (
                   <div key={p.id} className={`${styles.frame} ${i === active ? styles.frameActive : ''}`}>
                     {p.video ? (
@@ -364,45 +328,57 @@ export default function SelectedWork({ projects }: { projects: ProjectListItem[]
                   </div>
                 ))}
 
-                {/* checkerboard tile wipe — only exists in the DOM for ~260ms
-                    after a real project change (React removes it, so tiles can
-                    never linger). The tiles draw a heart / trophy / 1UP
-                    mid-transition: tiles pop in staggered (sweep), each LAYER
-                    pops out as one — dark field first, motif a beat later. */}
+                {/* chromatic tile wipe (aurora mosaic) — only exists in the
+                    DOM for ~260ms after a real project change (React removes
+                    it, so tiles can never linger). Each tile is coloured from
+                    a radial aurora field — blue → indigo core → magenta →
+                    orange — melting into the page colour at the edges, with a
+                    few striped/dotted accent tiles. Tiles pop in staggered
+                    (direction-aware sweep) and the layer pops out as one. */}
                 {wipeOn && (() => {
                   const dir = dirRef.current;
-                  const shape = WIPE_SHAPES[wipeSeqRef.current % WIPE_SHAPES.length];
-                  const rowOff = Math.floor((WIPE_ROWS - shape.length) / 2);
-                  const colOff = Math.floor((WIPE_COLS - shape[0].length) / 2);
+                  const seq = wipeSeqRef.current;
                   // scroll down: sweep left→right; scroll up: mirrored right→left
                   const delay = (c: number, r: number) =>
                     (dir === 1 ? c : WIPE_COLS - 1 - c) * 3 + ((r + c) % 2) * 18;
-                  // only the shape's own cells get DOM nodes (placed on the grid)
-                  const shapeCells: { c: number; r: number; ch: string }[] = [];
-                  shape.forEach((row, sr) =>
-                    [...row].forEach((ch, sc) => {
-                      if (ch === '#' || ch === 'o') shapeCells.push({ c: sc + colOff, r: sr + rowOff, ch });
-                    })
-                  );
+                  // subtle per-transition hue drift (kept small — big rotations
+                  // would drag the palette through greens the artwork avoids)
+                  const hueDrift = ((seq * 37) % 81) - 40;
+                  const tileStyle = (c: number, r: number): React.CSSProperties => {
+                    // aurora flows WITH the scroll: mirrored when stepping back
+                    const dx = (dir === 1 ? c / (WIPE_COLS - 1) : 1 - c / (WIPE_COLS - 1)) - 0.5;
+                    const dy = r / (WIPE_ROWS - 1) - 0.5;
+                    const d = Math.min(1, Math.hypot(dx, dy) * 1.9);
+                    // long-way hue lerp 215° → 390° (blue → violet core → orange),
+                    // never crossing green; top rows lean magenta
+                    const hue = (215 + (dx + 0.5) * 175 - dy * 35 + hueDrift + 360) % 360;
+                    const sat = Math.round(92 - d * 48);
+                    const light = Math.round(27 + d * 46);
+                    const melt = Math.max(0, Math.min(1, (d - 0.55) / 0.45)); // edges → page colour
+                    const vivid = Math.round(100 - melt * 82);
+                    const s: React.CSSProperties = {
+                      animationDelay: `${delay(c, r)}ms`,
+                      backgroundColor: `color-mix(in oklab, hsl(${hue} ${sat}% ${light}%) ${vivid}%, var(--base))`,
+                    };
+                    // sparse pattern tiles like the artwork (deterministic)
+                    const h = (c * 7 + r * 13 + seq * 5) % 23;
+                    if (h === 3) {
+                      s.backgroundImage =
+                        'repeating-linear-gradient(45deg, rgba(255,255,255,0.30) 0 2px, transparent 2px 6px)';
+                    } else if (h === 7) {
+                      s.backgroundImage = 'radial-gradient(rgba(255,255,255,0.35) 1px, transparent 1.4px)';
+                      s.backgroundSize = '6px 6px';
+                    }
+                    return s;
+                  };
                   return (
-                    <>
-                      <div key={`d${wipeSeqRef.current}`} className={`${styles.wipe} ${styles.wipeDarkLayer}`} aria-hidden="true">
-                        {Array.from({ length: WIPE_COLS * WIPE_ROWS }).map((_, i) => {
-                          const c = i % WIPE_COLS;
-                          const r = (i / WIPE_COLS) | 0;
-                          return <i key={i} className={styles.wipeDark} style={{ animationDelay: `${delay(c, r)}ms` }} />;
-                        })}
-                      </div>
-                      <div key={`s${wipeSeqRef.current}`} className={`${styles.wipe} ${styles.wipeShapeLayer} ${dir === -1 ? styles.wipeUp : ''}`} aria-hidden="true">
-                        {shapeCells.map(({ c, r, ch }, i) => (
-                          <i
-                            key={i}
-                            className={ch === '#' ? styles.wipeShape : styles.wipeShapeAlt}
-                            style={{ gridColumn: c + 1, gridRow: r + 1, animationDelay: `${delay(c, r)}ms` }}
-                          />
-                        ))}
-                      </div>
-                    </>
+                    <div key={`d${seq}`} className={`${styles.wipe} ${styles.wipeDarkLayer}`} aria-hidden="true">
+                      {Array.from({ length: WIPE_COLS * WIPE_ROWS }).map((_, i) => {
+                        const c = i % WIPE_COLS;
+                        const r = (i / WIPE_COLS) | 0;
+                        return <i key={i} className={styles.wipeDark} style={tileStyle(c, r)} />;
+                      })}
+                    </div>
                   );
                 })()}
 

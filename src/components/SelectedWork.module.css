@@ -208,59 +208,48 @@
   will-change: opacity, transform;
 }
 .frame img, .frame video { width: 100%; height: 100%; object-fit: cover; display: block; }
+/* scroll-linked drift: while scrolling toward the next project the active
+   work slides gently against the scroll (--sw-drift set per frame by the
+   ScrollTrigger; transform-only = composited). The slight base scale keeps
+   edges hidden while drifting. */
+.media { --sw-drift: 0; }
+.frameActive img,
+.frameActive video {
+  transform: translateY(calc(var(--sw-drift) * -30px)) scale(1.045);
+}
+@media (prefers-reduced-motion: reduce) {
+  .frameActive img,
+  .frameActive video { transform: none; }
+}
 .noMedia { position: absolute; inset: 0; background: linear-gradient(135deg, #17171a, #0d0d0f); }
 .frameActive { opacity: 1; visibility: visible; transform: scale(1); filter: none; transition-delay: 0s; }
-/* checkerboard tile wipe over the media on project change */
+/* chromatic tile wipe (aurora mosaic) over the media on project change —
+   hairline seams + tiny tile rounding give the reference artwork's mosaic
+   feel; colours come inline per tile (aurora field melting into var(--base)
+   at the edges, so it sits naturally on BOTH themes) */
 .wipe {
   position: absolute;
   inset: 0;
   display: grid;
   grid-template-columns: repeat(16, 1fr);
   grid-template-rows: repeat(11, 1fr);
+  gap: 2px;
   pointer-events: none;
   z-index: 1;
 }
-/* One animation per element (composite-order safe): tiles pop IN staggered
-   (sweep, delay inline); each LAYER pops OUT as a whole — motif first, then
-   the dark field. Cover phase = motif on dark tile field (preloader
-   language); the field drop reveals the finished work, nothing lingering. */
-/* real durations (not 1ms) so throttled compositors can't skip the final
-   frame; steps keep the binary pixel pop. The motif leaves just a beat after
-   the field — a quick flash, gone before the transition even finishes. */
-/* Exit choreography (premium, no lingering): the MOTIF lifts off first — a
-   smooth scale-up + fade — then the dark field drops, revealing the finished
-   work with nothing left on top. */
+/* Tiles pop IN staggered (direction-aware sweep, delay inline); the whole
+   layer pops OUT as one, revealing the finished work with nothing left on
+   top. Real durations (not 1ms) so throttled compositors can't skip the
+   final frame; steps keep the binary pixel pop. */
 .wipeDarkLayer { animation: sw-layer-out 0.08s steps(3, end) forwards; animation-delay: 160ms; }
-.wipeShapeLayer {
-  animation: sw-shape-exit 0.11s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-  animation-delay: 110ms;
-  transform-origin: center;
-  will-change: opacity, transform;
-}
-@keyframes sw-shape-exit {
-  from { opacity: 1; transform: scale(1); }
-  to   { opacity: 0; transform: scale(1.14); }
-}
-/* scrolling back up: the motif RECEDES (scale-down) instead of lifting off —
-   together with the mirrored sweep this reads unmistakably as "reverse" */
-.wipeShapeLayer.wipeUp { animation-name: sw-shape-exit-rev; }
-@keyframes sw-shape-exit-rev {
-  from { opacity: 1; transform: scale(1); }
-  to   { opacity: 0; transform: scale(0.86); }
-}
 .wipe i {
   display: block;
   opacity: 0;
+  border-radius: 2px;
 }
-.wipe .wipeDark,
-.wipe .wipeShape,
-.wipe .wipeShapeAlt {
+.wipe .wipeDark {
   animation: sw-tile-in 1ms steps(1, end) both;
 }
-.wipe .wipeDark { background: #131313; }
-/* soft dark edge so the motif also reads over light project media */
-.wipe .wipeShape { background: #ddf160; box-shadow: 0 0 0 2px rgba(10, 10, 10, 0.4); }
-.wipe .wipeShapeAlt { background: #ffffff; box-shadow: 0 0 0 2px rgba(10, 10, 10, 0.4); }
 @keyframes sw-tile-in { from { opacity: 0; } to { opacity: 1; } }
 @keyframes sw-layer-out { from { opacity: 1; } to { opacity: 0; } }
 

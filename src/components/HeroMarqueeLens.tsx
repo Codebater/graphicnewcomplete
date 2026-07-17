@@ -135,12 +135,28 @@ export default function HeroMarqueeLens() {
       const second = strip.children[setLen] as HTMLElement;
       const stripPeriod = second.offsetLeft - first.offsetLeft;
 
+      // The clay character's HEAD is the lens now: ball centre at
+      // (50%, 18%) of the image, radius 24% of its width, star eyes riding
+      // slightly above centre at 15.2% (fractions measured from the cutout).
+      const HEAD = { cx: 0.5, cy: 0.18, r: 0.24, eyeCy: 0.152 };
+
       // Static band geometry — only changes on resize, never per frame.
+      // The head sits ON the marquee line (original composition): the icon
+      // strip is the TEXT LINE's band with the ORIGINAL fixed icon sizes —
+      // the exact icons-to-text ratio the effect always had. The overlay box
+      // is sized to the character's region (the head pokes above the line's
+      // container, so an inset:0 overlay would clip it); all coordinates are
+      // relative to the overlay's own rect.
       const measureBand = () => {
         if (!overlay) return;
         const or = (marquee as HTMLElement).getBoundingClientRect();
         const lr = line.getBoundingClientRect();
-        strip.style.top = `${lr.top - or.top}px`;
+        const ir = smiley.getBoundingClientRect();
+        const pad = ir.width * 0.06;
+        overlay.style.top = `${ir.top - or.top - pad}px`;
+        overlay.style.height = `${ir.height + pad * 2}px`;
+        const ovTop = ir.top - pad; // overlay's viewport top as just laid out
+        strip.style.top = `${lr.top - ovTop}px`;
         strip.style.left = `${lr.left - or.left}px`;
         strip.style.height = `${lr.height}px`;
       };
@@ -164,19 +180,20 @@ export default function HeroMarqueeLens() {
         // --- READS FIRST (batched so no write below forces a sync re-layout) ---
         // Mirror the real track's x-position (style read, no layout).
         const m = new DOMMatrixReadOnly(getComputedStyle(track).transform);
-        // The smiley BOBS vertically (CSS mxd-move, ±1rem @1.2s), so the lens
-        // circle must follow it EVERY frame at sub-pixel precision. Updating
-        // only every 3rd frame + rounding to whole px made the circle jump in
-        // ~5px steps = the "framey" look. These two rects are the only layout
-        // reads; taking them before any style write keeps layout clean.
-        const or = (marquee as HTMLElement).getBoundingClientRect();
+        // The character BOBS vertically (CSS mxd-move, ±1rem @1.2s), so the
+        // lens circle must follow it EVERY frame at sub-pixel precision.
+        // These two rects are the only layout reads; taking them before any
+        // style write keeps layout clean.
+        const ovR = overlay.getBoundingClientRect();
         const sr = smiley.getBoundingClientRect();
 
         // --- COMPUTE ---
         const x = -((-m.m41 % stripPeriod + stripPeriod) % stripPeriod);
-        const cx = sr.left + sr.width / 2 - or.left;
-        const cy = sr.top + sr.height / 2 - or.top;
-        const r = Math.min(sr.width, sr.height) * 0.36;
+        // the lens is the character's HEAD; coords relative to the overlay
+        // box (which is sized to the character's region, not the container)
+        const cx = sr.left + sr.width * HEAD.cx - ovR.left;
+        const cy = sr.top + sr.height * HEAD.cy - ovR.top;
+        const r = sr.width * HEAD.r;
         // sub-pixel (no Math.round) so the circle glides with the ball
         const clip = r > 4 ? `circle(${r}px at ${cx}px ${cy}px)` : 'circle(0 at 50% 50%)';
 
@@ -203,7 +220,9 @@ export default function HeroMarqueeLens() {
     };
 
     const tryInit = () => {
-      if (!init() && tries++ < 60) retryTimer = setTimeout(tryInit, 250);
+      // generous retry window (~45s): slow devices/first paints can take a
+      // while before the marquee tween writes its first transform
+      if (!init() && tries++ < 180) retryTimer = setTimeout(tryInit, 250);
     };
     tryInit();
 

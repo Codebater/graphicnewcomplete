@@ -4,35 +4,112 @@ import { useEffect, useRef } from 'react';
 import PixelText from './PixelText';
 import styles from './VisorCard.module.css';
 
-// "The Visor" — Andrej's collectible card. The hero section's lens effect,
-// worn: a marquee of the SAME pixel icons (heart, crown, diamond, invader,
-// star) scrolls across the mirrored band of his glasses, as if the hero
-// marquee is being projected onto the visor. Same interaction skeleton as
-// the other cards: eased 3D cursor tilt, idle float, IO-paused rAF.
+// "The Visor" — collectible cards wearing the hero effect: a marquee of
+// pixel icons projected onto the mirrored band of each person's glasses.
+// The projection is clipped by a MATTE OF THE ACTUAL LENS, extracted from
+// each photo's pixels (glass silhouette incl. curved edges, nose-bridge
+// cutouts and overlapping hair — icons pass BEHIND those, like a
+// compositor's matte). Same interaction skeleton as the other cards:
+// eased 3D cursor tilt, idle float, IO-paused rAF.
 
-// Pixel-art bitmaps — identical to HeroMarqueeLens so the brand language
-// stays one-to-one ('#' = filled cell).
-const BITMAPS: string[][] = [
-  // heart
-  ['.##.##.', '#######', '#######', '.#####.', '..###..', '...#...'],
-  // crown
-  ['#..#..#', '#..#..#', '#######', '#######', '.#####.'],
-  // diamond
-  ['..##..', '.####.', '######', '.####.', '..##..'],
-  // space invader
-  [
-    '..#.....#..',
-    '...#...#...',
-    '..#######..',
-    '.##.###.##.',
-    '###########',
-    '#.#######.#',
-    '#.#.....#.#',
-    '...##.##...',
-  ],
-  // pixel star
-  ['...#...', '..###..', '#######', '.#####.', '..###..', '.#...#.'],
-];
+type Band = { left: string; top: string; width: string; height: string; tilt: number };
+
+type PersonConfig = {
+  photo: string;
+  mask: string;
+  /* the photo's exact aspect ratio — the parallax wrap uses it so the matte's
+     percentage coordinates map 1:1 onto the image (no object-fit cropping) */
+  aspect: string;
+  alt: string;
+  name: string;
+  sub: string;
+  band: Band;
+  icons: string[][];
+};
+
+// shared pixel bitmaps ('#' = filled cell)
+const G = ['.###.', '#....', '#..##', '#...#', '.###.'];                     // brand logo
+const EYE = ['..###..', '.#...#.', '#..#..#', '.#...#.', '..###..'];
+const BOLT = ['..##.', '.##..', '####.', '..##.', '.##..', '##...'];
+const HEART = ['.##.##.', '#######', '#######', '.#####.', '..###..', '...#...'];
+const STAR = ['...#...', '..###..', '#######', '.#####.', '..###..', '.#...#.'];
+
+const CONFIGS: Record<'andrej' | 'asad' | 'anon', PersonConfig> = {
+  // Design lead: G, designer's cursor, pen nib, eye, bolt, heart, star
+  andrej: {
+    photo: '/king/andrej-visor.webp',
+    mask: '/king/andrej-visor-mask.png',
+    aspect: '1086 / 1448',
+    alt: 'Andrej — Design Lead',
+    name: 'ANDREJ',
+    sub: 'DESIGN LEAD',
+    // lens band measured from the photo: x 27.3%→77.6%, centerline y 38.6%,
+    // real downward tilt 3.2° to camera-right
+    band: { left: '27.3%', top: '33.2%', width: '50.3%', height: '10.4%', tilt: 3.2 },
+    icons: [
+      G,
+      ['#......', '##.....', '###....', '####...', '#####..', '######.', '###....', '#.#....'], // cursor
+      ['..###..', '.#####.', '.#####.', '..###..', '..#.#..', '...#...'], // pen nib
+      EYE,
+      BOLT,
+      HEART,
+      STAR,
+    ],
+  },
+  // Dev lead: G, code brackets, terminal prompt, eye, bolt, heart, star
+  asad: {
+    photo: '/king/asad-visor.webp',
+    mask: '/king/asad-visor-mask.png',
+    aspect: '1122 / 1402',
+    alt: 'Asad — Dev Lead',
+    name: 'ASAD',
+    sub: 'DEV LEAD',
+    // lens band measured from the photo: x 28.3%→74.9%, centerline y ~37.4%,
+    // essentially level (−0.8°)
+    band: { left: '28%', top: '32.1%', width: '47.5%', height: '10.5%', tilt: -0.8 },
+    icons: [
+      G,
+      ['..#.#..', '.#...#.', '#.....#', '.#...#.', '..#.#..'], // <> brackets
+      ['#.....', '.#....', '..#...', '.#....', '#..###'],      // >_ terminal
+      EYE,
+      BOLT,
+      HEART,
+      STAR,
+    ],
+  },
+  // The Anonymous — the hero smiley ball itself in a suit. The marquee runs
+  // straight through BOTH star-shaped eye recesses (parametric star mattes
+  // aligned to the photo), icons sized up to the recess scale.
+  anon: {
+    photo: '/king/anon-visor.webp',
+    mask: '/king/anon-visor-mask.png',
+    aspect: '2 / 3',
+    alt: 'Anonymous — the GRAPHIQ smiley',
+    name: 'ANONYMOUS',
+    sub: 'CLASSIFIED',
+    // one lane through both star eyes: x 22%→78%, centerline y ~25.8%,
+    // slight 1.3° tilt between the two recess centers
+    band: { left: '22%', top: '19.3%', width: '56%', height: '13%', tilt: 1.3 },
+    icons: [
+      G,
+      ['.###.', '#...#', '...#.', '..#..', '..#..', '.....', '..#..'], // ?
+      [
+        '..#.....#..',
+        '...#...#...',
+        '..#######..',
+        '.##.###.##.',
+        '###########',
+        '#.#######.#',
+        '#.#.....#.#',
+        '...##.##...',
+      ], // space invader (was printed in the eyes)
+      EYE,
+      BOLT,
+      HEART,
+      STAR,
+    ],
+  },
+};
 
 function IconSvg({ rows }: { rows: string[] }) {
   const h = rows.length;
@@ -58,10 +135,10 @@ function IconSvg({ rows }: { rows: string[] }) {
 }
 
 // One icon set; rendered twice inside the strip for a seamless -50% loop.
-function IconSet() {
+function IconSet({ icons }: { icons: string[][] }) {
   return (
     <>
-      {BITMAPS.map((bm, i) => (
+      {icons.map((bm, i) => (
         <span key={i} className={styles.icon}>
           <IconSvg rows={bm} />
         </span>
@@ -70,7 +147,17 @@ function IconSet() {
   );
 }
 
-export default function VisorCard() {
+export default function VisorCard({
+  person = 'andrej',
+  sub,
+}: {
+  person?: 'andrej' | 'asad' | 'anon';
+  /* per-slot label override (the two Anonymous entries share one card
+     but carry their own roles) */
+  sub?: string;
+}) {
+  const cfg = CONFIGS[person];
+  const subText = sub ?? cfg.sub;
   const stageRef = useRef<HTMLDivElement | null>(null);
   const cardRef = useRef<HTMLDivElement | null>(null);
 
@@ -138,15 +225,33 @@ export default function VisorCard() {
           <div className={styles.frame}>
             {/* photo + visor overlay share ONE parallax wrap so the marquee
                 stays glued to the glasses while the card tilts */}
-            <div className={styles.photoWrap}>
+            <div className={styles.photoWrap} style={{ aspectRatio: cfg.aspect }}>
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img decoding="async" className={styles.portrait} src="/king/andrej-visor.webp" alt="Andrej — Design Lead" />
+              <img decoding="async" className={styles.portrait} src={cfg.photo} alt={cfg.alt} />
 
-              {/* the visor projection: hero pixel icons scrolling on the lens */}
-              <div className={styles.visor} aria-hidden="true">
-                <div className={styles.visorStrip}>
-                  <IconSet />
-                  <IconSet />
+              {/* the projection, clipped by the lens matte */}
+              <div
+                className={styles.visor}
+                aria-hidden="true"
+                style={{
+                  WebkitMaskImage: `url(${cfg.mask})`,
+                  maskImage: `url(${cfg.mask})`,
+                }}
+              >
+                <div
+                  className={styles.visorBand}
+                  style={{
+                    left: cfg.band.left,
+                    top: cfg.band.top,
+                    width: cfg.band.width,
+                    height: cfg.band.height,
+                    transform: `rotate(${cfg.band.tilt}deg)`,
+                  }}
+                >
+                  <div className={styles.visorStrip}>
+                    <IconSet icons={cfg.icons} />
+                    <IconSet icons={cfg.icons} />
+                  </div>
                 </div>
                 <div className={styles.visorSheen} />
               </div>
@@ -162,10 +267,10 @@ export default function VisorCard() {
 
           {/* typography — tile lettering, hero language */}
           <div className={styles.type}>
-            <div className={styles.word}>
-              <PixelText text="ANDREJ" cursor={false} font="5x7" />
+            <div className={`${styles.word} ${cfg.name.length > 7 ? styles.wordLong : ''}`}>
+              <PixelText text={cfg.name} cursor={false} font="5x7" />
             </div>
-            <div className={styles.sub}>DESIGN LEAD</div>
+            <div className={styles.sub}>{subText}</div>
           </div>
         </div>
       </div>

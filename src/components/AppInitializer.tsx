@@ -1345,7 +1345,9 @@ export default function AppInitializer() {
       const themeBtn = document.querySelector('#color-switcher');
       if (themeBtn) {
         function getCurrentTheme(){
-          let theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+          // the clay editorial (light) theme is the site's default look;
+          // visitors who explicitly toggled keep their choice
+          let theme = 'light';
           const savedTheme = localStorage.getItem('template.theme');
           if (savedTheme) {
             theme = savedTheme;

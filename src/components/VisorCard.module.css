@@ -48,7 +48,8 @@
   left: 50%;
   top: 42%;
   width: 106%;
-  aspect-ratio: 3 / 4;
+  /* aspect-ratio comes inline per person = the photo's EXACT ratio, so the
+     matte's % coordinates map 1:1 onto the image (object-fit never crops) */
   transform: translate(-50%, -50%)
     translate(calc((var(--px) - 0.5) * -14px), calc((var(--py) - 0.5) * -14px));
 }
@@ -62,19 +63,25 @@
 }
 
 /* ---- the visor projection ---- */
+/* The projection overlay covers the WHOLE photo and is clipped by a matte of
+   the actual lens: an alpha PNG traced from each photo's pixels (the glass
+   silhouette with its curved edges, nose-bridge cutouts and any overlapping
+   hair notched out, with soft fades baked into the ends). Nothing can ever
+   render outside the physical glass. The mask URL and the band geometry are
+   set inline per person (see CONFIGS in VisorCard.tsx). */
 .visor {
   position: absolute;
-  /* the glasses' solid lens band, measured from the photo's pixels
-     (dark-span scan: rows 33.5%→42.5%, cols 28.5%→77.5%) */
-  left: 29%;
-  top: 33.4%;
-  width: 48.2%;
-  height: 9.8%;
-  border-radius: 999px;
-  overflow: hidden;
-  /* fade the strip out toward the visor's curved ends */
-  -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 10%, #000 90%, transparent 100%);
-  mask-image: linear-gradient(90deg, transparent 0, #000 10%, #000 90%, transparent 100%);
+  inset: 0;
+  -webkit-mask-size: 100% 100%;
+  mask-size: 100% 100%;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+}
+/* the icon lane rides each visor's real tilt along its centerline;
+   the matte above does all the precise clipping */
+.visorBand {
+  position: absolute;
+  transform-origin: center;
 }
 .visorStrip {
   position: absolute;
@@ -111,10 +118,14 @@
   height: 100%;
   display: block;
 }
-/* live reflection on the lens — follows the cursor like a real mirror */
+/* live reflection on the lens — follows the cursor like a real mirror
+   (inside the matte, so it too exists only on the glass) */
 .visorSheen {
   position: absolute;
-  inset: 0;
+  left: 20%;
+  top: 28%;
+  width: 64%;
+  height: 22%;
   background: linear-gradient(
     105deg,
     transparent 32%,
@@ -206,6 +217,10 @@
 .word :global(.pixel-text__cell--on) {
   background: var(--lime);
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.45);
+}
+/* long names (ANONYMOUS) get smaller tiles so the word fits the card */
+.wordLong :global(.pixel-text) {
+  --pxt: clamp(0.22rem, 0.62vw, 0.34rem);
 }
 .sub {
   font-family: var(--_font-accent, "Funnel Display", sans-serif);
