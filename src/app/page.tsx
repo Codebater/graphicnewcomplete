@@ -464,12 +464,13 @@ export default async function Home() {
                   <div className="col-12 col-xl-6 mxd-grid-item no-margin">
                     <div className="mxd-block__content">
                       <div className="mxd-block__paragraph">
-                        <p className="t-large t-bright anim-uni-in-up">We are a creative digital agency specializing in innovative design and cutting-edge 
-                          development. We help businesses stand out and thrive in the modern landscape. 
+                        <p className="t-large t-bright anim-uni-in-up">We work with people who have vision, taste, and the courage to build something
+                          meaningful. Together, we turn ambitious ideas into thoughtful digital experiences, products, and brands built to last.
                         </p>
-                        <p className="anim-uni-in-up">From pixel-perfect designs to flawless code, every aspect of our projects is 
-                          crafted with care to ensure the highest standards of quality. We are passionate about integrating the latest technologies and trends, including 
-                          interactive animations and mobile-first strategies.</p>
+                        <p className="anim-uni-in-up">The work we create for our clients also helps fund our own projects—useful tools
+                          and infrastructure designed to give other dreamers a stronger foundation for bringing their ideas to life.</p>
+                        <p className="anim-uni-in-up">We are not interested in chasing trends or simply finding the next thing to sell.
+                          We focus on solving real problems, helping good people, and creating work that is genuinely useful.</p>
                         <div className="mxd-paragraph__controls anim-uni-in-up">
                           <Link className="btn btn-anim btn-default btn-outline slide-right-up" href="/about-us">
                             <span className="btn-caption">More About Us</span>
