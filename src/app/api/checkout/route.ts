@@ -43,9 +43,10 @@ const PLANS: Record<string, PlanConfig> = {
     mode: 'payment',
   },
   'launch-72h': {
-    name: 'Launch My Business — Live in 72 Hours',
+    // key kept for compatibility — the promise is 96 hours (72h + a 24h polish day)
+    name: 'Launch My Business — Live in 96 Hours',
     description:
-      'Complete business website launched in 72 hours: design, copy, domain, hosting and contact — done for you. Single slot.',
+      'Complete business website launched in 96 hours: design, copy, domain, hosting and contact — done for you. Single slot.',
     amountCents: 149_900, // $1,499 one-time — ONE slot, booked live
     mode: 'payment',
   },

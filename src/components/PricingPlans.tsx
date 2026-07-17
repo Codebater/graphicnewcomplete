@@ -33,7 +33,7 @@ type Plan = {
   badge?: string;
   description: string;
   features: string[];
-  tools: string;
+  tools: React.ReactNode;
   price: string;
   period: string;
   action:
@@ -41,20 +41,21 @@ type Plan = {
     | { type: 'contact'; label: string };
 };
 
-// The flagship one-slot offer (card 01).
+// The flagship one-slot offer (card 01). 96 hours = 72h + a 24h polish day.
+// (The internal plan/slot key stays 'launch-72h' — invisible to users.)
 const LAUNCH = {
   num: '01',
   icon: 'ph-rocket-launch',
   title: '🚀 Launch My Business',
-  metric: 'Go live in 72 hours.',
+  metric: 'Go live in 96 hours.',
   description:
-    'Idea on Monday, business online by Thursday. We design, write and launch your complete business website — done for you.',
+    'Idea on Monday, business online by Friday. We design, write and launch your complete business website — done for you.',
   features: [
-    'Complete business website, live in 3 days',
+    'Complete business website, live in 4 days',
     'Domain, hosting & business email set up',
     'Copy & design shaped in one workshop call',
     'Contact & booking so clients reach you day one',
-    '72-hour delivery — guaranteed',
+    '96-hour delivery — guaranteed',
   ],
   tools: 'Next.js · Vercel · Figma',
   price: '$1,499',
@@ -153,7 +154,15 @@ const PLANS: Plan[] = [
       'CRM, sheets & invoicing connected',
       'Documented so your team actually uses it',
     ],
-    tools: 'AI · Telegram · Make · APIs',
+    tools: (
+      <>
+        AI ·{' '}
+        <i className={`ph-fill ph-telegram-logo ${styles.toolIcon} ${styles.toolTelegram}`} aria-hidden="true" />{' '}
+        Telegram ·{' '}
+        <i className={`ph-fill ph-whatsapp-logo ${styles.toolIcon} ${styles.toolWhatsApp}`} aria-hidden="true" />{' '}
+        WhatsApp · Make · APIs
+      </>
+    ),
     price: '$1,850',
     period: '/ one time',
     action: { type: 'buy', key: 'automation', label: 'Buy now' },
@@ -172,7 +181,7 @@ const PLANS: Plan[] = [
       'Admin dashboard to run it',
       'Architecture that scales with you',
     ],
-    tools: 'Next.js · Postgres · Stripe',
+    tools: 'Custom — ask us',
     price: '$5,500 – $11,000',
     period: '/ project',
     action: { type: 'contact', label: 'Get a quote' },
@@ -191,7 +200,7 @@ const PLANS: Plan[] = [
       'Performance engineered at scale',
       'Long-term support & evolution',
     ],
-    tools: 'React · APIs · Cloud',
+    tools: 'Custom — ask us',
     price: '$11,000+',
     period: '/ project',
     action: { type: 'contact', label: 'Get a quote' },

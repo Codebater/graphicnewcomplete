@@ -102,6 +102,13 @@
   color: var(--t-muted);
   opacity: 0.85;
 }
+/* brand icons inside a tools line (Telegram / WhatsApp on the Automation card) */
+.toolIcon {
+  font-size: 1.6rem;
+  vertical-align: -0.25em;
+}
+.toolTelegram { color: #229ed9; }
+.toolWhatsApp { color: #25d366; }
 
 /* One-slot availability line under the hero CTA */
 .slotNote {

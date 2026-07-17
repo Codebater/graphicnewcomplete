@@ -8,7 +8,7 @@ import Loader from '@/components/Loader';
 
 export const metadata = {
   title: 'Pricing - GRAPHIQ STUDIO LLC - Business Growth Studio',
-  description: 'Launch your business in 72 hours, sell online in a week, automate away 10+ hours of work — outcome-first packages from GRAPHIQ STUDIO LLC, your business growth studio.',
+  description: 'Launch your business in 96 hours, sell online in a week, automate away 10+ hours of work — outcome-first packages from GRAPHIQ STUDIO LLC, your business growth studio.',
   keywords: 'pricing, packages, web design pricing, digital agency pricing, creative solutions, starter package, professional package',
   openGraph: {
     title: 'Pricing - GRAPHIQ STUDIO LLC',
