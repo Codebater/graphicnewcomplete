@@ -93,18 +93,38 @@
   justify-content: center;
 }
 
-/* ---- side list ---- */
+/* ---- bento cluster: shared card language for the three tiles ---- */
+.cluster {
+  --sw-gap: clamp(12px, 1.2vw, 18px);
+  --sw-radius: clamp(18px, 2vw, 26px);
+  --sw-card: var(--base-tint, #17171a);
+  --sw-line: color-mix(in srgb, var(--t-bright, #fff) 9%, transparent);
+  position: relative;
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  gap: var(--sw-gap);
+}
+
+/* ---- side list (bento tile) ---- */
 .listViewport {
-  position: absolute;
-  left: clamp(2.5rem, 7vw, 8rem);
-  top: 50%;
-  transform: translateY(-50%);
-  width: clamp(200px, 22vw, 320px);
-  height: clamp(230px, 44vh, 400px);
+  position: relative;
+  width: clamp(210px, 23vw, 320px);
+  border-radius: var(--sw-radius);
+  background: var(--sw-card);
+  border: 1px solid var(--sw-line);
+  padding: clamp(1rem, 2vh, 1.6rem) clamp(1.1rem, 1.6vw, 1.6rem);
   overflow: hidden;
   z-index: 3;
-  -webkit-mask-image: linear-gradient(180deg, transparent, #000 20%, #000 80%, transparent);
-  mask-image: linear-gradient(180deg, transparent, #000 20%, #000 80%, transparent);
+  display: flex;
+}
+/* the fade mask sits on this inner wrapper so the CARD surface stays solid
+   to its edges — only the names fade in/out */
+.listMask {
+  flex: 1;
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(180deg, transparent, #000 18%, #000 82%, transparent);
+  mask-image: linear-gradient(180deg, transparent, #000 18%, #000 82%, transparent);
 }
 .list {
   list-style: none;
@@ -146,9 +166,10 @@
 .item::before {
   content: '';
   position: absolute;
-  left: -3.2rem;
+  /* inside the card's padding now (it used to float in open space) */
+  left: -1.1rem;
   top: 50%;
-  width: 2.2rem;
+  width: 0.7rem;
   height: 1px;
   background: var(--accent, #c9a24b);
   transform: translateY(-50%) scaleX(0);
@@ -161,40 +182,35 @@
 .itemActive .itemNum { color: var(--accent, #c9a24b); opacity: 1; }
 .itemActive::before { transform: translateY(-50%) scaleX(1); opacity: 0.9; }
 
-/* ---- centre player ---- */
+/* ---- centre player (media tile + info tile column) ---- */
 .player {
   position: relative;
   z-index: 2;
   display: flex;
   flex-direction: column;
   align-items: center;
+  gap: var(--sw-gap, 14px);
   width: clamp(460px, 44vw, 660px);
   max-width: 90vw;
 }
-/* shell carries the glow (drop-shadow follows the stepped clip shape) */
+/* bento media tile: rounded card + soft shadow (box-shadow paints once —
+   the old stepped-clip drop-shadow() filters re-rendered the playing video
+   through two blurs every frame, on desktop too) */
 .mediaShell {
   width: 100%;
-  filter: drop-shadow(0 40px 70px rgba(0, 0, 0, 0.7))
-    drop-shadow(0 0 30px color-mix(in srgb, var(--accent, #c9a24b) 30%, transparent));
-  transition: filter 0.9s ease;
+  border-radius: var(--sw-radius, 24px);
+  box-shadow:
+    0 30px 70px rgba(0, 0, 0, 0.45),
+    0 0 30px color-mix(in srgb, var(--accent, #c9a24b) 22%, transparent);
+  transition: box-shadow 0.9s ease;
 }
-/* pixel-stepped corners — the brand's 8-bit notch, no rounding */
 .media {
   position: relative;
   width: 100%;
   aspect-ratio: 16 / 11;
   overflow: hidden;
   background: #101010;
-  clip-path: polygon(
-    0 16px, 8px 16px, 8px 8px, 16px 8px, 16px 0,
-    calc(100% - 16px) 0, calc(100% - 16px) 8px, calc(100% - 8px) 8px,
-    calc(100% - 8px) 16px, 100% 16px,
-    100% calc(100% - 16px), calc(100% - 8px) calc(100% - 16px),
-    calc(100% - 8px) calc(100% - 8px), calc(100% - 16px) calc(100% - 8px),
-    calc(100% - 16px) 100%,
-    16px 100%, 16px calc(100% - 8px), 8px calc(100% - 8px),
-    8px calc(100% - 16px), 0 calc(100% - 16px)
-  );
+  border-radius: var(--sw-radius, 24px);
 }
 .frame {
   position: absolute;
@@ -256,16 +272,19 @@
 @keyframes sw-tile-in { from { opacity: 0; } to { opacity: 1; } }
 @keyframes sw-layer-out { from { opacity: 1; } to { opacity: 0; } }
 
+/* mini bento chip floating on the media tile */
 .mediaBar {
   position: absolute;
-  left: 1.1rem;
-  bottom: 1rem;
+  left: 0.9rem;
+  bottom: 0.9rem;
   display: flex;
   align-items: center;
   gap: 1rem;
   z-index: 2;
   color: #fff;
-  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.6);
+  padding: 0.5rem 0.95rem;
+  border-radius: 14px;
+  background: rgba(12, 12, 12, 0.55);
 }
 .play {
   display: inline-flex;
@@ -311,25 +330,39 @@
   background-image: repeating-linear-gradient(90deg, var(--accent, #c9a24b) 0 0.42rem, transparent 0.42rem 0.74rem);
 }
 
-/* info below media */
+/* info tile below the media (bento card, editorial left-aligned). The ACTIVE
+   block is in normal flow so the card auto-fits its content — a fixed height
+   would clip longer descriptions past the rounded edge. Inactive blocks are
+   absolute at offsets equal to the padding, so the crossfade never shifts. */
 .info {
   position: relative;
   width: 100%;
-  min-height: clamp(190px, 24vh, 250px);
-  margin-top: clamp(1.6rem, 3vh, 2.6rem);
-  text-align: center;
+  min-height: clamp(170px, 21vh, 230px);
+  padding: clamp(1.2rem, 2.4vh, 1.7rem) clamp(1.3rem, 2vw, 2rem) clamp(1.3rem, 2.6vh, 1.9rem);
+  border-radius: var(--sw-radius, 24px);
+  background: var(--sw-card, #17171a);
+  border: 1px solid var(--sw-line, rgba(255, 255, 255, 0.09));
+  text-align: left;
 }
 .infoBlock {
   position: absolute;
-  left: 0;
-  right: 0;
-  top: 0;
+  left: clamp(1.3rem, 2vw, 2rem);
+  right: clamp(1.3rem, 2vw, 2rem);
+  top: clamp(1.2rem, 2.4vh, 1.7rem);
   opacity: 0;
   transform: translateY(16px);
   transition: opacity 0.3s ease, transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
   pointer-events: none;
 }
-.infoActive { opacity: 1; transform: none; pointer-events: auto; }
+.infoActive {
+  position: relative;
+  left: auto;
+  right: auto;
+  top: auto;
+  opacity: 1;
+  transform: none;
+  pointer-events: auto;
+}
 .cat {
   font-family: var(--_font-default, sans-serif);
   font-weight: 600;
@@ -351,8 +384,8 @@
   color: var(--ink);
 }
 .desc {
-  max-width: 42ch;
-  margin: clamp(0.9rem, 1.8vh, 1.4rem) auto 0;
+  max-width: 46ch;
+  margin: clamp(0.9rem, 1.8vh, 1.4rem) 0 0;
   font-size: clamp(0.9rem, 1.1vw, 1.02rem);
   line-height: 1.55;
   color: var(--muted);
@@ -422,18 +455,8 @@
   .hint { display: none; }
   .metaTag { display: none; }            /* was colliding with the hamburger */
 
-  /* drop-shadow() FILTERS force the whole subtree — including every frame of
-     the playing video — through the filter, so mobile GPUs re-render two big
-     shadows continuously while scrolling. box-shadow paints once on the shell
-     (the video is its own layer and never invalidates it); at 40-60px blur
-     the missing stepped notches in the shadow are imperceptible. */
-  .mediaShell {
-    filter: none;
-    transition: box-shadow 0.9s ease;
-    box-shadow:
-      0 30px 60px rgba(0, 0, 0, 0.6),
-      0 0 30px color-mix(in srgb, var(--accent, #c9a24b) 26%, transparent);
-  }
+  /* (the shell now uses box-shadow at all sizes — the old mobile-only
+     filter→box-shadow override became the base rule with the bento tile) */
   /* the radial gradient already fades softly — the extra blur(30px) just
      rasterized a huge 60vw layer for nothing on phones */
   .pin::before { filter: none; }
@@ -456,14 +479,15 @@
 
   /* The MEDIA is the anchor: it centres in the pin. The info is lifted out of
      the flow (absolute, hanging just below the viewer) so it no longer pushes
-     the viewer toward the top. */
+     the viewer toward the top. As a bento card it needs a real min-height —
+     its blocks are absolute, so 0 would collapse the card to a border line. */
   .info {
     position: absolute;
     top: 100%;
     left: 0;
     right: 0;
-    min-height: 0;
-    margin-top: clamp(1.1rem, 3.2vh, 1.8rem);
+    min-height: clamp(150px, 20vh, 210px);
+    margin-top: var(--sw-gap, 14px);
   }
   /* no blur filter on phones — the crossfade is opacity+scale only, which
      stays butter-smooth on mobile GPUs */

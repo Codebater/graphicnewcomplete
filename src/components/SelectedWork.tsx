@@ -347,16 +347,26 @@ export default function SelectedWork({ projects }: { projects: ProjectListItem[]
         </div>
 
         <div className={styles.stage}>
+          {/* bento cluster: list tile + (media tile / info tile). The cluster
+              stretches the list tile to the player column's height, so the
+              boxes read as one composed bento. */}
+          <div className={styles.cluster}>
           {/* side list */}
           <div className={styles.listViewport}>
-            <ul ref={listRef} className={styles.list}>
-              {projects.map((p, i) => (
-                <li key={p.id} data-item className={`${styles.item} ${i === active ? styles.itemActive : ''}`}>
-                  <span className={styles.itemNum}>{num(i)}</span>
-                  <span className={styles.itemName}>{p.title}</span>
-                </li>
-              ))}
-            </ul>
+            {/* mask lives on this inner wrapper — on the card itself it would
+                fade the card surface away at the top/bottom, not just the
+                names. measure() reads list.parentElement, so this wrapper IS
+                the list viewport now. */}
+            <div className={styles.listMask}>
+              <ul ref={listRef} className={styles.list}>
+                {projects.map((p, i) => (
+                  <li key={p.id} data-item className={`${styles.item} ${i === active ? styles.itemActive : ''}`}>
+                    <span className={styles.itemNum}>{num(i)}</span>
+                    <span className={styles.itemName}>{p.title}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
           </div>
 
           {/* centre player */}
@@ -442,6 +452,7 @@ export default function SelectedWork({ projects }: { projects: ProjectListItem[]
                 </div>
               ))}
             </div>
+          </div>
           </div>
         </div>
 
