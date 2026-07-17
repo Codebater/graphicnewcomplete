@@ -81,7 +81,7 @@ export default function Header() {
                 </p>
                 <p className="t-xsmall">
                   <i className="ph ph-copyright"></i>
-                  2025
+                  2026
                 </p>
               </div>
             </div>

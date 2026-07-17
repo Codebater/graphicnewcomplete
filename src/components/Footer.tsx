@@ -128,7 +128,7 @@ const Footer = () => {
               <p className="t-xsmall t-muted">
                 <a className="no-effect" href="" target="_blank" rel="noopener noreferrer">GRAPHIQ_ART</a>
                 <i className="ph-bold ph-copyright"></i>
-                2025
+                2026
               </p>
             </div>
           </div>
