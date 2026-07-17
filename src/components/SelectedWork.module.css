@@ -21,13 +21,17 @@
   overflow: hidden;
 }
 
-/* top labels */
+/* top labels — the row mirrors the fixed menu chip's box (nav margin-top
+   4rem + contain min-height 5.6rem at ≥768px) and centers its content, so
+   the SELECTED WORK tag sits on the button's line at ANY tile size. */
 .topbar {
   position: absolute;
-  top: clamp(1.6rem, 4vh, 3rem);
+  top: 4rem;
+  height: 5.6rem;
   left: clamp(1.6rem, 5vw, 4rem);
   right: clamp(1.6rem, 5vw, 4rem);
   display: flex;
+  align-items: center;
   justify-content: space-between;
   z-index: 4;
 }
@@ -44,18 +48,25 @@
 /* direct child only — `.tag i` would also hit every PixelText tile cell
    (they're <i> elements too) and turn the lettering into solid blobs */
 .tag > i { width: 5px; height: 5px; border-radius: 50%; background: var(--accent, #c9a24b); }
-/* mini tile lettering for the left label — tiles need real gaps (≥35% of the
-   tile) or the letters merge into unreadable blobs at this size */
+/* tile lettering for the left label — bigger since it now anchors the
+   topbar line with the menu chip; tiles still need real gaps (≥35% of the
+   tile) or the letters merge into unreadable blobs */
 .pixelTag :global(.pixel-text) {
-  --pxt: 0.34rem;
+  --pxt: 0.5rem;
   gap: calc(var(--pxt) * 2);
   padding: 0;
   opacity: 0.9;
 }
-/* very narrow phones (<360px CSS width): smaller tiles so the tag
-   never runs into the fixed header buttons */
+/* phones: as big as fits beside the fixed smiley chip (0.5rem would overlap
+   it on 360-400px screens); a step smaller on very narrow screens */
+@media (max-width: 1023px) {
+  .pixelTag :global(.pixel-text) { --pxt: 0.44rem; }
+}
+@media (max-width: 419px) {
+  .pixelTag :global(.pixel-text) { --pxt: 0.38rem; }
+}
 @media (max-width: 379px) {
-  .pixelTag :global(.pixel-text) { --pxt: 0.26rem; }
+  .pixelTag :global(.pixel-text) { --pxt: 0.3rem; }
 }
 /* generous letter tracking inside each word so letters never touch */
 .pixelTag :global(.pixel-text__word) { gap: calc(var(--pxt) * 1.7); }
@@ -469,9 +480,19 @@
   .pin { height: 100dvh; min-height: 0; }
 
   .topbar {
-    top: max(1.4rem, env(safe-area-inset-top));
+    /* mirror the mobile chip box: nav margin-top 3rem + min-height 4.6rem */
+    top: max(3rem, env(safe-area-inset-top));
+    height: 4.6rem;
     left: clamp(1.2rem, 6vw, 2rem);
     right: clamp(1.2rem, 6vw, 2rem);
+  }
+  /* 768-1023: the chip container already uses the desktop box (margin-top
+     4rem, min-height 5.6rem) while this layout is still the mobile one */
+  @media (min-width: 768px) {
+    .topbar {
+      top: max(4rem, env(safe-area-inset-top));
+      height: 5.6rem;
+    }
   }
   /* keep the tag tiles at full size on mobile — smaller merges into blobs */
 
