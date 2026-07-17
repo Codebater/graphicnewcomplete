@@ -100,7 +100,7 @@ export default function AboutUs() {
                   <div className="row g-0">
                     <div className="col-12 col-xl-8 mxd-grid-item no-margin">
                       <div className="mxd-section-title__title">
-                        <h2 className="reveal-type">The best talent</h2>
+                        <h2 className="reveal-type">Chasing taste</h2>
                       </div>
                     </div>
                     <div className="col-12 col-xl-4 mxd-grid-item no-margin">
