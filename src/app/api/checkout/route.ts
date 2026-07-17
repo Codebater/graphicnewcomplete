@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import { getStripe } from '@/lib/stripe';
+import { LAUNCH_SLOT_ID, getSlotStatus, reserveSlot } from '@/lib/pricing-slot';
 
 export const runtime = 'nodejs';
 
@@ -36,9 +37,23 @@ const PLANS: Record<string, PlanConfig> = {
     mode: 'payment',
   },
   shopify: {
-    name: 'Shopify / E-Commerce Store',
-    description: 'Complete store setup with up to 50 products.',
+    name: 'Sell Products Online — Shopify Store',
+    description: 'Complete Shopify store, ready to sell in one week. Up to 50 products.',
     amountCents: 165_000, // $1,650 one-time
+    mode: 'payment',
+  },
+  'launch-72h': {
+    name: 'Launch My Business — Live in 72 Hours',
+    description:
+      'Complete business website launched in 72 hours: design, copy, domain, hosting and contact — done for you. Single slot.',
+    amountCents: 149_900, // $1,499 one-time — ONE slot, booked live
+    mode: 'payment',
+  },
+  automation: {
+    name: 'Automate My Business — AI Automation Suite',
+    description:
+      'We map your repetitive work and automate it with AI, messaging bots and connected systems. Save 10+ hours every week.',
+    amountCents: 185_000, // $1,850 one-time
     mode: 'payment',
   },
 };
@@ -46,7 +61,7 @@ const PLANS: Record<string, PlanConfig> = {
 const CURRENCY = 'usd';
 
 const bodySchema = z.object({
-  plan: z.enum(['hosting', 'seo', 'lead-engine', 'shopify']),
+  plan: z.enum(['hosting', 'seo', 'lead-engine', 'shopify', 'launch-72h', 'automation']),
 });
 
 function appUrl() {
@@ -65,6 +80,27 @@ export async function POST(req: Request) {
     }
 
     const plan = PLANS[parsed.data.plan];
+
+    // The 72h launch card is a SINGLE slot: refuse checkout while it's
+    // booked, or while someone else's checkout reservation is still live.
+    // (Checked before Stripe init so the sold-out answer never depends on
+    // payment config.)
+    if (parsed.data.plan === 'launch-72h') {
+      const slot = await getSlotStatus(LAUNCH_SLOT_ID);
+      if (slot === 'booked') {
+        return NextResponse.json(
+          { error: 'This slot has been booked. Contact us to join the waitlist for the next one.' },
+          { status: 409 }
+        );
+      }
+      if (slot === 'reserved') {
+        return NextResponse.json(
+          { error: 'Someone is completing checkout for this slot right now — check back in a few minutes.' },
+          { status: 409 }
+        );
+      }
+    }
+
     const stripe = getStripe();
     const origin = appUrl();
 
@@ -93,6 +129,12 @@ export async function POST(req: Request) {
 
     if (!session.url) {
       return NextResponse.json({ error: 'Could not start checkout' }, { status: 500 });
+    }
+
+    // Hold the single slot while this customer is in Stripe checkout
+    // (auto-expires if they abandon it).
+    if (parsed.data.plan === 'launch-72h') {
+      await reserveSlot(session.id, LAUNCH_SLOT_ID);
     }
 
     return NextResponse.json({ url: session.url });

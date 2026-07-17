@@ -7,8 +7,8 @@ import PricingPlans from '@/components/PricingPlans';
 import Loader from '@/components/Loader';
 
 export const metadata = {
-  title: 'Pricing - GRAPHIQ STUDIO LLC - Creative Solutions Made Simple',
-  description: 'Explore our pricing packages for creative digital solutions. From starter packages for small businesses to custom enterprise solutions, we have a package that fits your needs.',
+  title: 'Pricing - GRAPHIQ STUDIO LLC - Business Growth Studio',
+  description: 'Launch your business in 72 hours, sell online in a week, automate away 10+ hours of work — outcome-first packages from GRAPHIQ STUDIO LLC, your business growth studio.',
   keywords: 'pricing, packages, web design pricing, digital agency pricing, creative solutions, starter package, professional package',
   openGraph: {
     title: 'Pricing - GRAPHIQ STUDIO LLC',
@@ -63,7 +63,8 @@ export default function Pricing() {
                     <div className="mxd-block__content">
                       <div className="mxd-block__inner-headline">
                         <h1 className="inner-headline__title headline-img-before headline-img-01 loading__item">
-                          Creative solutions made simple
+                          Pick an outcome.
+                          We handle the tech.
                         </h1>
                       </div>
                     </div>
