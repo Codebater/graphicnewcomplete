@@ -673,9 +673,12 @@ html body {
      grounded, not floating */
   transform: translateX(-50%) translateY(-22.6%) !important;
 }
-/* body layer: in FRONT of the ball — the hand's fingers overlap the chin */
+/* body layer: in FRONT of the ball — the hand's fingers overlap the chin.
+   top: drops the body slightly relative to the ball so the neck/collar sit
+   naturally under the chin (reference placement). */
 .mxd-hero-02-marquee__image img.hero-body {
   position: relative;
+  top: 4%;
   z-index: 2;
   width: 100%;
   height: auto;
