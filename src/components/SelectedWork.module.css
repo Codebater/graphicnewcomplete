@@ -76,10 +76,33 @@
 .pixelTag :global(.pixel-text__word) { gap: calc(var(--pxt) * 1.7); }
 .pixelTag :global(.pixel-text__letter) { gap: calc(var(--pxt) * 0.38); }
 .pixelTag :global(.pixel-text__cell) { border-radius: 24%; }
+/* pre-hydration fallback only — once mounted, each cell gets its aurora
+   colour inline (the wipe's 215°→390° hue ramp mapped across the lettering,
+   works on both themes) */
 .pixelTag :global(.pixel-text__cell--on) { background: #ddf160; }
-/* light theme: green-on-cream is illegible — use the theme ink instead */
 :global([color-scheme='light']) .pixelTag :global(.pixel-text__cell--on) {
   background: var(--t-bright);
+}
+/* aurora sweep: on each project transition the lettering pulses brighter
+   column by column, travelling WITH the wipe (LR on scroll down, RL up).
+   Runs only during the transition (class is DOM-gated by a React timer) —
+   zero steady-state animation cost in the pinned section. */
+.tagSweepLR :global(.pixel-text__cell--on),
+.tagSweepRL :global(.pixel-text__cell--on) {
+  animation: sw-tag-pulse 0.4s ease both;
+}
+.tagSweepLR :global(.pixel-text__cell--on) {
+  animation-delay: calc(var(--xf, 0) * 0.28s);
+}
+.tagSweepRL :global(.pixel-text__cell--on) {
+  animation-delay: calc((1 - var(--xf, 0)) * 0.28s);
+}
+@keyframes sw-tag-pulse {
+  40% { filter: brightness(1.9) saturate(1.35); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .tagSweepLR :global(.pixel-text__cell--on),
+  .tagSweepRL :global(.pixel-text__cell--on) { animation: none; }
 }
 
 /* accent bloom behind the player */

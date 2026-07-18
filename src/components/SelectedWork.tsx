@@ -54,10 +54,46 @@ export default function SelectedWork({ projects }: { projects: ProjectListItem[]
   const videoArmedRef = useRef(false);
   const firstActive = useRef(true);
   const inViewRef = useRef(false);
+  // PREVIOUS PROJECTS tag: its pixel tiles carry the wipe's aurora colours,
+  // and a brightness sweep travels across the lettering on each transition
+  // (same direction as the wipe). 0 = idle; ±1 = sweep direction.
+  const tagRef = useRef<HTMLSpanElement | null>(null);
+  const [tagSweep, setTagSweep] = useState(0);
+
+  // Colour the tag tiles from the aurora ramp once the tiles exist; each cell
+  // also gets its x-fraction (--xf) so the sweep can stagger by column.
+  // Re-runs on resize only (tile positions shift with the responsive sizes).
+  useEffect(() => {
+    const colorize = () => {
+      const tag = tagRef.current;
+      if (!tag) return;
+      const tr = tag.getBoundingClientRect();
+      if (tr.width < 10) return;
+      tag.querySelectorAll<HTMLElement>('.pixel-text__cell--on').forEach((cell) => {
+        const r = cell.getBoundingClientRect();
+        const xf = Math.max(0, Math.min(1, (r.left + r.width / 2 - tr.left) / tr.width));
+        // the wipe's long-way hue lerp (215° → 390°): blue → violet → magenta
+        // → orange, never crossing green; jewel-tone S/L so it reads on both
+        // the cream paper and the dark theme
+        const hue = (215 + xf * 175) % 360;
+        cell.style.backgroundColor = `hsl(${hue.toFixed(0)} 78% 46%)`;
+        cell.style.setProperty('--xf', xf.toFixed(3));
+      });
+    };
+    colorize();
+    let raf = 0;
+    const onResize = () => { cancelAnimationFrame(raf); raf = requestAnimationFrame(colorize); };
+    window.addEventListener('resize', onResize);
+    return () => { window.removeEventListener('resize', onResize); cancelAnimationFrame(raf); };
+  }, []);
 
   useEffect(() => {
     if (firstActive.current) { firstActive.current = false; return; }
     setWipeOn(true);
+    // header tag sweeps with the wipe, same direction; DOM-gated by a React
+    // timer (never CSS fill states), so tiles can't stick mid-pulse
+    setTagSweep(dirRef.current);
+    const tagT = setTimeout(() => setTagSweep(0), 750);
     // subtle haptic tick on Android when the project changes (iOS has no API)
     try { (navigator as Navigator & { vibrate?: (ms: number) => void }).vibrate?.(12); } catch { /* noop */ }
 
@@ -68,7 +104,7 @@ export default function SelectedWork({ projects }: { projects: ProjectListItem[]
     // perfect, so mobile now uses the SAME smooth continuous scrub: the wipe is
     // just a visual overlay over the project that's already changing underneath.
     const t = setTimeout(() => setWipeOn(false), 260); // motif gone ~220ms, field ~240ms
-    return () => clearTimeout(t);
+    return () => { clearTimeout(t); clearTimeout(tagT); };
   }, [active]);
 
   // Aurora tile styles, computed ONCE per transition (176 unique inline
@@ -339,7 +375,10 @@ export default function SelectedWork({ projects }: { projects: ProjectListItem[]
       {/* ---------- sticky-pinned showcase (all sizes) ---------- */}
       <div className={styles.pin} style={{ ['--accent' as string]: accent }}>
         <div className={styles.topbar}>
-          <span className={`${styles.tag} ${styles.pixelTag}`}>
+          <span
+            ref={tagRef}
+            className={`${styles.tag} ${styles.pixelTag} ${tagSweep === 1 ? styles.tagSweepLR : tagSweep === -1 ? styles.tagSweepRL : ''}`}
+          >
             <PixelText text="PREVIOUS PROJECTS" cursor={false} />
             <i />
           </span>
