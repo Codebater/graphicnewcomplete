@@ -245,15 +245,15 @@ html body {
   left: 0;
   display: flex;
   align-items: center;
-  gap: 5rem;
+  gap: 4.25rem;
   width: max-content;
   will-change: transform;
 }
 .marquee-lens__icon {
   flex: 0 0 auto;
   /* sized from the head by HeroMarqueeLens so icons fit the star eyes */
-  width: var(--lens-icon, 5rem);
-  height: var(--lens-icon, 5rem);
+  width: var(--lens-icon, 4.25rem);
+  height: var(--lens-icon, 4.25rem);
   color: var(--t-bright);
   display: inline-flex;
 }
@@ -267,11 +267,11 @@ html body {
 }
 @media only screen and (min-width: 768px) {
   .marquee-lens__strip {
-    gap: 5rem;
+    gap: 4.25rem;
   }
   .marquee-lens__icon {
-    width: var(--lens-icon, 8rem);
-    height: var(--lens-icon, 8rem);
+    width: var(--lens-icon, 6.8rem);
+    height: var(--lens-icon, 6.8rem);
   }
 }
 
@@ -658,8 +658,25 @@ html body {
    behind the scrolling text. Sizes chosen so the head (52.5% of image width)
    reads clearly smaller than the old 400px ball. ---- */
 .mxd-hero-02-marquee {
-  /* one size source for the character AND the crown tiles above his head */
-  --hiw: clamp(540px, 58vw, 780px);
+  /* one size source for the character — 0.85× the original so more of the
+     figure shows; the marquee text + lens icons scale by the same factor
+     below, keeping the head-through-text ratio exactly the original */
+  --hiw: clamp(460px, 49vw, 665px);
+}
+/* marquee text + pulse star at 0.85× the template's three tiers
+   (!important: /css/main.css loads after globals) */
+.mxd-hero-02-marquee .marquee__text { font-size: 8.5rem !important; }
+.mxd-hero-02-marquee .marquee__image { width: 6rem !important; height: 6rem !important; }
+.mxd-hero-02-marquee .marquee__item.item-regular { gap: 2.6rem !important; }
+@media only screen and (min-width: 768px) {
+  .mxd-hero-02-marquee .marquee__text { font-size: 11.9rem !important; }
+  .mxd-hero-02-marquee .marquee__image { width: 7.75rem !important; height: 7.75rem !important; }
+  .mxd-hero-02-marquee .marquee__item.item-regular { gap: 3.4rem !important; }
+}
+@media only screen and (min-width: 1600px) {
+  .mxd-hero-02-marquee .marquee__text { font-size: 15.3rem !important; }
+  .mxd-hero-02-marquee .marquee__image { width: 10.3rem !important; height: 10.3rem !important; }
+  .mxd-hero-02-marquee .marquee__item.item-regular { gap: 4.25rem !important; }
 }
 .mxd-hero-02-marquee__image {
   /* !important: /css/main.css loads AFTER globals and sets 50rem/42rem.
