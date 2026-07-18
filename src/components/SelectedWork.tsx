@@ -60,9 +60,10 @@ export default function SelectedWork({ projects }: { projects: ProjectListItem[]
   const tagRef = useRef<HTMLSpanElement | null>(null);
   const [tagSweep, setTagSweep] = useState(0);
 
-  // Colour the tag tiles from the aurora ramp once the tiles exist; each cell
-  // also gets its x-fraction (--xf) so the sweep can stagger by column.
-  // Re-runs on resize only (tile positions shift with the responsive sizes).
+  // Prepare the tag tiles for the transition wash: each cell gets its aurora
+  // colour (--ac) and x-fraction (--xf) as custom properties — AT REST the
+  // tiles keep their normal theme colour; the aurora only appears during the
+  // sweep animation. Re-runs on resize only.
   useEffect(() => {
     const colorize = () => {
       const tag = tagRef.current;
@@ -76,7 +77,7 @@ export default function SelectedWork({ projects }: { projects: ProjectListItem[]
         // → orange, never crossing green; jewel-tone S/L so it reads on both
         // the cream paper and the dark theme
         const hue = (215 + xf * 175) % 360;
-        cell.style.backgroundColor = `hsl(${hue.toFixed(0)} 78% 46%)`;
+        cell.style.setProperty('--ac', `hsl(${hue.toFixed(0)} 78% 46%)`);
         cell.style.setProperty('--xf', xf.toFixed(3));
       });
     };
@@ -91,9 +92,9 @@ export default function SelectedWork({ projects }: { projects: ProjectListItem[]
     if (firstActive.current) { firstActive.current = false; return; }
     setWipeOn(true);
     // header tag sweeps with the wipe, same direction; DOM-gated by a React
-    // timer (never CSS fill states), so tiles can't stick mid-pulse
+    // timer (never CSS fill states), so tiles can't stick mid-wash
     setTagSweep(dirRef.current);
-    const tagT = setTimeout(() => setTagSweep(0), 750);
+    const tagT = setTimeout(() => setTagSweep(0), 1000);
     // subtle haptic tick on Android when the project changes (iOS has no API)
     try { (navigator as Navigator & { vibrate?: (ms: number) => void }).vibrate?.(12); } catch { /* noop */ }
 
