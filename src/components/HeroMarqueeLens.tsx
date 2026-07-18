@@ -84,8 +84,7 @@ export default function HeroMarqueeLens() {
       const line = marquee?.querySelector('.mxd-hero-02-marquee__line') as HTMLElement | null;
       const textMarquee = line?.querySelector('.marquee') as HTMLElement | null;
       const track = line?.querySelector('.marquee__toleft') as HTMLElement | null;
-      // the BALL is its own layer now (behind the body so fingers overlap it)
-      const smiley = marquee?.querySelector('.hero-ball') as HTMLElement | null;
+      const smiley = marquee?.querySelector('.mxd-hero-02-marquee__image') as HTMLElement | null;
       // Wait until the marquee is actually animating (GSAP has set a transform).
       if (!marquee || !line || !textMarquee || !track || !smiley) return false;
       if (getComputedStyle(track).transform === 'none') return false;
@@ -136,9 +135,10 @@ export default function HeroMarqueeLens() {
       const second = strip.children[setLen] as HTMLElement;
       const stripPeriod = second.offsetLeft - first.offsetLeft;
 
-      // The lens tracks the dedicated ball element: its centre IS the ball
-      // centre, radius just inside the sphere's edge.
-      const HEAD = { cx: 0.5, cy: 0.5, r: 0.49 };
+      // The clay character's HEAD is the lens now: ball centre at
+      // (50%, 18%) of the image, radius 24% of its width, star eyes riding
+      // slightly above centre at 15.2% (fractions measured from the cutout).
+      const HEAD = { cx: 0.5, cy: 0.18, r: 0.24, eyeCy: 0.152 };
 
       // Static band geometry — only changes on resize, never per frame.
       // The head sits ON the marquee line (original composition): the icon

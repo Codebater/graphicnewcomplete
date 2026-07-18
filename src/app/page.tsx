@@ -76,11 +76,7 @@ export default async function Home() {
               <div className="mxd-hero-02-static__center">
                 <div className="mxd-hero-02-marquee">
                   <div className="mxd-hero-02-marquee__image loading__item">
-                    {/* two layers: the ball sits BEHIND the body so the hand's
-                        fingers overlap the chin — real 3D depth like the poster */}
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img className="hero-ball" src="/porthomeimages/clay-ball.webp" alt="" width={400} height={400} fetchPriority="high" decoding="async" />
-                    <Image className="hero-body" src="/porthomeimages/clay-body.webp" alt="The GRAPHIQ smiley in a clay suit" width={720} height={1040} priority fetchPriority="high" />
+                    <Image src="/porthomeimages/clay-hero.webp" alt="The GRAPHIQ smiley in a clay suit" width={720} height={1040} priority fetchPriority="high" />
                   </div>
                   <div className="mxd-hero-02-marquee__line loading__item">
                     <div className="marquee marquee-left--gsap">
