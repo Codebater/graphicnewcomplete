@@ -653,6 +653,45 @@ html body {
   }
 }
 
+/* ---- Footer: Ecosystem as an icon row (Instagram / GitHub / LinkedIn /
+   WhatsApp) + a WhatsApp chip beside the phone number ---- */
+/* double class beats the template's .footer-socials (main.css loads after
+   globals, so order alone won't) */
+.footer-socials.footer-socials--icons {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 1.8rem;
+}
+.footer-socials--icons .footer-socials__link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.8rem;
+  line-height: 1;
+  text-decoration: none;
+  transition: color 0.3s ease, transform 0.3s ease;
+}
+.no-touch .footer-socials--icons .footer-socials__link:hover {
+  color: var(--accent);
+  transform: translateY(-2px);
+}
+.footer-phone-wa {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 0.8rem;
+  font-size: 2.2rem;
+  line-height: 1;
+  vertical-align: middle;
+  color: inherit;
+  transition: color 0.3s ease, transform 0.3s ease;
+}
+.no-touch .footer-phone-wa:hover {
+  color: #25d366;   /* WhatsApp green */
+  transform: scale(1.12);
+}
+
 /* ---- Clay hero character (replaces the floating ball): smaller head,
    shifted up — the character floats above the marquee line, the coat drops
    behind the scrolling text. Sizes chosen so the head (52.5% of image width)

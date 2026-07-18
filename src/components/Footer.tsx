@@ -74,6 +74,15 @@ const Footer = () => {
                   c0,0,1.3-0.1,1.8-0.2c1,0,4,0,4,0c0.2,0,0.4-0.2,0.4-0.4C20,9.8,19.8,9.6,19.6,9.6L19.6,9.6z"/>
               </svg>
             <a href="tel:+12132322227">+1 213-232-2227</a>
+            <a
+              className="footer-phone-wa"
+              href="https://wa.me/12132322227"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Chat on WhatsApp"
+            >
+              <i className="ph ph-whatsapp-logo"></i>
+            </a>
             </p>
           </div>
         {/* inner card */}
@@ -105,15 +114,26 @@ const Footer = () => {
               </div>
               {/* footer socials */}
               <div className="footer-blocks__socials">
-                <ul className="footer-socials">
+                <ul className="footer-socials footer-socials--icons">
                   <li className="footer-socials__item anim-uni-in-up">
-                    <a href="https://www.instagram.com/n_drjj" className="footer-socials__link" target="_blank" rel="noopener noreferrer">Instagram</a>
+                    <a href="https://www.instagram.com/n_drjj" className="footer-socials__link" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+                      <i className="ph ph-instagram-logo"></i>
+                    </a>
                   </li>
                   <li className="footer-socials__item anim-uni-in-up">
-                    <a href="https://github.com/Codebater" className="footer-socials__link" target="_blank" rel="noopener noreferrer">Github</a>
+                    <a href="https://github.com/Codebater" className="footer-socials__link" target="_blank" rel="noopener noreferrer" aria-label="GitHub">
+                      <i className="ph ph-github-logo"></i>
+                    </a>
                   </li>
                   <li className="footer-socials__item anim-uni-in-up">
-                    <a href="https://www.linkedin.com/in/andrej-lisal-67620341a/" className="footer-socials__link" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+                    <a href="https://www.linkedin.com/in/andrej-lisal-67620341a/" className="footer-socials__link" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
+                      <i className="ph ph-linkedin-logo"></i>
+                    </a>
+                  </li>
+                  <li className="footer-socials__item anim-uni-in-up">
+                    <a href="https://wa.me/12132322227" className="footer-socials__link" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp">
+                      <i className="ph ph-whatsapp-logo"></i>
+                    </a>
                   </li>
                 </ul>
               </div>
