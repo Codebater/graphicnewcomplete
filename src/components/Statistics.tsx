@@ -34,6 +34,33 @@ const Statistics = () => {
                       <p ref={counter1Ref} className="mxd-counter__number mxd-stats-number opposite">0</p>
                       <p className="mxd-counter__descr t-140 t-bright opposite">Happy clients who<br/>trust our work</p>
                     </div>
+                    {/* languages we work in — self-hosted flag SVGs (emoji
+                        flags render as letter pairs on Windows), seamless
+                        2-copy CSS marquee, compositor-only */}
+                    <div className="stats-langs" aria-label="Languages we work in">
+                      <div className="stats-langs__track">
+                        {[0, 1].map((copy) => (
+                          <span key={copy} className="stats-langs__set" aria-hidden={copy === 1}>
+                            {[
+                              ['gb', 'English'],
+                              ['de', 'German'],
+                              ['es', 'Spanish'],
+                              ['pk', 'Urdu'],
+                              ['sk', 'Slovak'],
+                              ['ru', 'Russian'],
+                              ['cz', 'Czech'],
+                              ['th', 'Thai'],
+                            ].map(([code, name]) => (
+                              // eslint-disable-next-line @next/next/no-img-element
+                              <span key={code} className="stats-langs__item">
+                                <img src={`/flags/${code}.svg`} alt="" width={20} height={20} loading="lazy" />
+                                {name}
+                              </span>
+                            ))}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
                     <div className="mxd-stats-cards__btngroup">
                       <Link className="btn btn-anim btn-default btn-outline opposite slide-right-up" href="/about-us">
                         <span className="btn-caption">Studio</span>

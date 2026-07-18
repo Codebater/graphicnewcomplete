@@ -336,7 +336,7 @@ export default async function Home() {
                     </div>
                     <div className="col-12 col-xl-3 mxd-grid-item no-margin">
                       <div className="mxd-section-title__hrcontrols anim-uni-in-up">
-                        <Link className="btn btn-anim btn-default btn-outline slide-right-up" href="/works-masonry">
+                        <Link className="btn btn-anim btn-default btn-outline slide-right-up" href="/portfolio">
                           <span className="btn-caption">Works</span>
                           <i className="ph-bold ph-arrow-up-right"></i>
                         </Link>
