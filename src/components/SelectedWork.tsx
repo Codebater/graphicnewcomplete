@@ -94,7 +94,7 @@ export default function SelectedWork({ projects }: { projects: ProjectListItem[]
     // header tag sweeps with the wipe, same direction; DOM-gated by a React
     // timer (never CSS fill states), so tiles can't stick mid-wash
     setTagSweep(dirRef.current);
-    const tagT = setTimeout(() => setTagSweep(0), 1000);
+    const tagT = setTimeout(() => setTagSweep(0), 500);
     // subtle haptic tick on Android when the project changes (iOS has no API)
     try { (navigator as Navigator & { vibrate?: (ms: number) => void }).vibrate?.(12); } catch { /* noop */ }
 
