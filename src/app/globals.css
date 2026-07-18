@@ -740,6 +740,19 @@ html body {
    the fold instead of spilling into the next section */
 .mxd-hero-02.mxd-pinned-fullscreen {
   overflow: hidden;
+  position: relative;
+}
+/* The hero fade-out marker must sit at the hero's TRUE end. In content flow
+   it drifted upward when the marquee text scaled to 0.85 — the fade trigger
+   then started "before" scroll 0 and the hero sat permanently ~27% faded
+   (the washed-out "white overlay" over the character). Pinned to the
+   section's bottom edge the fade starts exactly at the fold again. */
+.mxd-hero-02 .mxd-pinned-fullscreen__tl-trigger {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 1px;
+  height: 1px;
 }
 
 /* ---- Clay editorial theme (from the GRAPHIQ "Human Technology" posters):
