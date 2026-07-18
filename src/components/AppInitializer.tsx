@@ -59,6 +59,42 @@ export default function AppInitializer() {
       const loadingItems = loadingWrap?.querySelectorAll('.loading__item');
       const fadeInItems = document.querySelectorAll('.loading__fade');
 
+      // ---- EXPERIMENT (local): collage intro on the home hero ----
+      // Instead of the pixel-face preloader, the loader exits almost
+      // immediately and the hero assembles piece by piece like a paper
+      // collage: figure placed first, then the marquee strip, the caption,
+      // the lists, and the scroll badge. Flip to false to restore the
+      // pixel loader + generic rise.
+      const HERO_COLLAGE_INTRO = true;
+      const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const heroCollage =
+        HERO_COLLAGE_INTRO && !reducedMotion && !!document.querySelector('.mxd-hero-02-marquee');
+      if (heroCollage) {
+        // hide the pieces IMMEDIATELY so nothing flashes between the quick
+        // loader exit and the collage start (images may still be loading)
+        gsap.set(
+          [
+            '.mxd-hero-02-marquee__image img',
+            '.mxd-hero-02-marquee__line',
+            '.hero-02-static__caption',
+            '.mxd-hero-02-static__btn',
+          ],
+          { opacity: 0 }
+        );
+        gsap.set('.mxd-hero-02-static__bottom li', { opacity: 0 });
+        // the lens overlay (backing + icon strip) is created independently by
+        // HeroMarqueeLens and would float in mid-air before the figure is
+        // placed — keep it hidden until the collage reveals the strip
+        document.querySelector('.mxd-hero-02-marquee')?.classList.add('collage-pending');
+        // and kill the kawaii preloader outright if some page still renders
+        // it (home doesn't anymore) — the collage IS the intro
+        const loaderEl = document.getElementById('loader');
+        if (loaderEl) {
+          loaderEl.classList.add('loaded');
+          gsap.set(loaderEl, { autoAlpha: 0 });
+        }
+      }
+
       function startLoader() {
         const counterElement = document.querySelector(".loader__count .count__text");
         if (counterElement) {
@@ -84,6 +120,9 @@ export default function AppInitializer() {
               loader.classList.add("loaded");
             }
           }, ms);
+
+        // Collage intro: the loader was already killed at init — nothing to do.
+        if (heroCollage) return;
 
         // Pixel-tile loader exit: 90s checkerboard dissolve. Half the tiles
         // pop off (binary, no fade) in a left-to-right sweep leaving a perfect
@@ -145,9 +184,59 @@ export default function AppInitializer() {
       }
 
       function pageAppearance() {
+        if (heroCollage) {
+          // ---- collage assembly: one piece placed after the other ----
+          // (the figure wrapper carries a CSS !important transform — animate
+          // the INNER img so nothing fights it)
+          const tl = gsap.timeline({ delay: 0.45 });
+          tl.fromTo(
+            '.mxd-hero-02-marquee__image img',
+            { y: '-6%', scale: 1.07, rotation: -3.5, opacity: 0 },
+            { y: 0, scale: 1, rotation: 0, opacity: 1, duration: 0.6, ease: 'back.out(1.4)' }
+          )
+            .fromTo(
+              '.mxd-hero-02-marquee__line',
+              { x: -90, opacity: 0 },
+              { x: 0, opacity: 1, duration: 0.5, ease: 'power3.out' },
+              '-=0.22'
+            )
+            // the lens (icons in the eyes) fades in WITH the landed strip
+            .call(() => {
+              document
+                .querySelector('.mxd-hero-02-marquee')
+                ?.classList.remove('collage-pending');
+            })
+            .fromTo(
+              '.hero-02-static__caption',
+              { y: -26, rotation: 2, opacity: 0 },
+              { y: 0, rotation: 0, opacity: 1, duration: 0.45, ease: 'back.out(1.6)' },
+              '-=0.18'
+            )
+            .fromTo(
+              '.mxd-hero-02-static__bottom li',
+              { y: 22, opacity: 0 },
+              { y: 0, opacity: 1, duration: 0.4, stagger: 0.045, ease: 'power3.out' },
+              '-=0.12'
+            )
+            .fromTo(
+              '.mxd-hero-02-static__btn',
+              { scale: 0, opacity: 0, rotation: -25 },
+              { scale: 1, opacity: 1, rotation: 0, duration: 0.6, ease: 'elastic.out(1, 0.6)' },
+              '-=0.15'
+            );
+          // non-hero fade items behave as before
+          const otherFades = Array.from(fadeInItems).filter(
+            (el) => !(el as HTMLElement).closest('.mxd-hero-02')
+          );
+          if (otherFades.length) {
+            gsap.set(otherFades, { opacity: 0 });
+            gsap.to(otherFades, { duration: 0.8, ease: 'none', opacity: 1, delay: 1.6 });
+          }
+          return;
+        }
         if (loadingItems) {
           gsap.set(loadingItems, { opacity: 0 });
-          gsap.to(loadingItems, { 
+          gsap.to(loadingItems, {
             duration: 1.1,
             ease: 'power4',
             startAt: {y: 120},

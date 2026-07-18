@@ -8,7 +8,7 @@ import { ProjectListItem } from '@/components/ProjectsList';
 import SelectedWork from '@/components/SelectedWork';
 import PromoWork from '@/components/PromoWork';
 import HeroMarqueeLens from '@/components/HeroMarqueeLens';
-import Loader from '@/components/Loader';
+// Loader import removed with the collage intro (see HERO_COLLAGE_INTRO)
 
 // Re-render the home page at most once a minute so newly published projects
 // appear in the work list automatically (ISR).
@@ -42,8 +42,10 @@ export default async function Home() {
 
   return (
     <>
-      {/* Loader */}
-      <Loader />
+      {/* Loader removed on home: the hero collage intro IS the loading
+          experience (see HERO_COLLAGE_INTRO in AppInitializer). Rendering it
+          at all let the kawaii face flash before the kill ran. If the flag
+          is turned off, re-add <Loader /> here. */}
 
       {/* Header */}
       <Header />

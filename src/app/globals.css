@@ -239,6 +239,15 @@ html body {
      background is flat, so this is visually identical in both themes. */
   background: var(--base);
 }
+/* collage intro: the lens overlay must not float before the figure/strip
+   are placed — hidden while the marquee carries .collage-pending, then
+   fades in as the strip lands */
+.marquee-lens {
+  transition: opacity 0.4s ease;
+}
+.mxd-hero-02-marquee.collage-pending .marquee-lens {
+  opacity: 0;
+}
 .marquee-lens__strip {
   position: absolute;
   top: 0;
