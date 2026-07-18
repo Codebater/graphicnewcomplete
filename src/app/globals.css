@@ -663,22 +663,42 @@ html body {
 }
 .mxd-hero-02-marquee__image {
   /* !important: /css/main.css loads AFTER globals and sets 50rem/42rem.
-     Sized so the HEAD (52.5% of image width) matches the old ball, with the
-     head centred ON the marquee line — the text runs through it and becomes
-     icons in the star eyes, exactly the original effect. */
+     Sized so the BALL (50% of the body width, centre at 22.6% of the body
+     height) reads like the reference poster, with the ball centred ON the
+     marquee line — the text runs through it and becomes icons in the star
+     eyes, exactly the original effect. */
   width: var(--hiw) !important;
-  /* translateY(-18%) pins the HEAD CENTRE (18% of image height) to the line
-     centre; the body drops toward the fold and is clipped by the hero =
+  /* translateY(-22.6%) pins the BALL CENTRE (22.6% of body height) to the
+     line centre; the body drops toward the fold and is clipped by the hero =
      grounded, not floating */
-  transform: translateX(-50%) translateY(-18%) !important;
+  transform: translateX(-50%) translateY(-22.6%) !important;
 }
-.mxd-hero-02-marquee__image img {
+/* body layer: in FRONT of the ball — the hand's fingers overlap the chin */
+.mxd-hero-02-marquee__image img.hero-body {
+  position: relative;
+  z-index: 2;
   width: 100%;
   height: auto;
   /* reserve the final box before decode: a late-decoding hero image must not
      change document height — that fired a global ScrollTrigger.refresh that
      could land as a visible stutter while already scrolling the card stack */
   aspect-ratio: 720 / 1040;
+}
+/* ball layer: behind the body; centre = (50%, 22.6%) of the body box.
+   top = 22.6% − (50% width × 720/1040 aspect)/2 = 5.3% */
+.mxd-hero-02-marquee__image img.hero-ball {
+  position: absolute;
+  left: 25%;
+  top: 5.3%;
+  width: 50%;
+  height: auto;
+  aspect-ratio: 1 / 1;
+  z-index: 1;
+}
+/* the head + marquee line ride a touch higher on the page (reference
+   composition shows more of the coat) */
+.mxd-hero-02-marquee {
+  margin-top: -3.5vh;
 }
 /* clip the character's coat at the hero's edge so the figure stands into
    the fold instead of spilling into the next section */
