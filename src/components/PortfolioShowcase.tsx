@@ -118,15 +118,16 @@ export default function PortfolioShowcase({ projects }: { projects: ProjectListI
         // every rail child (incl. wrap-around ghosts) cached with its static
         // centre in rail coordinates — the per-frame zoom needs NO rect reads
         let cardCache: { el: HTMLElement; c: number; s: number }[] = [];
-        // name wheel: flow-centre per name + last written x/y/scale. Every
-        // name shifts up by the interpolated active centre (active name =
-        // frame middle) and sweeps LEFT off-screen with distance (~2.6 rows
-        // away it's fully outside). ALL transforms live on the names
-        // themselves — the container is never transformed, so no CSS
-        // fallback can fight the wheel.
-        let nameCache: { el: HTMLElement; c: number; x: number; y: number; s: number }[] = [];
+        // name wheel: a true rotating fan. Every name (incl. wrap-around
+        // ghosts) sits on a circle whose hub is left of the spine — placed
+        // at its circle point, rotated radially (~18°/row, so the visible
+        // fan spans ~90°), fading out past ~2.5 rows. The active name rides
+        // the rightmost point of the circle at the frame's vertical middle.
+        // ALL transforms live on the names themselves — the container is
+        // never transformed, so no CSS fallback can fight the wheel.
+        let nameCache: { el: HTMLElement; c: number; x: number; y: number; s: number; r: number; o: number }[] = [];
+        let realNames: typeof nameCache = [];
         let rowUnit = 1;
-        let pull = 0;
         const measure = () => {
           const cards = rail.querySelectorAll<HTMLElement>('[data-card]');
           if (cards.length < 2) return;
@@ -145,17 +146,15 @@ export default function PortfolioShowcase({ projects }: { projects: ProjectListI
           if (namesEl) {
             nameCache = Array.from(namesEl.children).map((el) => {
               const h = el as HTMLElement;
-              return { el: h, c: h.offsetTop + h.offsetHeight / 2, x: NaN, y: NaN, s: NaN };
+              return { el: h, c: h.offsetTop + h.offsetHeight / 2, x: NaN, y: NaN, s: NaN, r: NaN, o: NaN };
             });
+            // only the real names (data-name) anchor the wheel's position —
+            // ghosts ride the same circle but never define it
+            realNames = nameCache.filter((n) => n.el.hasAttribute('data-name'));
             rowUnit =
-              nameCache.length > 1
-                ? (nameCache[nameCache.length - 1].c - nameCache[0].c) / (nameCache.length - 1)
+              realNames.length > 1
+                ? (realNames[realNames.length - 1].c - realNames[0].c) / (realNames.length - 1)
                 : 1;
-            // how far left a name must travel to clear the screen entirely
-            pull =
-              namesEl.offsetLeft +
-              Math.max(...nameCache.map((n) => n.el.offsetWidth)) +
-              24;
           }
         };
 
@@ -182,22 +181,29 @@ export default function PortfolioShowcase({ projects }: { projects: ProjectListI
             }
           }
           // name wheel (outside the rail-y gate — fully deduped per name):
-          // every name shifts up by the interpolated active centre and
-          // sweeps left off-screen with distance
-          if (nameCache.length) {
+          // place every name on the circle, rotate it radially, fade it out
+          // as it turns past the visible fan
+          if (nameCache.length && realNames.length && vpH) {
             const i0 = Math.min(N - 1, Math.floor(f));
             const i1 = Math.min(N - 1, i0 + 1);
-            const lc = nameCache[i0].c + (nameCache[i1].c - nameCache[i0].c) * (f - i0);
-            const ny = -Math.round(lc * 2) / 2;
+            const lc = realNames[i0].c + (realNames[i1].c - realNames[i0].c) * (f - i0);
+            const R = vpH * 0.3; // wheel radius — hub sits left of the spine
             for (const n of nameCache) {
-              const ad = Math.abs(n.c - lc) / rowUnit;
-              const x = -Math.round(pull * Math.pow(Math.min(ad / 2.6, 1), 2.2) * 2) / 2;
+              const d = (n.c - lc) / rowUnit;
+              const ad = Math.abs(d);
+              const phi = d * 0.32; // ~18.3° per row → ~90° visible fan
+              const x = Math.round(R * (Math.cos(phi) - 1) * 2) / 2;
+              const y = Math.round((R * Math.sin(phi) - n.c) * 2) / 2;
+              const rot = Math.round(phi * (180 / Math.PI) * 10) / 10;
               const sc = Math.round((1 + Math.max(0, 1 - ad) * 0.06) * 200) / 200;
-              if (x !== n.x || ny !== n.y || sc !== n.s) {
+              const o = Math.round(Math.min(1, Math.max(0, (2.8 - ad) / 0.6)) * 100) / 100;
+              if (x !== n.x || y !== n.y || sc !== n.s || rot !== n.r || o !== n.o) {
                 n.x = x;
-                n.y = ny;
+                n.y = y;
                 n.s = sc;
-                gsap.set(n.el, { x, y: ny, scale: sc });
+                n.r = rot;
+                n.o = o;
+                gsap.set(n.el, { x, y, rotation: rot, scale: sc, opacity: o });
               }
             }
           }
@@ -358,13 +364,39 @@ export default function PortfolioShowcase({ projects }: { projects: ProjectListI
           </div>
         </div>
 
-        {/* names — the reference's stacked list, active follows the scroll */}
+        {/* names — the rotating wheel. Wrap-around ghosts (the last projects
+            above the first, the first below the last — WITHOUT data-name, so
+            the wheel's anchor math only sees the real names) keep the circle
+            looking full, mirroring the card rail's ghosts. */}
         <nav ref={namesRef} className={styles.names} aria-label="Projects">
+          {projects.slice(-2).map((p) => (
+            <Link
+              key={`nlead-${p.id}`}
+              href={`/project-details/${p.id}`}
+              className={styles.name}
+              aria-hidden="true"
+              tabIndex={-1}
+            >
+              {p.title}
+            </Link>
+          ))}
           {projects.map((p, i) => (
             <Link
               key={p.id}
+              data-name
               href={`/project-details/${p.id}`}
               className={`${styles.name} ${i === active ? styles.nameActive : ''}`}
+            >
+              {p.title}
+            </Link>
+          ))}
+          {projects.slice(0, 2).map((p) => (
+            <Link
+              key={`ntail-${p.id}`}
+              href={`/project-details/${p.id}`}
+              className={styles.name}
+              aria-hidden="true"
+              tabIndex={-1}
             >
               {p.title}
             </Link>
