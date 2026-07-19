@@ -119,12 +119,12 @@ export default function PortfolioShowcase({ projects }: { projects: ProjectListI
         // centre in rail coordinates — the per-frame zoom needs NO rect reads
         let cardCache: { el: HTMLElement; c: number; s: number }[] = [];
         // name wheel: flow-centre per name + last written x/scale. The list
-        // shifts so the active name sits at the frame's vertical centre, and
-        // each name bows onto an arc (full bulge at the centre, straight
-        // again ~2 rows away).
+        // shifts so the active name sits at the frame's vertical centre; the
+        // others sweep LEFT along the wheel until they exit the screen edge
+        // (~2.6 rows away they're fully outside).
         let nameCache: { el: HTMLElement; c: number; x: number; s: number }[] = [];
         let rowUnit = 1;
-        let bulge = 0;
+        let pull = 0;
         const measure = () => {
           const cards = rail.querySelectorAll<HTMLElement>('[data-card]');
           if (cards.length < 2) return;
@@ -149,13 +149,18 @@ export default function PortfolioShowcase({ projects }: { projects: ProjectListI
               nameCache.length > 1
                 ? (nameCache[nameCache.length - 1].c - nameCache[0].c) / (nameCache.length - 1)
                 : 1;
-            bulge = Math.min(56, vp.clientWidth * (vp.clientWidth < 1024 ? 0.055 : 0.035));
+            // how far left a name must travel to clear the screen entirely
+            pull =
+              namesEl.offsetLeft +
+              Math.max(...nameCache.map((n) => n.el.offsetWidth)) +
+              24;
           }
         };
 
         let st: any = null;
         let lastY: number | null = null;
         let lastLc: number | null = null;
+        let snapT: ReturnType<typeof setTimeout> | null = null;
         const applyY = (progress: number) => {
           const f = progress * (N - 1);
           const y = -(firstCenter + f * step);
@@ -175,7 +180,9 @@ export default function PortfolioShowcase({ projects }: { projects: ProjectListI
               }
             }
             // name wheel: shift the list so the interpolated active centre
-            // sits at the frame middle; bow each name onto the arc
+            // sits at the frame middle; distant names sweep left off-screen
+            // (adjacent ones start right at the screen edge, like the wheel
+            // turning out of view)
             if (nameCache.length) {
               const i0 = Math.min(N - 1, Math.floor(f));
               const i1 = Math.min(N - 1, i0 + 1);
@@ -187,7 +194,7 @@ export default function PortfolioShowcase({ projects }: { projects: ProjectListI
               }
               for (const n of nameCache) {
                 const ad = Math.abs(n.c - lc) / rowUnit;
-                const x = Math.round(bulge * Math.cos(Math.min(ad / 2.2, 1) * (Math.PI / 2)) * 2) / 2;
+                const x = -Math.round(pull * Math.pow(Math.min(ad / 2.6, 1), 2.2) * 2) / 2;
                 const sc = Math.round((1 + Math.max(0, 1 - ad) * 0.06) * 200) / 200;
                 if (x !== n.x || sc !== n.s) {
                   n.x = x;
@@ -224,6 +231,19 @@ export default function PortfolioShowcase({ projects }: { projects: ProjectListI
                 activeRef.current = idx;
                 setActive(idx);
               }
+              // settle on the nearest project once the scroll goes quiet, so
+              // the highlighted name always rests exactly at the centre
+              if (snapT) clearTimeout(snapT);
+              if (self.progress > 0.001 && self.progress < 0.999) {
+                snapT = setTimeout(() => {
+                  const i = Math.round(self.progress * (N - 1));
+                  const target = self.start + ((self.end - self.start) * i) / (N - 1);
+                  if (Math.abs(self.scroll() - target) > 4) {
+                    if (w.lenis) w.lenis.scrollTo(target, { duration: 0.6 });
+                    else window.scrollTo({ top: target, behavior: 'smooth' });
+                  }
+                }, 160);
+              }
             },
           });
           requestAnimationFrame(() => ScrollTrigger.refresh());
@@ -237,6 +257,7 @@ export default function PortfolioShowcase({ projects }: { projects: ProjectListI
 
         return () => {
           clearInterval(guard);
+          if (snapT) clearTimeout(snapT);
           if (st) st.kill();
         };
       });
