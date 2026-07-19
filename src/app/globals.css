@@ -149,6 +149,7 @@ html body {
   background: var(--base-opp);
 }
 .pixel-g-logo__tile--accent {
+  /* fallback only — the component inlines the aurora colour per path step */
   background: #ddf160;
   transform: scale(1.12);
 }
@@ -896,12 +897,8 @@ html body {
 :root[color-scheme='light'] .mxd-nav__hamburger.is-flipping .hamburger__base {
   background-color: #a9624b;
 }
-/* nav logo: the pixel-G goes terracotta like the chips; the traveling pixel
-   stays lime (same accent-pixel language). :not() keeps this higher-
-   specificity rule off the accent tile — path tiles are also --on tiles. */
-:root[color-scheme='light'] .pixel-g-logo__tile--on:not(.pixel-g-logo__tile--accent) {
-  background: #a9624b;
-}
+/* nav logo: monochrome in both themes (var(--base-opp) from the base rule);
+   the traveling pixel carries the aurora ramp via inline style. */
 /* to-top: same clay glass */
 :root[color-scheme='light'] #to-top.btn-to-top {
   background-color: rgba(162, 84, 60, 0.9);
