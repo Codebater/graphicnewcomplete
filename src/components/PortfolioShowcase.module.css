@@ -97,6 +97,23 @@
   z-index: 4;
   pointer-events: none;
 }
+/* the poster-style ghost numeral in the frame's top-left — light italic
+   serif like the "01/02" numbers on the GRAPHIQ editorial posters */
+.year {
+  position: absolute;
+  top: 1rem;
+  left: 2.2rem;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-style: italic;
+  font-weight: 400;
+  font-size: clamp(4rem, 6vw, 6.4rem);
+  line-height: 1;
+  color: color-mix(in srgb, var(--t-bright, #1d1712) 14%, transparent);
+  letter-spacing: -0.02em;
+}
+@media (max-width: 1023px) {
+  .year { top: 0.8rem; left: 1.6rem; font-size: clamp(3.2rem, 10vw, 4.4rem); }
+}
 .side {
   position: absolute;
   left: 0.5rem;

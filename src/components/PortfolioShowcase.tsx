@@ -78,7 +78,7 @@ export default function PortfolioShowcase({ projects }: { projects: ProjectListI
             trigger: root,
             start: 'top top',
             end: 'bottom bottom',
-            scrub: 1,
+            scrub: 1.6,
             invalidateOnRefresh: true,
             // re-anchor AND re-apply on every refresh (images settling,
             // mobile URL-bar resize, killAll re-creates) — never leave the
@@ -212,6 +212,7 @@ export default function PortfolioShowcase({ projects }: { projects: ProjectListI
 
         {/* fixed rounded frame + rotated micro-labels */}
         <div className={styles.frame} aria-hidden="true">
+          <span className={styles.year}>26</span>
           <span className={`${styles.side} ${styles.sideTop}`}>GRAPHIQ STUDIO LLC</span>
           <span className={`${styles.side} ${styles.sideMid}`}>PORTFOLIO</span>
           <span className={`${styles.side} ${styles.sideBot}`}>SELECTED CASES</span>
