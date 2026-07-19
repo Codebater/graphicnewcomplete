@@ -95,6 +95,16 @@ export default function AppInitializer() {
         }
       }
 
+      // The kawaii/G preloader is retired site-wide: no page renders <Loader>
+      // anymore. On loaderless pages (all of them) hide the intro elements
+      // right away and appear QUICKLY — the old 0.8s/3.2s delays were tuned
+      // to the loader's exit and would leave a long blank hold without it.
+      const hasLoader = !!document.getElementById('loader');
+      if (!heroCollage && !hasLoader) {
+        if (loadingItems?.length) gsap.set(loadingItems, { opacity: 0 });
+        if (fadeInItems.length) gsap.set(fadeInItems, { opacity: 0 });
+      }
+
       function startLoader() {
         const counterElement = document.querySelector(".loader__count .count__text");
         if (counterElement) {
@@ -183,7 +193,12 @@ export default function AppInitializer() {
         slideAway();
       }
 
+      let appeared = false;
       function pageAppearance() {
+        // idempotent: loaderless pages trigger it early (below) and
+        // finishLoading calls it again once images settle
+        if (appeared) return;
+        appeared = true;
         if (heroCollage) {
           // ---- collage assembly: one piece placed after the other ----
           // (the figure wrapper carries a CSS !important transform — animate
@@ -242,17 +257,30 @@ export default function AppInitializer() {
             startAt: {y: 120},
             y: 0,
             opacity: 1,
-            delay: 0.8,
+            delay: hasLoader ? 0.8 : 0.15,
             stagger: 0.08
           });
         }
         gsap.set(fadeInItems, { opacity: 0 });
-        gsap.to(fadeInItems, { duration: 0.8, ease: 'none', opacity: 1, delay: 3.2 });
+        gsap.to(fadeInItems, {
+          duration: 0.8,
+          ease: 'none',
+          opacity: 1,
+          // 3.2s was timed to the loader's exit; loaderless pages appear fast
+          delay: hasLoader ? 3.2 : 0.5,
+        });
       }
 
       // Start loader if it exists
       if (document.querySelector(".loader__count")) {
         startLoader();
+      }
+
+      // No loader covering the page → don't hold the (hidden) content
+      // hostage to imagesLoaded; appear almost immediately. finishLoading
+      // still runs later for the ScrollTrigger refresh.
+      if (!heroCollage && !hasLoader) {
+        setTimeout(pageAppearance, 100);
       }
 
       // Initialize images loaded for page appearance.

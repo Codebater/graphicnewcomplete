@@ -1,7 +1,6 @@
 import Link from 'next/link';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-import Loader from '@/components/Loader';
 
 export const metadata = {
   title: 'Imprint - GRAPHIQ STUDIO LLC',
@@ -41,7 +40,6 @@ const sectionHeadingStyle: React.CSSProperties = {
 export default function Imprint() {
   return (
     <>
-      <Loader />
       <Header />
 
       <main id="mxd-page-content" className="mxd-page-content inner-page-content">

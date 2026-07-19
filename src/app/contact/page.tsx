@@ -4,7 +4,6 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import ContactConsultationFlow from '@/components/ContactConsultationFlow';
 import '@/styles/step-form.css';
-import Loader from '@/components/Loader';
 
 export const metadata = {
   title: 'Contact - GRAPHIQ STUDIO LLC - Let\'s Talk About Your Project',
@@ -23,8 +22,6 @@ export default function Contact() {
   return (
     <>
       
-      {/* Loader */}
-      <Loader />
 
       <Header />
 

@@ -4,7 +4,6 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 
 import { supabase } from '@/lib/supabase';
-import Loader from '@/components/Loader';
 
 // Get project data from Supabase
 const getProjectData = async (id: string) => {
@@ -243,8 +242,6 @@ export default async function ProjectDetails({ params }: { params: Promise<{ id:
 
   return (
     <>
-      {/* Loader */}
-      <Loader />
 
       <Header />
 

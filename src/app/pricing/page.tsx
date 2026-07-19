@@ -3,7 +3,6 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import PricingClient from '@/components/PricingClient';
 import PricingPlans from '@/components/PricingPlans';
-import Loader from '@/components/Loader';
 
 export const metadata = {
   title: 'Pricing - GRAPHIQ STUDIO LLC - Business Growth Studio',
@@ -22,8 +21,6 @@ export default function Pricing() {
   return (
     <>
       <PricingClient />
-      {/* Loader */}
-      <Loader />
 
       <Header />
 

@@ -2,7 +2,6 @@ import Link from 'next/link';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import PortfolioShowcase from '@/components/PortfolioShowcase';
-import Loader from '@/components/Loader';
 import { supabase } from '@/lib/supabase';
 import { ProjectListItem } from '@/components/ProjectsList';
 
@@ -49,8 +48,6 @@ export default async function Portfolio() {
   const projects = await getProjects();
   return (
     <>
-      {/* Loader */}
-      <Loader />
 
       <Header />
 

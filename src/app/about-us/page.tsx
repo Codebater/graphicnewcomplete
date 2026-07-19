@@ -4,7 +4,6 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import AboutUsClient from '@/components/AboutUsClient';
 import FreelancersList from '@/components/FreelancersListLazy';
-import Loader from '@/components/Loader';
 
 export const metadata = {
   title: 'About Us - GRAPHIQ STUDIO LLC - Digital Agency & Creative Studio',
@@ -23,8 +22,6 @@ export default function AboutUs() {
   return (
     <>
       <AboutUsClient />
-      {/* Loader */}
-      <Loader />
 
       <Header />
 
