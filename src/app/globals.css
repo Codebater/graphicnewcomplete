@@ -410,10 +410,10 @@ html body {
 /* generous letter tracking inside each word so letters never touch */
 .main-menu__link .pixel-text__word { gap: calc(var(--pxt) * 1.6); }
 .main-menu__link .pixel-text__cell { border-radius: 20%; }
-.main-menu__link .pixel-text__cell--on { background: var(--t-opp-bright); }
+.main-menu__link .pixel-text__cell--on { background: #161616; }
 .no-touch .main-menu__link:hover .pixel-text__cell--on,
 .main-menu__link:focus-visible .pixel-text__cell--on {
-  background: #ddf160;   /* the whole word lights up green on hover */
+  background: #fff;   /* word lights up white — lime is the card now */
 }
 
 /* menu links: a green tile bullet steps in on hover — pixel cursor language.
@@ -433,7 +433,7 @@ html body {
   width: 0.32em;
   height: 0.32em;
   margin-right: 0;
-  background: #ddf160;
+  background: #161616;
   opacity: 0;
   transform: translateY(-0.06em);
   transition: opacity 0.15s steps(2, end), width 0.15s steps(2, end), margin-right 0.15s steps(2, end);
@@ -463,7 +463,7 @@ html body {
 .rotating-caption__line.is-on { opacity: 1; }
 /* ink of the menu card's surface — a base span rule was forcing black,
    invisible on the dark card in the light theme */
-.mxd-menu__caption .rotating-caption__line { color: var(--t-opp-medium); }
+.mxd-menu__caption .rotating-caption__line { color: rgba(22, 22, 22, 0.78); }
 
 /* menu caption + bottom data line: small green lead-in tiles */
 .mxd-menu__caption::before {
@@ -472,7 +472,7 @@ html body {
   width: 0.9rem;
   height: 0.9rem;
   margin-bottom: 1.2rem;
-  background: #ddf160;
+  background: #161616;
 }
 .mxd-menu__data p:first-child::before {
   content: '';
@@ -480,7 +480,7 @@ html body {
   width: 0.6rem;
   height: 0.6rem;
   margin-right: 0.7rem;
-  background: #ddf160;
+  background: #161616;
 }
 
 /* ---- Header chip buttons — soft-glass squircles (user reference): dark
@@ -563,7 +563,7 @@ html body {
   -webkit-backdrop-filter: none;
   backdrop-filter: none;
   box-shadow: none;
-  background-color: var(--base-opp-tint);
+  background-color: #ddf160;   /* the menu card IS the brand accent */
 }
 /* no CSS animation while Flip drives the morph inside the menu */
 .mxd-menu__contain .hamburger__base { transition: none; }
@@ -591,6 +591,361 @@ html body {
    holds there (and thumbs have the native fast-scroll anyway) */
 @media (max-width: 1023px) {
   #to-top.btn-to-top { display: none !important; }
+}
+
+/* Menu glyph — ONE continuous futuristic G (AIRSKIN reference: solid mass,
+   pointed left chevron, carved counter, generous rounding via round stroke
+   joins). currentColor = card ink per theme; the socials ride the caption
+   line above the glyph. Sized against dvh too so the menu NEVER scrolls. */
+.menu-glyph {
+  position: relative;
+  margin-top: 1.2rem;
+  width: min(19rem, 48vw, 24dvh);
+  color: #161616;
+}
+@media only screen and (min-width: 1200px) {
+  .menu-glyph { width: min(34rem, 26vw, 44dvh); margin-top: 0; }
+}
+/* the caption row hangs ABOVE the glyph, right-aligned with its right
+   edge — width: max-content grows LEFTWARD, so it never spills past the
+   card padding even when the glyph is narrow (phones) */
+.menu-glyph__row {
+  position: absolute;
+  right: 0;
+  bottom: calc(100% + 1rem);
+  display: flex;
+  align-items: center;
+  gap: 1.6rem;
+  width: max-content;
+}
+.menu-glyph__brand {
+  font-family: var(--_font-default, sans-serif);
+  font-size: 1.05rem;
+  letter-spacing: 0.2em;
+  color: inherit;
+}
+.menu-glyph__brand sup { font-size: 0.7em; }
+.menu-glyph__socials {
+  display: inline-flex;
+  gap: 1.5rem;
+}
+.menu-glyph__socials a {
+  display: inline-flex;
+  color: inherit;
+  font-size: 2.1rem;
+  line-height: 1;
+  transition: color 0.25s ease, transform 0.25s ease;
+}
+.no-touch .menu-glyph__socials a:hover,
+.menu-glyph__socials a:focus-visible {
+  color: #a9624b;
+  transform: translateY(-2px);
+}
+.menu-glyph svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+/* tighten the stacked (sub-1200) menu so everything fits ONE screen (no
+   scrolling in a menu): the template spends 7.6rem card top padding,
+   4.4rem under the caption, 1.6rem link gaps, 5.2rem above the right
+   column, and stacks the data line vertically */
+@media (max-width: 1199px) {
+  .mxd-menu__wrapper .mxd-menu__inner { padding-top: 4rem; }
+  .mxd-menu__contain .mxd-menu__caption { margin-bottom: 1.2rem; }
+  .main-menu .main-menu__accordion { gap: 1rem; }
+  /* the G anchors bottom-RIGHT: the right column takes the leftover
+     height and the glyph rides its right edge */
+  .mxd-menu__wrapper .mxd-menu__right { padding-top: 1.2rem; margin-top: auto; }
+  .menu-glyph { margin-left: auto; }
+  .mxd-menu__wrapper .mxd-menu__data {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .menu-glyph { width: min(17rem, 44vw, 21dvh); margin-top: 4rem; }
+}
+/* very short screens (landscape phones): the rotating caption gives way */
+@media (max-width: 1199px) and (max-height: 620px) {
+  .mxd-menu__contain .mxd-menu__caption { display: none; }
+}
+
+/* ---- MOBILE INSTALLATION MENU (sub-1200): numbered editorial list, the
+   ball head riding a cream band (the hero marquee-line motif) with the
+   lens pixels drifting through its star eyes, socials in three columns.
+   Deep charcoal card in both themes; desktop (>=1200) keeps its menu. ---- */
+.radial-menu {
+  /* whiter than the site cream: yellowish #f3ead9 reads GREENISH against
+     the saturated clay card (simultaneous contrast) */
+  --rm-cream: #fbf7f0;
+  --rm-copper: #ddf160;   /* the brand accent pixel — copper drowns on clay */
+  display: none;
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  flex-direction: column;
+  padding: 2.2rem 2.4rem var(--rm-pad-b);
+  color: var(--rm-cream);
+  overflow: hidden;
+  border-radius: inherit;
+}
+/* film grain over the card (the old vignette read as a square dark
+   overlay on the clay card — removed) */
+.radial-menu::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
+  opacity: 0.05;
+  pointer-events: none;
+  z-index: 5;
+}
+@media (max-width: 1199px) {
+  .radial-menu { display: flex; }
+  .mxd-menu__wrapper .mxd-menu__inner { display: none; }
+  /* band geometry lives on the CONTAIN so the card mask and the menu
+     content share the exact same numbers */
+  .mxd-menu__contain {
+    --rmb: clamp(150px, 21dvh, 200px);
+    --rm-pad-b: calc(2rem + env(safe-area-inset-bottom));
+    --rm-soc-content: 12.6rem;
+    --rm-soc-h: calc(var(--rm-pad-b) + var(--rm-soc-content) + 1.8rem);
+  }
+  /* card follows the THEME like the chips do: clay in light, deep
+     charcoal in dark */
+  .mxd-menu__contain .hamburger__base,
+  .mxd-nav__hamburger.is-flipping .hamburger__base {
+    background-color: #0d0c0b;
+  }
+  :root[color-scheme='light'] .mxd-menu__contain .hamburger__base,
+  :root[color-scheme='light'] .mxd-nav__hamburger.is-flipping .hamburger__base {
+    background-color: #a9624b;
+  }
+  /* the band + circular notch are PUNCHED THROUGH the card: full mask
+     minus (band rect + plate circle), all measured from the card bottom */
+  .mxd-menu__contain .hamburger__base {
+    mask-image:
+      linear-gradient(#000 0 0),
+      linear-gradient(#000 0 0),
+      radial-gradient(closest-side, #000 99%, transparent 100%);
+    mask-size:
+      100% 100%,
+      100% calc(var(--rmb) * 0.33),
+      calc(var(--rmb) * 0.82) calc(var(--rmb) * 0.82);
+    mask-position:
+      0 0,
+      0 calc(100% - var(--rm-soc-h) - var(--rmb) * 0.335),
+      50% calc(100% - var(--rm-soc-h) - var(--rmb) * 0.09);
+    mask-repeat: no-repeat;
+    mask-composite: subtract, add, add;
+  }
+  .mxd-nav__hamburger.nav-open .hamburger__line::before {
+    background-color: #f3ead9;
+  }
+}
+
+/* logo lockup */
+.rm-top {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex: 0 0 auto;
+}
+.rm-logo-mark { display: block; width: 3.4rem; }
+.radial-menu .pixel-g-logo__tile--on { background: var(--rm-cream); }
+.radial-menu .pixel-g-logo__tile--accent { background: #0d0c0b; }
+.rm-logo-text {
+  font-family: var(--_font-default, sans-serif);
+  font-weight: 600;
+  font-size: 1.15rem;
+  line-height: 1.25;
+  letter-spacing: 0.14em;
+  color: var(--rm-cream);
+}
+
+/* ---- numbered destination list ---- */
+.rm-list {
+  position: relative;
+  z-index: 2;
+  flex: 0 0 auto;
+  margin-top: 2.6rem;
+}
+.rm-row {
+  display: flex;
+  align-items: center;
+  gap: 2.2rem;
+  padding: 1.75rem 0.6rem;
+  border-top: 1px solid rgba(243, 234, 217, 0.1);
+  text-decoration: none;
+  color: var(--rm-cream);
+}
+.rm-row:last-child { border-bottom: 1px solid rgba(243, 234, 217, 0.1); }
+.rm-row__num {
+  font-family: var(--_font-default, sans-serif);
+  font-weight: 500;
+  font-size: 1.15rem;
+  letter-spacing: 0.22em;
+  color: var(--rm-copper);
+  flex: 0 0 3.4rem;
+}
+.rm-row__label {
+  font-family: var(--_font-accent, sans-serif);
+  font-weight: 700;
+  font-size: clamp(1.9rem, 5.4vw, 2.4rem);
+  letter-spacing: 0.24em;
+  line-height: 1;
+  /* soft emboss like the reference */
+  text-shadow: 0 2px 3px rgba(0, 0, 0, 0.55);
+  transition: color 0.25s ease, text-shadow 0.25s ease;
+}
+.rm-row__arrow {
+  margin-left: auto;
+  font-size: 2rem;
+  color: var(--rm-copper);
+  transition: transform 0.25s ease;
+}
+.rm-row--active .rm-row__label {
+  color: var(--rm-copper);
+  text-shadow: 0 0 20px rgba(221, 241, 96, 0.45);
+}
+.no-touch .rm-row:hover .rm-row__label { color: var(--rm-copper); }
+.no-touch .rm-row:hover .rm-row__arrow { transform: translateX(4px); }
+
+/* ---- the head on its cream band ---- */
+.rm-band {
+  position: absolute;
+  z-index: 2;
+  left: 0;
+  right: 0;
+  bottom: var(--rm-soc-h);
+  height: var(--rmb);
+}
+.rm-ball {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: calc(var(--rmb) * 0.62);
+  /* the centring transform stays STATIC — animating it on this wrapper
+     misrendered in some compositors (ball drew ~55% low); the float lives
+     on the inner img instead */
+  transform: translate(-50%, -50%);
+  filter: drop-shadow(0 12px 14px rgba(0, 0, 0, 0.38));
+}
+@keyframes rm-float {
+  from { transform: translateY(-2.5%); }
+  to { transform: translateY(2.5%); }
+}
+.rm-ball img {
+  display: block;
+  width: 100%;
+  height: auto;
+  /* the opaque ball is the stencil: it sits ABOVE the eye windows and its
+     TRUE star holes reveal them — exactly the hero lens recipe */
+  position: relative;
+  z-index: 2;
+  animation: rm-float 6.5s ease-in-out infinite alternate;
+}
+/* eye windows BEHIND the ball: page-coloured backing + drifting icons,
+   theme-aware via the same vars as the hero lens (var(--base) backing,
+   var(--t-bright)/var(--accent) icons) */
+.rm-eye {
+  position: absolute;
+  overflow: hidden;
+  z-index: 1;
+  background: var(--base);
+}
+/* dark theme: soft backlight so the black sphere separates from the dark
+   page showing through the notch */
+:root[color-scheme='dark'] .rm-ball::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 145%;
+  height: 145%;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(circle, rgba(243, 234, 217, 0.15) 18%, rgba(221, 241, 96, 0.05) 42%, transparent 66%);
+  z-index: 0;
+}
+.rm-eye--left { left: 16.4%; top: 27.6%; width: 31%; height: 30.3%; }
+.rm-eye--right { left: 56.4%; top: 27.6%; width: 30.4%; height: 30.5%; }
+.rm-eye__strip {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  display: flex;
+  align-items: center;
+  width: max-content;
+  color: var(--t-bright);
+  animation: rm-drift 12s linear infinite;
+}
+@keyframes rm-drift {
+  to { transform: translateX(-50%); }
+}
+.rm-eye__icon:nth-child(2n) { color: var(--accent); }
+.rm-eye__icon {
+  display: flex;
+  /* trailing margin instead of flex gap: the strip's -50% wrap point is
+     then EXACTLY one set period — no half-gap hop at the loop seam */
+  margin-right: calc(var(--rmb) * 0.05);
+}
+.rm-eye__icon svg {
+  display: block;
+  height: calc(var(--rmb) * 0.072);
+  width: auto;
+}
+
+/* ---- socials: three columns ---- */
+.rm-socials {
+  position: absolute;
+  z-index: 2;
+  left: 2.4rem;
+  right: 2.4rem;
+  bottom: var(--rm-pad-b);
+  height: var(--rm-soc-content);
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  align-items: center;
+}
+.rm-social {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--rm-cream);
+  text-decoration: none;
+  font-size: 4.6rem;
+  line-height: 1;
+  /* squash-and-stretch spring on every menu open (the wrapper's
+     display toggle re-triggers the animation); each icon on its own
+     clock — asynchronous, not a uniform stagger */
+  animation: rm-spring 0.68s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+.rm-social:nth-child(1) { animation-delay: 0.4s; animation-duration: 0.85s; }
+.rm-social:nth-child(2) { animation-delay: 0.72s; animation-duration: 1.05s; }
+.rm-social:nth-child(3) { animation-delay: 0.55s; animation-duration: 0.92s; }
+@keyframes rm-spring {
+  0% { transform: scale(0); opacity: 0; }
+  45% { transform: scale(1.5, 0.58); opacity: 1; }
+  62% { transform: scale(0.7, 1.42); }
+  76% { transform: scale(1.24, 0.84); }
+  88% { transform: scale(0.93, 1.09); }
+  100% { transform: scale(1); }
+}
+.rm-social i { transition: color 0.25s ease, transform 0.25s ease; }
+.no-touch .rm-social:hover i { color: var(--rm-copper); transform: scale(1.12); }
+
+@media (prefers-reduced-motion: reduce) {
+  .rm-ball img, .rm-eye__strip, .rm-social { animation: none; }
+}
+/* short screens: tighten before anything scrolls */
+@media (max-width: 1199px) and (max-height: 720px) {
+  .mxd-menu__contain { --rmb: clamp(120px, 18dvh, 160px); }
+  .rm-row { padding: 1.3rem 0.6rem; }
+  .rm-list { margin-top: 1.6rem; }
+  .rm-social { font-size: 3.8rem; }
 }
 
 /* Pricing "Tools We Love" marquee: text wordmarks inside the template's
@@ -666,7 +1021,7 @@ html body {
 .mxd-nav__hamburger.nav-open .hamburger__line::before {
   animation: none;
   border-radius: 0.2rem;
-  background-color: var(--t-opp-bright);
+  background-color: #161616;
 }
 @keyframes hamburger-eye-life {
   0%, 17% { transform: none; }
@@ -793,8 +1148,15 @@ html body {
 .mxd-hero-02-marquee {
   /* one size source for the character — 0.85× the original so more of the
      figure shows; the marquee text + lens icons scale by the same factor
-     below, keeping the head-through-text ratio exactly the original */
-  --hiw: clamp(460px, 49vw, 665px);
+     below, keeping the head-through-text ratio exactly the original.
+     ×1.5222 vs the old 720-wide canvas (460/49vw/665): the hero file is
+     now 1096px wide (the FULL figure — both natural silhouette edges in
+     frame) and the wider box scales up in lockstep, keeping the BALL the
+     exact same on-screen size; displayed height is invariant. The ball
+     sits at 41.06% of the canvas width (asymmetric extension right), so
+     the wrapper anchors with translateX(-41.06%) below and the lens uses
+     HEAD.cx 0.4106 — ball screen position unchanged. */
+  --hiw: clamp(700px, 74.6vw, 1012px);
 }
 /* marquee text + pulse star at 0.85× the template's three tiers
    (!important: /css/main.css loads after globals) */
@@ -820,15 +1182,18 @@ html body {
   /* translateY(-18%) pins the HEAD CENTRE (18% of image height) to the line
      centre; the body drops toward the fold and is clipped by the hero =
      grounded, not floating */
-  transform: translateX(-50%) translateY(-18%) !important;
+  /* -41.06% (not -50%): anchors the BALL (at 41.06% of image width) to
+     the same screen spot the old centred ball had */
+  transform: translateX(-41.06%) translateY(-18%) !important;
 }
 .mxd-hero-02-marquee__image img {
   width: 100%;
   height: auto;
   /* reserve the final box before decode: a late-decoding hero image must not
      change document height — that fired a global ScrollTrigger.refresh that
-     could land as a visible stutter while already scrolling the card stack */
-  aspect-ratio: 720 / 1040;
+     could land as a visible stutter while already scrolling the card stack.
+     Matches the hero file's canvas (1096×1040 full-figure cut). */
+  aspect-ratio: 1096 / 1040;
 }
 /* clip the character's coat at the hero's edge so the figure stands into
    the fold instead of spilling into the next section */
@@ -870,31 +1235,12 @@ html body {
 }
 
 
-/* ---- Clay menu (light theme): the open menu card becomes the poster's
-   terracotta with cream tile lettering — the dark theme menu is untouched.
-   Lime stays the hover/accent language on both. ---- */
-:root[color-scheme='light'] .mxd-menu__contain .hamburger__base {
-  background-color: #a9624b;   /* the coat terracotta */
-}
-:root[color-scheme='light'] .main-menu__link .pixel-text__cell--on {
-  background: #f3ead9;         /* cream tiles on terracotta */
-  box-shadow: 0 1px 3px rgba(60, 30, 15, 0.25);
-}
-/* compound :root.no-touch — .no-touch lives ON <html>, not below it */
-:root[color-scheme='light'].no-touch .main-menu__link:hover .pixel-text__cell--on,
-:root[color-scheme='light'] .main-menu__link:focus-visible .pixel-text__cell--on {
-  background: #ddf160;         /* word lights lime on hover, as everywhere */
-}
-:root[color-scheme='light'] .mxd-menu__caption .rotating-caption__line {
-  color: rgba(243, 234, 217, 0.88);
-}
-:root[color-scheme='light'] .mxd-menu__data p,
-:root[color-scheme='light'] .mxd-menu__data a {
-  color: rgba(243, 234, 217, 0.75);
-}
-/* X eyes on the open terracotta card read cream too */
-:root[color-scheme='light'] .mxd-nav__hamburger.nav-open .hamburger__line::before {
-  background-color: #f3ead9;
+/* ---- Lime menu (both themes): the open card is the brand accent #ddf160
+   with dark ink everywhere — colours live in the unscoped rules above.
+   Data line ink: ---- */
+.mxd-menu__wrapper .mxd-menu__data p,
+.mxd-menu__wrapper .mxd-menu__data a {
+  color: rgba(22, 22, 22, 0.7);
 }
 
 /* ---- Clay chips (light theme): the three dark-glass squircles (theme
@@ -935,8 +1281,12 @@ html body {
 }
 /* close morph: the card shrinking back into the chip stays terracotta —
    without this it resolves to var(--base-opp-tint) and flashes dark brown */
-:root[color-scheme='light'] .mxd-nav__hamburger.is-flipping .hamburger__base {
-  background-color: #a9624b;
+/* desktop only — on mobile the charcoal installation-menu rule must win
+   or the close morph flashes lime for a beat */
+@media (min-width: 1200px) {
+  :root[color-scheme='light'] .mxd-nav__hamburger.is-flipping .hamburger__base {
+    background-color: #ddf160;
+  }
 }
 /* nav logo: monochrome in both themes (var(--base-opp) from the base rule);
    the traveling pixel carries the aurora ramp via inline style. */

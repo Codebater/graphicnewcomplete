@@ -40,6 +40,10 @@ const coverTiles = (() => {
   return tiles;
 })();
 
+// collage intro runs ONCE per visit — React dev double-mounts effects and
+// a per-mount flag alone would either double-play or freeze the first pass
+let lastCollageAt = 0;
+
 const TileCover = () => (
   <span className="pfTileCover" aria-hidden="true">
     {coverTiles.map((t, i) => (
@@ -83,6 +87,99 @@ export default function PortfolioShowcase({ projects }: { projects: ProjectListI
     );
     io.observe(root);
     return () => io.disconnect();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // collage intro: the showcase assembles piece by piece on arrival — frame
+  // snaps in, the ghost numeral tilts and settles, cards tumble into the
+  // rail, names slide in, micro-labels last. Runs once per mount; only
+  // animates properties the scrub NEVER writes (cards: y/rotation/opacity —
+  // the zoom-settle owns scale; names: x/opacity — the centring owns
+  // y/scale), so the intro and the ScrollTrigger can overlap safely.
+  useEffect(() => {
+    if (!projects.length) return;
+    const w = window as unknown as { gsap?: any };
+    let cancelled = false;
+    let tries = 0;
+    let tl: any = null;
+    const run = () => {
+      if (cancelled) return;
+      const gsap = w.gsap;
+      if (!gsap) {
+        if (tries++ < 60) setTimeout(run, 100);
+        return;
+      }
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      const root = rootRef.current;
+      const rail = railRef.current;
+      const namesEl = namesRef.current;
+      if (!root || !rail) return;
+      // wait until the scrub has PLACED the rail (resting transform applied)
+      // — otherwise the cards animate before they are in line and snap when
+      // the positioning lands mid-collage
+      if (getComputedStyle(rail).transform === 'none' && tries++ < 60) {
+        setTimeout(run, 100);
+        return;
+      }
+      if (Date.now() - lastCollageAt < 1500) return; // double-mount echo
+      lastCollageAt = Date.now();
+      const frame = root.querySelector(`.${styles.frame}`);
+      const year = root.querySelector(`.${styles.year}`);
+      const sides = root.querySelectorAll(`.${styles.side}`);
+      const counter = root.querySelector(`.${styles.counter}`);
+      const cards = Array.from(rail.children);
+      const names = namesEl ? Array.from(namesEl.children) : [];
+      // fromTo with explicit end values everywhere: .from() captures the
+      // CURRENT state as the target, so an interrupted first pass (React
+      // dev double-mount) would freeze elements invisible
+      tl = gsap.timeline({ delay: 0.2 });
+      tl.fromTo(
+        frame,
+        { scale: 0.94, opacity: 0 },
+        { scale: 1, opacity: 1, duration: 0.55, ease: 'back.out(1.4)' }
+      )
+        .fromTo(
+          year,
+          { y: -26, rotation: -8, opacity: 0 },
+          { y: 0, rotation: 0, opacity: 1, duration: 0.45, ease: 'back.out(1.7)' },
+          '-=0.28'
+        )
+        .fromTo(
+          cards,
+          { y: 36, opacity: 0 },
+          {
+            y: 0,
+            // land on the stylesheet's resting opacities (active card = 1),
+            // then hand opacity back to the CSS below
+            opacity: (i: number) => (i === 2 ? 1 : 0.85),
+            duration: 0.45,
+            stagger: 0.06,
+            ease: 'power3.out',
+          },
+          '-=0.32'
+        )
+        .fromTo(
+          names,
+          { x: -38, opacity: 0 },
+          { x: 0, opacity: 1, duration: 0.4, stagger: 0.05, ease: 'power3.out' },
+          '-=0.4'
+        )
+        .fromTo(
+          [...sides, counter],
+          { opacity: 0 },
+          { opacity: 1, duration: 0.4, stagger: 0.07 },
+          '-=0.2'
+        )
+        .call(() => gsap.set(cards, { clearProps: 'opacity' }));
+    };
+    run();
+    return () => {
+      // stop pending retries only — never kill a playing timeline: the
+      // dev double-mount cleanup would freeze pass 1 mid-collage, and on a
+      // real unmount the nodes are gone anyway
+      cancelled = true;
+      void tl;
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

@@ -136,9 +136,10 @@ export default function HeroMarqueeLens() {
       const stripPeriod = second.offsetLeft - first.offsetLeft;
 
       // The clay character's HEAD is the lens now: ball centre at
-      // (50%, 18%) of the image, radius 24% of its width, star eyes riding
-      // slightly above centre at 15.2% (fractions measured from the cutout).
-      const HEAD = { cx: 0.5, cy: 0.18, r: 0.24, eyeCy: 0.152 };
+      // (41.06%, 18%) of the image (the 1096-wide full-figure canvas
+      // extends asymmetrically to the right), star eyes riding slightly
+      // above centre at 15.2%. r = ball radius / image width (173/1096).
+      const HEAD = { cx: 0.4106, cy: 0.18, r: 0.1578, eyeCy: 0.152 };
 
       // Static band geometry — only changes on resize, never per frame.
       // The head sits ON the marquee line (original composition): the icon

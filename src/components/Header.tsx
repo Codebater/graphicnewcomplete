@@ -2,6 +2,7 @@ import Link from 'next/link';
 import RotatingCaption from '@/components/RotatingCaption';
 import PixelGLogo from '@/components/PixelGLogo';
 import PixelText from '@/components/PixelText';
+import RadialMenu from '@/components/RadialMenu';
 
 export default function Header() {
   return (
@@ -64,12 +65,49 @@ export default function Header() {
                   </nav>
                 </div>
               </div>
-              
+
               {/* right side */}
               <div className="mxd-menu__right">
                 <div className="menu-promo">
                   <div className="menu-promo__content">
-                    {/* Optional promo content */}
+                    {/* futuristic single-mass G glyph (AIRSKIN reference):
+                        pointed left chevron, carved counter, rounded joins.
+                        Socials ride the caption line above it. */}
+                    <div className="menu-glyph menu-fade-in">
+                      <div className="menu-glyph__row">
+                        <span className="menu-glyph__brand" aria-hidden="true">GRAPHIQ<sup>&reg;</sup></span>
+                        <span className="menu-glyph__socials">
+                          <a href="https://wa.me/12132322227" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp">
+                            <i className="ph ph-whatsapp-logo"></i>
+                          </a>
+                          <a href="https://www.instagram.com/n_drjj" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+                            <i className="ph ph-instagram-logo"></i>
+                          </a>
+                          <a href="https://www.linkedin.com/in/andrej-lisal-67620341a/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
+                            <i className="ph ph-linkedin-logo"></i>
+                          </a>
+                        </span>
+                      </div>
+                      <svg viewBox="0 0 400 420" aria-hidden="true" focusable="false">
+                        {/* body: top bar + pointed left chevron + bottom bar,
+                            mouth open to the right edge */}
+                        <path
+                          d="M150 16 H384 V148 H210 V198 L305 404 H90 L16 212 Z"
+                          fill="currentColor"
+                          stroke="currentColor"
+                          strokeWidth="26"
+                          strokeLinejoin="round"
+                        />
+                        {/* the detached arm, split by the diagonal channel */}
+                        <path
+                          d="M252 198 H384 V404 H340 Z"
+                          fill="currentColor"
+                          stroke="currentColor"
+                          strokeWidth="26"
+                          strokeLinejoin="round"
+                        />
+                      </svg>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -85,6 +123,9 @@ export default function Header() {
                 </p>
               </div>
             </div>
+            {/* sub-1200 replaces the whole layout with the radial
+                installation menu (CSS-gated) */}
+            <RadialMenu />
           </div>
         </div>
       </nav>

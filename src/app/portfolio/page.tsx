@@ -8,6 +8,15 @@ import { ProjectListItem } from '@/components/ProjectsList';
 // Fresh projects at most every minute (same ISR policy as home)
 export const revalidate = 60;
 
+
+// Placeholder projects without a real showcase video yet play the local
+// "under construction" loop (site-hosted in /public/videos; the poster
+// follows the -poster.webp convention). Keyed by id — titles can change.
+const CONSTRUCTION_LOOP_IDS = new Set([
+  '346c90d6-05f3-475e-8c27-b4d0273289b0', // Fabbrica
+  'f9176cb0-0d20-421d-88b6-96dcb4fcdbbd', // Stash - Storage Rental
+]);
+
 async function getProjects(): Promise<ProjectListItem[]> {
   try {
     const { data, error } = await supabase
@@ -23,7 +32,9 @@ async function getProjects(): Promise<ProjectListItem[]> {
       title: p.title,
       subtitle: p.services || p.client || '',
       image: p.featured_image || undefined,
-      video: p.featured_video || undefined,
+      video:
+        p.featured_video ||
+        (CONSTRUCTION_LOOP_IDS.has(p.id) ? '/videos/construction-loop.mp4' : undefined),
     }));
   } catch (e) {
     console.error('Portfolio projects fetch failed:', e);

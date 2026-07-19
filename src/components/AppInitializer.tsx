@@ -532,7 +532,7 @@ export default function AppInitializer() {
         const menuItem = $(element).find(".main-menu__item");
         const videoEl = $(element).find(".menu-promo__video");
         const fadeInEl = $(element).find(".menu-fade-in");
-        const flipDuration = 0.6;
+        const flipDuration = 0.4;   // quick open/close (was 0.6)
 
         function flip(forwards: boolean) {
           const state = Flip.getState(flipItemEl);
@@ -551,7 +551,7 @@ export default function AppInitializer() {
           hamburgerEl.addClass("is-flipping");
           Flip.from(state, {
             ease: "power4.inOut",
-            duration: 0.8,
+            duration: 0.5,   // quick morph (was 0.8)
             onComplete: () => hamburgerEl.removeClass("is-flipping"),
           });
         }
