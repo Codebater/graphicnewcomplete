@@ -43,22 +43,36 @@ export default function PortfolioShowcase({ projects }: { projects: ProjectListI
         if (!root || !rail) return;
 
         // rail geometry: first card centre + step between card centres —
-        // measured on refresh only, never per frame
+        // measured on refresh only, never per frame. Guarded against the
+        // degenerate mid-hydration layout (pin height ~0) that produced a
+        // wrong anchor and made the first scroll "jump".
         let firstCenter = 0;
         let step = 0;
         const measure = () => {
           const cards = rail.querySelectorAll<HTMLElement>('[data-card]');
           if (cards.length < 2) return;
           const vp = rail.parentElement!;
+          if (vp.clientHeight < 200) return; // not laid out yet — keep last good values
           const a = cards[0].offsetTop + cards[0].offsetHeight / 2;
           const b = cards[1].offsetTop + cards[1].offsetHeight / 2;
           step = b - a;
           firstCenter = a - vp.clientHeight / 2;
         };
-        measure();
 
         let st: any = null;
         let lastY: number | null = null;
+        const applyY = (progress: number) => {
+          const f = progress * (N - 1);
+          const y = -(firstCenter + f * step);
+          if (y !== lastY) {
+            lastY = y;
+            gsap.set(rail, { y });
+          }
+        };
+        // resting state is correct even before the trigger exists / fires
+        measure();
+        applyY(0);
+
         const create = () => {
           st = ScrollTrigger.create({
             trigger: root,
@@ -66,14 +80,16 @@ export default function PortfolioShowcase({ projects }: { projects: ProjectListI
             end: 'bottom bottom',
             scrub: 1,
             invalidateOnRefresh: true,
-            onRefresh: measure,
+            // re-anchor AND re-apply on every refresh (images settling,
+            // mobile URL-bar resize, killAll re-creates) — never leave the
+            // rail on a stale transform
+            onRefresh: (self: any) => {
+              measure();
+              applyY(self.progress);
+            },
             onUpdate: (self: any) => {
+              applyY(self.progress);
               const f = self.progress * (N - 1);
-              const y = -(firstCenter + f * step);
-              if (y !== lastY) {
-                lastY = y;
-                gsap.set(rail, { y });
-              }
               const idx = Math.round(f);
               if (idx !== activeRef.current && Math.abs(f - idx) < 0.4) {
                 activeRef.current = idx;
