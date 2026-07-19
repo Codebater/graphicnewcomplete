@@ -52,6 +52,7 @@ export default function PortfolioShowcase({ projects }: { projects: ProjectListI
   const rootRef = useRef<HTMLElement | null>(null);
   const railRef = useRef<HTMLDivElement | null>(null);
   const namesRef = useRef<HTMLElement | null>(null);
+  const frameRef = useRef<HTMLDivElement | null>(null);
   const [active, setActive] = useState(0);
   const activeRef = useRef(0);
   const inViewRef = useRef(false);
@@ -126,6 +127,10 @@ export default function PortfolioShowcase({ projects }: { projects: ProjectListI
         let nameCache: { el: HTMLElement; c: number; y: number; s: number }[] = [];
         let realNames: typeof nameCache = [];
         let rowUnit = 1;
+        // half the frame's height — cards whose centre is beyond this line
+        // are outside the box and get the frost blur (per-card CSS filter;
+        // backdrop-filter bands silently failed on the user's phone)
+        let frameHalf = 0;
         const measure = () => {
           const cards = rail.querySelectorAll<HTMLElement>('[data-card]');
           if (cards.length < 2) return;
@@ -140,6 +145,7 @@ export default function PortfolioShowcase({ projects }: { projects: ProjectListI
             const h = el as HTMLElement;
             return { el: h, c: h.offsetTop + h.offsetHeight / 2, s: -1 };
           });
+          frameHalf = frameRef.current ? frameRef.current.offsetHeight / 2 : 0;
           const namesEl = namesRef.current;
           if (namesEl) {
             nameCache = Array.from(namesEl.children).map((el) => {
@@ -166,12 +172,16 @@ export default function PortfolioShowcase({ projects }: { projects: ProjectListI
             // nears the frame centre (transform-only, deduped per card)
             if (vpH) {
               for (const it of cardCache) {
-                const d = Math.abs(it.c + y - vpH / 2) / vpH;
+                const aoff = Math.abs(it.c + y - vpH / 2);
+                const d = aoff / vpH;
                 const sc = Math.round((1 - 0.14 * Math.min(1, d * 1.6)) * 250) / 250;
                 if (sc !== it.s) {
                   it.s = sc;
                   gsap.set(it.el, { scale: sc });
                 }
+                // frost outside the box — re-asserted every frame (React
+                // re-renders rewrite className and would drop the class)
+                it.el.classList.toggle('pfBlur', frameHalf > 0 && aoff > frameHalf);
               }
             }
           }
@@ -337,14 +347,6 @@ export default function PortfolioShowcase({ projects }: { projects: ProjectListI
           </div>
         </div>
 
-        {/* frost: everything OUTSIDE the frame is blurred — four plain
-            backdrop-filter bands around the box (no mask, so it can't
-            silently fail on mobile). Purely additive; covers/cards/names
-            untouched. */}
-        <div className={styles.frost} aria-hidden="true">
-          <i /><i /><i /><i />
-        </div>
-
         {/* names — the reference's stacked list, active follows the scroll
             and always sits at the frame middle. Wrap-around ghosts (the last
             projects above the first, the first below the last — WITHOUT
@@ -386,7 +388,7 @@ export default function PortfolioShowcase({ projects }: { projects: ProjectListI
         </nav>
 
         {/* fixed rounded frame + rotated micro-labels */}
-        <div className={styles.frame} aria-hidden="true">
+        <div ref={frameRef} className={styles.frame} aria-hidden="true">
           <span className={styles.year}>26</span>
           <span className={`${styles.side} ${styles.sideTop}`}>GRAPHIQ STUDIO LLC</span>
           <span className={`${styles.side} ${styles.sideMid}`}>PORTFOLIO</span>
