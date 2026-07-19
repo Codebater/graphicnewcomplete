@@ -44,11 +44,38 @@
 .cardActive {
   opacity: 1;
 }
-.card img {
+.card img,
+.card video {
   width: 100%;
   height: 100%;
   object-fit: cover;
   display: block;
+}
+/* aurora tile cover — every card sits under the mosaic; only the active
+   card's tiles sweep away (per-tile transition delays set inline). The
+   cover element is global-classed so the SSR markup stays tiny. */
+.card :global(.pfTileCover) {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  grid-template-rows: repeat(5, 1fr);
+  gap: 2px;
+  pointer-events: none;
+  contain: layout paint;
+}
+.card { position: relative; }
+.card :global(.pfTileCover) i {
+  display: block;
+  border-radius: 2px;
+  opacity: 1;
+  transition: opacity 0.06s steps(2, end);
+}
+.cardRevealed :global(.pfTileCover) i {
+  opacity: 0;
+}
+@media (prefers-reduced-motion: reduce) {
+  .card :global(.pfTileCover) i { transition: none; }
 }
 .noMedia {
   display: block;

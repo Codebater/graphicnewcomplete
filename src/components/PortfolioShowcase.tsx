@@ -13,11 +13,76 @@ import styles from './PortfolioShowcase.module.css';
 const posterOf = (videoUrl: string) =>
   videoUrl.replace(/\.(mp4|webm|mov)(\?.*)?$/i, '-poster.webp');
 
+// aurora tile cover (the Selected Work wipe language): 8x5 opaque tiles per
+// card, coloured from the same 215°->390° long-way hue ramp, melting to the
+// page base at the card edges. Rendered once (SSR) — the reveal/cover is
+// pure CSS class + staggered transition delays.
+const COVER_COLS = 8;
+const COVER_ROWS = 5;
+const coverTiles = (() => {
+  const tiles: { bg: string; d: number }[] = [];
+  for (let i = 0; i < COVER_COLS * COVER_ROWS; i++) {
+    const c = i % COVER_COLS;
+    const r = (i / COVER_COLS) | 0;
+    const dx = c / (COVER_COLS - 1) - 0.5;
+    const dy = r / (COVER_ROWS - 1) - 0.5;
+    const dist = Math.min(1, Math.hypot(dx, dy) * 1.9);
+    const hue = (215 + (dx + 0.5) * 175 - dy * 35 + 360) % 360;
+    const sat = Math.round(92 - dist * 48);
+    const light = Math.round(27 + dist * 46);
+    const melt = Math.max(0, Math.min(1, (dist - 0.55) / 0.45));
+    const vivid = Math.round(100 - melt * 82);
+    tiles.push({
+      bg: `color-mix(in oklab, hsl(${hue.toFixed(0)} ${sat}% ${light}%) ${vivid}%, var(--base))`,
+      d: c * 22 + ((r + c) % 2) * 40,
+    });
+  }
+  return tiles;
+})();
+
+const TileCover = () => (
+  <span className="pfTileCover" aria-hidden="true">
+    {coverTiles.map((t, i) => (
+      <i key={i} style={{ backgroundColor: t.bg, transitionDelay: `${t.d}ms` }} />
+    ))}
+  </span>
+);
+
 export default function PortfolioShowcase({ projects }: { projects: ProjectListItem[] }) {
   const rootRef = useRef<HTMLElement | null>(null);
   const railRef = useRef<HTMLDivElement | null>(null);
   const [active, setActive] = useState(0);
   const activeRef = useRef(0);
+  const inViewRef = useRef(false);
+
+  // play ONLY the active card's video while the section is on screen
+  const syncVideos = () => {
+    const root = rootRef.current;
+    if (!root) return;
+    root.querySelectorAll<HTMLVideoElement>('video[data-idx]').forEach((v) => {
+      v.muted = true;
+      if (Number(v.dataset.idx) === activeRef.current && inViewRef.current) {
+        v.play().catch(() => {});
+      } else if (!v.paused) {
+        v.pause();
+      }
+    });
+  };
+  useEffect(syncVideos, [active]);
+  useEffect(() => {
+    const root = rootRef.current;
+    if (!root) return;
+    const io = new IntersectionObserver(
+      (entries) => {
+        inViewRef.current = entries[entries.length - 1].isIntersecting;
+        syncVideos();
+      },
+      { rootMargin: '0px 0px -80px 0px' }
+    );
+    io.observe(root);
+    return () => io.disconnect();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     if (!projects.length) return;
@@ -174,25 +239,38 @@ export default function PortfolioShowcase({ projects }: { projects: ProjectListI
                   ) : (
                     <span className={styles.noMedia} />
                   )}
+                  <TileCover />
                 </Link>
               );
             })}
             {projects.map((p, i) => {
               const img = p.image || (p.video ? posterOf(p.video) : undefined);
+              const revealed = i === active;
               return (
                 <Link
                   key={p.id}
                   data-card
                   href={`/project-details/${p.id}`}
-                  className={`${styles.card} ${i === active ? styles.cardActive : ''}`}
+                  className={`${styles.card} ${revealed ? `${styles.cardActive} ${styles.cardRevealed}` : ''}`}
                   aria-label={p.title}
                 >
-                  {img ? (
+                  {p.video ? (
+                    <video
+                      data-idx={i}
+                      src={p.video}
+                      poster={p.video ? posterOf(p.video) : undefined}
+                      muted
+                      loop
+                      playsInline
+                      preload="none"
+                    />
+                  ) : img ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img src={img} alt={p.title} loading={i < 2 ? 'eager' : 'lazy'} />
                   ) : (
                     <span className={styles.noMedia} />
                   )}
+                  <TileCover />
                 </Link>
               );
             })}
@@ -212,6 +290,7 @@ export default function PortfolioShowcase({ projects }: { projects: ProjectListI
                   ) : (
                     <span className={styles.noMedia} />
                   )}
+                  <TileCover />
                 </Link>
               );
             })}
