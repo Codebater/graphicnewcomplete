@@ -51,6 +51,7 @@ const TileCover = () => (
 export default function PortfolioShowcase({ projects }: { projects: ProjectListItem[] }) {
   const rootRef = useRef<HTMLElement | null>(null);
   const railRef = useRef<HTMLDivElement | null>(null);
+  const namesRef = useRef<HTMLElement | null>(null);
   const [active, setActive] = useState(0);
   const activeRef = useRef(0);
   const inViewRef = useRef(false);
@@ -117,6 +118,14 @@ export default function PortfolioShowcase({ projects }: { projects: ProjectListI
         // every rail child (incl. wrap-around ghosts) cached with its static
         // centre in rail coordinates — the per-frame zoom needs NO rect reads
         let cardCache: { el: HTMLElement; c: number; s: number }[] = [];
+        // names: the straight list shifts so the ACTIVE name sits at the
+        // frame's vertical middle. The shift is written on EVERY name (not
+        // the container — a container-level gsap y was beaten by module CSS
+        // on some phones). Ghost names (no data-name) fill the box above
+        // the first and below the last project; anchor math uses reals only.
+        let nameCache: { el: HTMLElement; c: number; y: number; s: number }[] = [];
+        let realNames: typeof nameCache = [];
+        let rowUnit = 1;
         const measure = () => {
           const cards = rail.querySelectorAll<HTMLElement>('[data-card]');
           if (cards.length < 2) return;
@@ -131,6 +140,18 @@ export default function PortfolioShowcase({ projects }: { projects: ProjectListI
             const h = el as HTMLElement;
             return { el: h, c: h.offsetTop + h.offsetHeight / 2, s: -1 };
           });
+          const namesEl = namesRef.current;
+          if (namesEl) {
+            nameCache = Array.from(namesEl.children).map((el) => {
+              const h = el as HTMLElement;
+              return { el: h, c: h.offsetTop + h.offsetHeight / 2, y: NaN, s: NaN };
+            });
+            realNames = nameCache.filter((n) => n.el.hasAttribute('data-name'));
+            rowUnit =
+              realNames.length > 1
+                ? (realNames[realNames.length - 1].c - realNames[0].c) / (realNames.length - 1)
+                : 1;
+          }
         };
 
         let st: any = null;
@@ -151,6 +172,25 @@ export default function PortfolioShowcase({ projects }: { projects: ProjectListI
                   it.s = sc;
                   gsap.set(it.el, { scale: sc });
                 }
+              }
+            }
+          }
+          // straight names list: shift every name up by the interpolated
+          // active centre so the highlighted name sits at the frame middle
+          // (per-name writes, fully deduped; the active pop is folded into
+          // the transform because an inline y would override a CSS scale)
+          if (nameCache.length && realNames.length) {
+            const i0 = Math.min(N - 1, Math.floor(f));
+            const i1 = Math.min(N - 1, i0 + 1);
+            const lc = realNames[i0].c + (realNames[i1].c - realNames[i0].c) * (f - i0);
+            const ny = -Math.round(lc * 2) / 2;
+            for (const n of nameCache) {
+              const ad = Math.abs(n.c - lc) / rowUnit;
+              const sc = Math.round((1 + Math.max(0, 1 - ad) * 0.06) * 200) / 200;
+              if (ny !== n.y || sc !== n.s) {
+                n.y = ny;
+                n.s = sc;
+                gsap.set(n.el, { y: ny, scale: sc });
               }
             }
           }
@@ -297,13 +337,40 @@ export default function PortfolioShowcase({ projects }: { projects: ProjectListI
           </div>
         </div>
 
-        {/* names — the reference's stacked list, active follows the scroll */}
-        <nav className={styles.names} aria-label="Projects">
+        {/* names — the reference's stacked list, active follows the scroll
+            and always sits at the frame middle. Wrap-around ghosts (the last
+            projects above the first, the first below the last — WITHOUT
+            data-name, so the shift math only sees the real names) keep the
+            box filled above and below. */}
+        <nav ref={namesRef} className={styles.names} aria-label="Projects">
+          {projects.slice(-2).map((p) => (
+            <Link
+              key={`nlead-${p.id}`}
+              href={`/project-details/${p.id}`}
+              className={styles.name}
+              aria-hidden="true"
+              tabIndex={-1}
+            >
+              {p.title}
+            </Link>
+          ))}
           {projects.map((p, i) => (
             <Link
               key={p.id}
+              data-name
               href={`/project-details/${p.id}`}
               className={`${styles.name} ${i === active ? styles.nameActive : ''}`}
+            >
+              {p.title}
+            </Link>
+          ))}
+          {projects.slice(0, 2).map((p) => (
+            <Link
+              key={`ntail-${p.id}`}
+              href={`/project-details/${p.id}`}
+              className={styles.name}
+              aria-hidden="true"
+              tabIndex={-1}
             >
               {p.title}
             </Link>

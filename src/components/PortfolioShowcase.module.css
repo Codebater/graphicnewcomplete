@@ -83,12 +83,13 @@
   background: color-mix(in srgb, var(--t-bright, #1d1712) 10%, transparent);
 }
 
-/* ---- names ---- */
+/* ---- names (straight list; JS shifts every name so the active one sits
+   at the frame middle — the container is NEVER transformed and carries no
+   CSS transform, so nothing can fight the per-name writes) ---- */
 .names {
   position: absolute;
   left: clamp(1.6rem, 13vw, 16rem);
   top: 50%;
-  transform: translateY(-50%);
   z-index: 3;
   display: flex;
   flex-direction: column;
@@ -102,12 +103,14 @@
   letter-spacing: -0.01em;
   color: var(--muted);
   text-decoration: none;
-  transition: color 0.45s ease, transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+  /* colour only — the active pop lives in the JS transform (an inline y
+     would override a class scale, and a transform transition would smear
+     the scrub-driven shift) */
+  transition: color 0.45s ease;
   transform-origin: left center;
 }
 .nameActive {
   color: var(--ink);
-  transform: scale(1.06);
 }
 :global(.no-touch) .name:hover { color: var(--ink); }
 
