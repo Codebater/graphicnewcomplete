@@ -83,20 +83,19 @@
   background: color-mix(in srgb, var(--t-bright, #1d1712) 10%, transparent);
 }
 
-/* ---- names (wheel: JS owns the transforms — list shifts so the active
-   name is centred, each name bows onto the arc) ---- */
+/* ---- names (wheel: JS owns ALL transforms, applied per name — the
+   container itself is NEVER transformed, so its top anchor can't be
+   fought by a CSS fallback) ---- */
 .names {
   position: absolute;
   /* spine of the wheel sits mid-way in the frame's empty left half (the
      rail starts at 52%), not hugging the screen edge */
   left: clamp(2rem, 20vw, 40rem);
   top: 50%;
-  transform: translateY(-50%);   /* pre-JS fallback only */
   z-index: 3;
   display: flex;
   flex-direction: column;
   gap: 0.35em;
-  will-change: transform;
 }
 .name {
   font-family: var(--_font-accent, 'Funnel Display', sans-serif);

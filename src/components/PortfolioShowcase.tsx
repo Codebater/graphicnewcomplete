@@ -118,11 +118,13 @@ export default function PortfolioShowcase({ projects }: { projects: ProjectListI
         // every rail child (incl. wrap-around ghosts) cached with its static
         // centre in rail coordinates — the per-frame zoom needs NO rect reads
         let cardCache: { el: HTMLElement; c: number; s: number }[] = [];
-        // name wheel: flow-centre per name + last written x/scale. The list
-        // shifts so the active name sits at the frame's vertical centre; the
-        // others sweep LEFT along the wheel until they exit the screen edge
-        // (~2.6 rows away they're fully outside).
-        let nameCache: { el: HTMLElement; c: number; x: number; s: number }[] = [];
+        // name wheel: flow-centre per name + last written x/y/scale. Every
+        // name shifts up by the interpolated active centre (active name =
+        // frame middle) and sweeps LEFT off-screen with distance (~2.6 rows
+        // away it's fully outside). ALL transforms live on the names
+        // themselves — the container is never transformed, so no CSS
+        // fallback can fight the wheel.
+        let nameCache: { el: HTMLElement; c: number; x: number; y: number; s: number }[] = [];
         let rowUnit = 1;
         let pull = 0;
         const measure = () => {
@@ -143,7 +145,7 @@ export default function PortfolioShowcase({ projects }: { projects: ProjectListI
           if (namesEl) {
             nameCache = Array.from(namesEl.children).map((el) => {
               const h = el as HTMLElement;
-              return { el: h, c: h.offsetTop + h.offsetHeight / 2, x: NaN, s: NaN };
+              return { el: h, c: h.offsetTop + h.offsetHeight / 2, x: NaN, y: NaN, s: NaN };
             });
             rowUnit =
               nameCache.length > 1
@@ -159,7 +161,6 @@ export default function PortfolioShowcase({ projects }: { projects: ProjectListI
 
         let st: any = null;
         let lastY: number | null = null;
-        let lastLc: number | null = null;
         let snapT: ReturnType<typeof setTimeout> | null = null;
         const applyY = (progress: number) => {
           const f = progress * (N - 1);
@@ -179,28 +180,24 @@ export default function PortfolioShowcase({ projects }: { projects: ProjectListI
                 }
               }
             }
-            // name wheel: shift the list so the interpolated active centre
-            // sits at the frame middle; distant names sweep left off-screen
-            // (adjacent ones start right at the screen edge, like the wheel
-            // turning out of view)
-            if (nameCache.length) {
-              const i0 = Math.min(N - 1, Math.floor(f));
-              const i1 = Math.min(N - 1, i0 + 1);
-              const lc = nameCache[i0].c + (nameCache[i1].c - nameCache[i0].c) * (f - i0);
-              const lcR = Math.round(lc * 2) / 2;
-              if (lcR !== lastLc) {
-                lastLc = lcR;
-                gsap.set(namesRef.current, { y: -lcR });
-              }
-              for (const n of nameCache) {
-                const ad = Math.abs(n.c - lc) / rowUnit;
-                const x = -Math.round(pull * Math.pow(Math.min(ad / 2.6, 1), 2.2) * 2) / 2;
-                const sc = Math.round((1 + Math.max(0, 1 - ad) * 0.06) * 200) / 200;
-                if (x !== n.x || sc !== n.s) {
-                  n.x = x;
-                  n.s = sc;
-                  gsap.set(n.el, { x, scale: sc });
-                }
+          }
+          // name wheel (outside the rail-y gate — fully deduped per name):
+          // every name shifts up by the interpolated active centre and
+          // sweeps left off-screen with distance
+          if (nameCache.length) {
+            const i0 = Math.min(N - 1, Math.floor(f));
+            const i1 = Math.min(N - 1, i0 + 1);
+            const lc = nameCache[i0].c + (nameCache[i1].c - nameCache[i0].c) * (f - i0);
+            const ny = -Math.round(lc * 2) / 2;
+            for (const n of nameCache) {
+              const ad = Math.abs(n.c - lc) / rowUnit;
+              const x = -Math.round(pull * Math.pow(Math.min(ad / 2.6, 1), 2.2) * 2) / 2;
+              const sc = Math.round((1 + Math.max(0, 1 - ad) * 0.06) * 200) / 200;
+              if (x !== n.x || ny !== n.y || sc !== n.s) {
+                n.x = x;
+                n.y = ny;
+                n.s = sc;
+                gsap.set(n.el, { x, y: ny, scale: sc });
               }
             }
           }
