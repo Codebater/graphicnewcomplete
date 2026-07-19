@@ -48,15 +48,24 @@ export default function PortfolioShowcase({ projects }: { projects: ProjectListI
         // wrong anchor and made the first scroll "jump".
         let firstCenter = 0;
         let step = 0;
+        let vpH = 0;
+        // every rail child (incl. wrap-around ghosts) cached with its static
+        // centre in rail coordinates — the per-frame zoom needs NO rect reads
+        let cardCache: { el: HTMLElement; c: number; s: number }[] = [];
         const measure = () => {
           const cards = rail.querySelectorAll<HTMLElement>('[data-card]');
           if (cards.length < 2) return;
           const vp = rail.parentElement!;
           if (vp.clientHeight < 200) return; // not laid out yet — keep last good values
+          vpH = vp.clientHeight;
           const a = cards[0].offsetTop + cards[0].offsetHeight / 2;
           const b = cards[1].offsetTop + cards[1].offsetHeight / 2;
           step = b - a;
           firstCenter = a - vp.clientHeight / 2;
+          cardCache = Array.from(rail.children).map((el) => {
+            const h = el as HTMLElement;
+            return { el: h, c: h.offsetTop + h.offsetHeight / 2, s: -1 };
+          });
         };
 
         let st: any = null;
@@ -67,6 +76,18 @@ export default function PortfolioShowcase({ projects }: { projects: ProjectListI
           if (y !== lastY) {
             lastY = y;
             gsap.set(rail, { y });
+            // promo-style zoom-settle: each card grows to full size as it
+            // nears the frame centre (transform-only, deduped per card)
+            if (vpH) {
+              for (const it of cardCache) {
+                const d = Math.abs(it.c + y - vpH / 2) / vpH;
+                const sc = Math.round((1 - 0.14 * Math.min(1, d * 1.6)) * 250) / 250;
+                if (sc !== it.s) {
+                  it.s = sc;
+                  gsap.set(it.el, { scale: sc });
+                }
+              }
+            }
           }
         };
         // resting state is correct even before the trigger exists / fires
