@@ -593,6 +593,32 @@ html body {
   #to-top.btn-to-top { display: none !important; }
 }
 
+/* ---- Tighter header (user request): smaller logo mark + wordmark and
+   smaller chip buttons. Compound selectors beat main.css (which loads
+   after globals). The smiley face geometry is untouched — the menu-X morph
+   uses fixed offsets tied to the eye gap. SelectedWork's topbar mirrors
+   the chip box and is updated in its module (4rem / 4.8rem). ---- */
+.mxd-header__logo .mxd-logo { gap: 0.8rem; }
+.mxd-header__logo .mxd-logo__image { width: 3.6rem; }
+.mxd-header__logo .mxd-logo__text { font-size: 1.55rem; }
+.mxd-header__controls .mxd-color-switcher,
+.mxd-nav__contain .mxd-nav__hamburger {
+  width: 4rem;
+  height: 4rem;
+}
+.mxd-header__controls .mxd-color-switcher i { font-size: 2.1rem; }
+@media only screen and (min-width: 768px) {
+  .mxd-header__logo .mxd-logo { gap: 1rem; }
+  .mxd-header__logo .mxd-logo__image { width: 4.2rem; }
+  .mxd-header__logo .mxd-logo__text { font-size: 1.9rem; }
+  .mxd-header__controls .mxd-color-switcher,
+  .mxd-nav__contain .mxd-nav__hamburger {
+    width: 4.8rem;
+    height: 4.8rem;
+  }
+  .mxd-header__controls .mxd-color-switcher i { font-size: 2.6rem; }
+}
+
 /* hamburger: a kawaii smiley (same language as the preloader / hero ball).
    The two template "lines" become bead eyes — AppInitializer stretches +
    crosses them into the X when the menu opens — plus a smile mouth that
