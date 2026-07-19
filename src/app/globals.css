@@ -679,7 +679,7 @@ html body {
      the saturated clay card (simultaneous contrast) */
   --rm-cream: #fbf7f0;
   --rm-copper: #ddf160;   /* the brand accent pixel — copper drowns on clay */
-  display: none;
+  display: flex;
   position: absolute;
   inset: 0;
   z-index: 3;
@@ -700,49 +700,47 @@ html body {
   pointer-events: none;
   z-index: 5;
 }
-@media (max-width: 1199px) {
-  .radial-menu { display: flex; }
-  .mxd-menu__wrapper .mxd-menu__inner { display: none; }
-  /* band geometry lives on the CONTAIN so the card mask and the menu
-     content share the exact same numbers */
-  .mxd-menu__contain {
+.mxd-menu__wrapper .mxd-menu__inner { display: none; }
+/* band geometry lives on the CONTAIN so the card mask and the menu
+   content share the exact same numbers */
+.mxd-menu__contain {
     --rmb: clamp(150px, 21dvh, 200px);
     --rm-pad-b: calc(2rem + env(safe-area-inset-bottom));
     --rm-soc-content: 12.6rem;
     --rm-soc-h: calc(var(--rm-pad-b) + var(--rm-soc-content) + 1.8rem);
   }
-  /* card follows the THEME like the chips do: clay in light, deep
-     charcoal in dark */
-  .mxd-menu__contain .hamburger__base,
-  .mxd-nav__hamburger.is-flipping .hamburger__base {
-    background-color: #0d0c0b;
-  }
-  :root[color-scheme='light'] .mxd-menu__contain .hamburger__base,
-  :root[color-scheme='light'] .mxd-nav__hamburger.is-flipping .hamburger__base {
-    background-color: #a9624b;
-  }
-  /* the band + circular notch are PUNCHED THROUGH the card: full mask
-     minus (band rect + plate circle), all measured from the card bottom */
-  .mxd-menu__contain .hamburger__base {
-    mask-image:
-      linear-gradient(#000 0 0),
-      linear-gradient(#000 0 0),
-      radial-gradient(closest-side, #000 99%, transparent 100%);
-    mask-size:
-      100% 100%,
-      100% calc(var(--rmb) * 0.33),
-      calc(var(--rmb) * 0.82) calc(var(--rmb) * 0.82);
-    mask-position:
-      0 0,
-      0 calc(100% - var(--rm-soc-h) - var(--rmb) * 0.335),
-      50% calc(100% - var(--rm-soc-h) - var(--rmb) * 0.09);
-    mask-repeat: no-repeat;
-    mask-composite: subtract, add, add;
-  }
-  .mxd-nav__hamburger.nav-open .hamburger__line::before {
-    background-color: #f3ead9;
-  }
+/* card follows the THEME like the chips do: clay in light, deep
+   charcoal in dark */
+.mxd-menu__contain .hamburger__base,
+.mxd-nav__hamburger.is-flipping .hamburger__base {
+  background-color: #0d0c0b;
 }
+:root[color-scheme='light'] .mxd-menu__contain .hamburger__base,
+:root[color-scheme='light'] .mxd-nav__hamburger.is-flipping .hamburger__base {
+  background-color: #a9624b;
+}
+/* the band + circular notch are PUNCHED THROUGH the card: full mask
+   minus (band rect + plate circle), all measured from the card bottom */
+.mxd-menu__contain .hamburger__base {
+  mask-image:
+    linear-gradient(#000 0 0),
+    linear-gradient(#000 0 0),
+    radial-gradient(closest-side, #000 99%, transparent 100%);
+  mask-size:
+    100% 100%,
+    100% calc(var(--rmb) * 0.33),
+    calc(var(--rmb) * 0.82) calc(var(--rmb) * 0.82);
+  mask-position:
+    0 0,
+    0 calc(100% - var(--rm-soc-h) - var(--rmb) * 0.335),
+    50% calc(100% - var(--rm-soc-h) - var(--rmb) * 0.09);
+  mask-repeat: no-repeat;
+  mask-composite: subtract, add, add;
+}
+.mxd-nav__hamburger.nav-open .hamburger__line::before {
+  background-color: #f3ead9;
+}
+
 
 /* logo lockup */
 .rm-top {
@@ -940,9 +938,22 @@ html body {
 @media (prefers-reduced-motion: reduce) {
   .rm-ball img, .rm-eye__strip, .rm-social { animation: none; }
 }
-/* short screens: tighten before anything scrolls */
-@media (max-width: 1199px) and (max-height: 720px) {
-  .mxd-menu__contain { --rmb: clamp(120px, 18dvh, 160px); }
+/* desktop (>=1200): same installation menu, tuned — centred content
+   column, grander band, bigger type/icons */
+@media (min-width: 1200px) {
+  .mxd-menu__contain { --rmb: clamp(180px, 24dvh, 250px); }
+  .radial-menu { padding: 3rem clamp(4rem, 50vw - 34rem, 46rem) var(--rm-pad-b); }
+  .rm-socials {
+    left: clamp(4rem, 50vw - 34rem, 46rem);
+    right: clamp(4rem, 50vw - 34rem, 46rem);
+  }
+  .rm-row__label { font-size: 2.7rem; }
+  .rm-social { font-size: 5.2rem; }
+}
+
+/* short screens (any width): tighten before anything scrolls */
+@media (max-height: 740px) {
+  .mxd-menu__contain { --rmb: clamp(120px, 18dvh, 160px) !important; }
   .rm-row { padding: 1.3rem 0.6rem; }
   .rm-list { margin-top: 1.6rem; }
   .rm-social { font-size: 3.8rem; }
@@ -1281,13 +1292,8 @@ html body {
 }
 /* close morph: the card shrinking back into the chip stays terracotta —
    without this it resolves to var(--base-opp-tint) and flashes dark brown */
-/* desktop only — on mobile the charcoal installation-menu rule must win
-   or the close morph flashes lime for a beat */
-@media (min-width: 1200px) {
-  :root[color-scheme='light'] .mxd-nav__hamburger.is-flipping .hamburger__base {
-    background-color: #ddf160;
-  }
-}
+/* (the desktop lime menu is retired — the installation menu's theme
+   card rules above own the morph colour at every width) */
 /* nav logo: monochrome in both themes (var(--base-opp) from the base rule);
    the traveling pixel carries the aurora ramp via inline style. */
 /* to-top: same clay glass */
