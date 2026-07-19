@@ -131,9 +131,31 @@ export default function PortfolioShowcase({ projects }: { projects: ProjectListI
       aria-label="Portfolio"
     >
       <div className={styles.pin}>
-        {/* image rail — scrolls through the frame */}
+        {/* image rail — scrolls through the frame. Wrap-around ghosts (the
+            last projects above the first, the first below the last — WITHOUT
+            data-card, so the anchor/step math only sees the real cards) keep
+            the rail looking endless like the reference. */}
         <div className={styles.railViewport}>
           <div ref={railRef} className={styles.rail}>
+            {projects.slice(-2).map((p) => {
+              const img = p.image || (p.video ? posterOf(p.video) : undefined);
+              return (
+                <Link
+                  key={`lead-${p.id}`}
+                  href={`/project-details/${p.id}`}
+                  className={styles.card}
+                  aria-hidden="true"
+                  tabIndex={-1}
+                >
+                  {img ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={img} alt="" loading="eager" />
+                  ) : (
+                    <span className={styles.noMedia} />
+                  )}
+                </Link>
+              );
+            })}
             {projects.map((p, i) => {
               const img = p.image || (p.video ? posterOf(p.video) : undefined);
               return (
@@ -147,6 +169,25 @@ export default function PortfolioShowcase({ projects }: { projects: ProjectListI
                   {img ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img src={img} alt={p.title} loading={i < 2 ? 'eager' : 'lazy'} />
+                  ) : (
+                    <span className={styles.noMedia} />
+                  )}
+                </Link>
+              );
+            })}
+            {projects.slice(0, 2).map((p) => {
+              const img = p.image || (p.video ? posterOf(p.video) : undefined);
+              return (
+                <Link
+                  key={`tail-${p.id}`}
+                  href={`/project-details/${p.id}`}
+                  className={styles.card}
+                  aria-hidden="true"
+                  tabIndex={-1}
+                >
+                  {img ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={img} alt="" loading="lazy" />
                   ) : (
                     <span className={styles.noMedia} />
                   )}
