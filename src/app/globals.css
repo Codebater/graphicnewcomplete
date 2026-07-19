@@ -1160,14 +1160,12 @@ html body {
   /* one size source for the character — 0.85× the original so more of the
      figure shows; the marquee text + lens icons scale by the same factor
      below, keeping the head-through-text ratio exactly the original.
-     ×1.5222 vs the old 720-wide canvas (460/49vw/665): the hero file is
-     now 1096px wide (the FULL figure — both natural silhouette edges in
-     frame) and the wider box scales up in lockstep, keeping the BALL the
-     exact same on-screen size; displayed height is invariant. The ball
-     sits at 41.06% of the canvas width (asymmetric extension right), so
-     the wrapper anchors with translateX(-41.06%) below and the lens uses
-     HEAD.cx 0.4106 — ball screen position unchanged. */
-  --hiw: clamp(700px, 74.6vw, 1012px);
+     ×1.0042 vs the old 720-wide base (460/49vw/665): the hero file is a
+     723×1040 upper-body cut of the user's final clay render (full art
+     width visible, coat bleeding right + bottom). Ball at 58.34% of the
+     canvas width → wrapper anchors translateX(-58.34%), lens HEAD.cx
+     0.5834 — ball screen position and size unchanged as always. */
+  --hiw: clamp(462px, 49.2vw, 668px);
 }
 /* marquee text + pulse star at 0.85× the template's three tiers
    (!important: /css/main.css loads after globals) */
@@ -1193,9 +1191,9 @@ html body {
   /* translateY(-18%) pins the HEAD CENTRE (18% of image height) to the line
      centre; the body drops toward the fold and is clipped by the hero =
      grounded, not floating */
-  /* -41.06% (not -50%): anchors the BALL (at 41.06% of image width) to
+  /* -58.34% (not -50%): anchors the BALL (at 58.34% of image width) to
      the same screen spot the old centred ball had */
-  transform: translateX(-41.06%) translateY(-18%) !important;
+  transform: translateX(-58.34%) translateY(-18%) !important;
 }
 .mxd-hero-02-marquee__image img {
   width: 100%;
@@ -1203,8 +1201,8 @@ html body {
   /* reserve the final box before decode: a late-decoding hero image must not
      change document height — that fired a global ScrollTrigger.refresh that
      could land as a visible stutter while already scrolling the card stack.
-     Matches the hero file's canvas (1096×1040 full-figure cut). */
-  aspect-ratio: 1096 / 1040;
+     Matches the hero file's canvas (723×1040 upper-body cut). */
+  aspect-ratio: 723 / 1040;
 }
 /* clip the character's coat at the hero's edge so the figure stands into
    the fold instead of spilling into the next section */
