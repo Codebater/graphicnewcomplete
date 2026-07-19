@@ -1,4 +1,3 @@
-import Image from 'next/image';
 import Link from 'next/link';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -100,7 +99,7 @@ export default function Pricing() {
                 <div className="marquee__toright">
                   
                   {/* Marquee Items */}
-                  {Array(5).fill('Our Partners').map((text, index) => (
+                  {Array(5).fill('Tools We Love').map((text, index) => (
                     <div key={index} className="marquee__item one-line item-regular text">
                       <p className="marquee__text">{text}</p>
                       <div className="marquee__image">
@@ -124,43 +123,30 @@ export default function Pricing() {
           </div>
         </div>
 
-        {/* Section - Marquee Partners Two Lines */}
+        {/* Section - Marquee Tools Two Lines (wordmark cards — the template's
+            placeholder brand logos looked like fake partners) */}
         <div className="mxd-section padding-pre-title">
           <div className="mxd-container fullwidth-container">
 
-            {/* Block - Marquee Partners Two Lines */}
+            {/* Block - Marquee Tools Two Lines */}
             <div className="mxd-block">
               <div className="marquee marquee--gsap">
-                
+
                 {/* Top Line */}
                 <div className="marquee__top">
-                  {[
-                    { src: '/img/brands/envato.svg', alt: 'Envato' },
-                    { src: '/img/brands/angular.svg', alt: 'Angular' },
-                    { src: '/img/brands/deepseek.svg', alt: 'DeepSeek' },
-                    { src: '/img/brands/dribbble.svg', alt: 'Dribbble' },
-                    { src: '/img/brands/udemy.svg', alt: 'Udemy' },
-                    { src: '/img/brands/behance.svg', alt: 'Behance' }
-                  ].map((brand, index) => (
-                    <a key={index} className="marquee__item item-partners" href="#0">
-                      <Image src={brand.src} alt={brand.alt} width={120} height={60} />
-                    </a>
+                  {['Next.js', 'React', 'Supabase', 'Vercel', 'Stripe', 'GSAP'].map((tool) => (
+                    <div key={tool} className="marquee__item item-partners">
+                      <span className="tool-wordmark">{tool}</span>
+                    </div>
                   ))}
                 </div>
 
                 {/* Bottom Line */}
                 <div className="marquee__bottom">
-                  {[
-                    { src: '/img/brands/codeninja.svg', alt: 'CodeNinja' },
-                    { src: '/img/brands/crewai.svg', alt: 'CrewAI' },
-                    { src: '/img/brands/smartlook.svg', alt: 'Smartlook' },
-                    { src: '/img/brands/ghostgaming.svg', alt: 'Ghost Gaming' },
-                    { src: '/img/brands/logitech.svg', alt: 'Logitech' },
-                    { src: '/img/brands/mozilla.svg', alt: 'Mozilla' }
-                  ].map((brand, index) => (
-                    <a key={index} className="marquee__item item-partners" href="#0">
-                      <Image src={brand.src} alt={brand.alt} width={120} height={60} />
-                    </a>
+                  {['Claude', 'OpenAI', 'Figma', 'Shopify', 'WordPress', 'Tailwind CSS'].map((tool) => (
+                    <div key={tool} className="marquee__item item-partners">
+                      <span className="tool-wordmark">{tool}</span>
+                    </div>
                   ))}
                 </div>
 
