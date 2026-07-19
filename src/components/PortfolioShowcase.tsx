@@ -51,8 +51,6 @@ const TileCover = () => (
 export default function PortfolioShowcase({ projects }: { projects: ProjectListItem[] }) {
   const rootRef = useRef<HTMLElement | null>(null);
   const railRef = useRef<HTMLDivElement | null>(null);
-  const namesRef = useRef<HTMLElement | null>(null);
-  const frameRef = useRef<HTMLDivElement | null>(null);
   const [active, setActive] = useState(0);
   const activeRef = useRef(0);
   const inViewRef = useRef(false);
@@ -119,19 +117,6 @@ export default function PortfolioShowcase({ projects }: { projects: ProjectListI
         // every rail child (incl. wrap-around ghosts) cached with its static
         // centre in rail coordinates — the per-frame zoom needs NO rect reads
         let cardCache: { el: HTMLElement; c: number; s: number }[] = [];
-        // name wheel: every name (incl. wrap-around ghosts) travels a circle
-        // whose hub is left of the spine — the text itself stays STRAIGHT
-        // (no rotation; the radial tilt was tried and rolled back as "too
-        // much"), fading out past ~2.5 rows. The active name rides the
-        // rightmost point of the circle at the frame's vertical middle.
-        // ALL transforms live on the names themselves — the container is
-        // never transformed, so no CSS fallback can fight the wheel.
-        let nameCache: { el: HTMLElement; c: number; x: number; y: number; s: number; o: number }[] = [];
-        let realNames: typeof nameCache = [];
-        let rowUnit = 1;
-        // half the frame's height — cards whose centre crosses this line are
-        // outside the box and show their picture frosted instead of tiles
-        let frameHalf = 0;
         const measure = () => {
           const cards = rail.querySelectorAll<HTMLElement>('[data-card]');
           if (cards.length < 2) return;
@@ -146,26 +131,10 @@ export default function PortfolioShowcase({ projects }: { projects: ProjectListI
             const h = el as HTMLElement;
             return { el: h, c: h.offsetTop + h.offsetHeight / 2, s: -1 };
           });
-          frameHalf = frameRef.current ? frameRef.current.offsetHeight / 2 : 0;
-          const namesEl = namesRef.current;
-          if (namesEl) {
-            nameCache = Array.from(namesEl.children).map((el) => {
-              const h = el as HTMLElement;
-              return { el: h, c: h.offsetTop + h.offsetHeight / 2, x: NaN, y: NaN, s: NaN, o: NaN };
-            });
-            // only the real names (data-name) anchor the wheel's position —
-            // ghosts ride the same circle but never define it
-            realNames = nameCache.filter((n) => n.el.hasAttribute('data-name'));
-            rowUnit =
-              realNames.length > 1
-                ? (realNames[realNames.length - 1].c - realNames[0].c) / (realNames.length - 1)
-                : 1;
-          }
         };
 
         let st: any = null;
         let lastY: number | null = null;
-        let snapT: ReturnType<typeof setTimeout> | null = null;
         const applyY = (progress: number) => {
           const f = progress * (N - 1);
           const y = -(firstCenter + f * step);
@@ -176,42 +145,12 @@ export default function PortfolioShowcase({ projects }: { projects: ProjectListI
             // nears the frame centre (transform-only, deduped per card)
             if (vpH) {
               for (const it of cardCache) {
-                const aoff = Math.abs(it.c + y - vpH / 2);
-                const d = aoff / vpH;
+                const d = Math.abs(it.c + y - vpH / 2) / vpH;
                 const sc = Math.round((1 - 0.14 * Math.min(1, d * 1.6)) * 250) / 250;
                 if (sc !== it.s) {
                   it.s = sc;
                   gsap.set(it.el, { scale: sc });
                 }
-                // outside the box: tiles sweep away, the picture shows
-                // frosted (toggle is re-asserted every frame — React
-                // re-renders rewrite className and would drop it otherwise)
-                it.el.classList.toggle('pfOut', frameHalf > 0 && aoff > frameHalf);
-              }
-            }
-          }
-          // name wheel (outside the rail-y gate — fully deduped per name):
-          // place every name on the circle (text stays straight) and fade
-          // it out as it travels past the visible fan
-          if (nameCache.length && realNames.length && vpH) {
-            const i0 = Math.min(N - 1, Math.floor(f));
-            const i1 = Math.min(N - 1, i0 + 1);
-            const lc = realNames[i0].c + (realNames[i1].c - realNames[i0].c) * (f - i0);
-            const R = vpH * 0.3; // wheel radius — hub sits left of the spine
-            for (const n of nameCache) {
-              const d = (n.c - lc) / rowUnit;
-              const ad = Math.abs(d);
-              const phi = d * 0.32; // ~18.3° per row → ~90° visible fan
-              const x = Math.round(R * (Math.cos(phi) - 1) * 2) / 2;
-              const y = Math.round((R * Math.sin(phi) - n.c) * 2) / 2;
-              const sc = Math.round((1 + Math.max(0, 1 - ad) * 0.06) * 200) / 200;
-              const o = Math.round(Math.min(1, Math.max(0, (2.8 - ad) / 0.6)) * 100) / 100;
-              if (x !== n.x || y !== n.y || sc !== n.s || o !== n.o) {
-                n.x = x;
-                n.y = y;
-                n.s = sc;
-                n.o = o;
-                gsap.set(n.el, { x, y, scale: sc, opacity: o });
               }
             }
           }
@@ -242,19 +181,6 @@ export default function PortfolioShowcase({ projects }: { projects: ProjectListI
                 activeRef.current = idx;
                 setActive(idx);
               }
-              // settle on the nearest project once the scroll goes quiet, so
-              // the highlighted name always rests exactly at the centre
-              if (snapT) clearTimeout(snapT);
-              if (self.progress > 0.001 && self.progress < 0.999) {
-                snapT = setTimeout(() => {
-                  const i = Math.round(self.progress * (N - 1));
-                  const target = self.start + ((self.end - self.start) * i) / (N - 1);
-                  if (Math.abs(self.scroll() - target) > 4) {
-                    if (w.lenis) w.lenis.scrollTo(target, { duration: 0.6 });
-                    else window.scrollTo({ top: target, behavior: 'smooth' });
-                  }
-                }, 160);
-              }
             },
           });
           requestAnimationFrame(() => ScrollTrigger.refresh());
@@ -268,7 +194,6 @@ export default function PortfolioShowcase({ projects }: { projects: ProjectListI
 
         return () => {
           clearInterval(guard);
-          if (snapT) clearTimeout(snapT);
           if (st) st.kill();
         };
       });
@@ -372,39 +297,13 @@ export default function PortfolioShowcase({ projects }: { projects: ProjectListI
           </div>
         </div>
 
-        {/* names — the rotating wheel. Wrap-around ghosts (the last projects
-            above the first, the first below the last — WITHOUT data-name, so
-            the wheel's anchor math only sees the real names) keep the circle
-            looking full, mirroring the card rail's ghosts. */}
-        <nav ref={namesRef} className={styles.names} aria-label="Projects">
-          {projects.slice(-2).map((p) => (
-            <Link
-              key={`nlead-${p.id}`}
-              href={`/project-details/${p.id}`}
-              className={styles.name}
-              aria-hidden="true"
-              tabIndex={-1}
-            >
-              {p.title}
-            </Link>
-          ))}
+        {/* names — the reference's stacked list, active follows the scroll */}
+        <nav className={styles.names} aria-label="Projects">
           {projects.map((p, i) => (
             <Link
               key={p.id}
-              data-name
               href={`/project-details/${p.id}`}
               className={`${styles.name} ${i === active ? styles.nameActive : ''}`}
-            >
-              {p.title}
-            </Link>
-          ))}
-          {projects.slice(0, 2).map((p) => (
-            <Link
-              key={`ntail-${p.id}`}
-              href={`/project-details/${p.id}`}
-              className={styles.name}
-              aria-hidden="true"
-              tabIndex={-1}
             >
               {p.title}
             </Link>
@@ -412,7 +311,7 @@ export default function PortfolioShowcase({ projects }: { projects: ProjectListI
         </nav>
 
         {/* fixed rounded frame + rotated micro-labels */}
-        <div ref={frameRef} className={styles.frame} aria-hidden="true">
+        <div className={styles.frame} aria-hidden="true">
           <span className={styles.year}>26</span>
           <span className={`${styles.side} ${styles.sideTop}`}>GRAPHIQ STUDIO LLC</span>
           <span className={`${styles.side} ${styles.sideMid}`}>PORTFOLIO</span>

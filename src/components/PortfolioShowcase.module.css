@@ -50,17 +50,6 @@
   height: 100%;
   object-fit: cover;
   display: block;
-  transition: filter 0.45s ease;
-}
-/* outside the box (`pfOut`, toggled by the scrub as a card's centre crosses
-   the frame edge): the aurora cover sweeps away and the artwork underneath
-   shows frosted — sharp media exists only inside the frame */
-.card:global(.pfOut) img,
-.card:global(.pfOut) video {
-  filter: blur(9px);
-}
-.card:global(.pfOut) :global(.pfTileCover) i {
-  opacity: 0;
 }
 /* aurora tile cover — every card sits under the mosaic; only the active
    card's tiles sweep away (per-tile transition delays set inline). The
@@ -94,15 +83,12 @@
   background: color-mix(in srgb, var(--t-bright, #1d1712) 10%, transparent);
 }
 
-/* ---- names (wheel: JS owns ALL transforms, applied per name — the
-   container itself is NEVER transformed, so its top anchor can't be
-   fought by a CSS fallback) ---- */
+/* ---- names ---- */
 .names {
   position: absolute;
-  /* spine of the wheel sits mid-way in the frame's empty left half (the
-     rail starts at 52%), not hugging the screen edge */
-  left: clamp(2rem, 20vw, 40rem);
+  left: clamp(1.6rem, 13vw, 16rem);
   top: 50%;
+  transform: translateY(-50%);
   z-index: 3;
   display: flex;
   flex-direction: column;
@@ -116,14 +102,12 @@
   letter-spacing: -0.01em;
   color: var(--muted);
   text-decoration: none;
-  /* colour only — a transform transition would smear the scrub-driven
-     wheel writes (the active scale is folded into the JS transform) */
-  transition: color 0.45s ease;
+  transition: color 0.45s ease, transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
   transform-origin: left center;
-  will-change: transform;
 }
 .nameActive {
   color: var(--ink);
+  transform: scale(1.06);
 }
 :global(.no-touch) .name:hover { color: var(--ink); }
 
@@ -194,8 +178,7 @@
   }
   .card { border-radius: 12px; }
   .names {
-    /* centred in the frame's left area (frame border 3vw .. rail 53vw) */
-    left: clamp(2rem, 13vw, 9rem);
+    left: clamp(1.4rem, 8vw, 3rem);
     max-width: 44vw;
   }
   .name { font-size: clamp(1.7rem, 6vw, 2.4rem); }
