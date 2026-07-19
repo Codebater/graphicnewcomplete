@@ -41,18 +41,18 @@ export default function Header() {
                         </Link>
                       </li>
                       <li className="main-menu__item">
-                        <Link className="main-menu__link btn" href="/about-us" aria-label="About Us">
-                          <PixelText text="ABOUT US" cursor={false} font="5x7" />
+                        <Link className="main-menu__link btn" href="/about-us" aria-label="Studio">
+                          <PixelText text="STUDIO" cursor={false} font="5x7" />
                         </Link>
                       </li>
                       <li className="main-menu__item">
-                        <Link className="main-menu__link btn" href="/pricing" aria-label="Pricing">
-                          <PixelText text="PRICING" cursor={false} font="5x7" />
+                        <Link className="main-menu__link btn" href="/pricing" aria-label="Services">
+                          <PixelText text="SERVICES" cursor={false} font="5x7" />
                         </Link>
                       </li>
                       <li className="main-menu__item">
-                        <Link className="main-menu__link btn" href="/portfolio" aria-label="Portfolio">
-                          <PixelText text="PORTFOLIO" cursor={false} font="5x7" />
+                        <Link className="main-menu__link btn" href="/portfolio" aria-label="Work">
+                          <PixelText text="WORK" cursor={false} font="5x7" />
                         </Link>
                       </li>
                       <li className="main-menu__item">

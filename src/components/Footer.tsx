@@ -19,17 +19,17 @@ const Footer = () => {
                 </li>
                 <li className="footer-nav__item anim-uni-in-up">
                   <Link href="/about-us" className="footer-nav__link btn-anim">
-                    <span className="btn-caption">About Us</span>
+                    <span className="btn-caption">Studio</span>
                   </Link>
                 </li>
                 <li className="footer-nav__item anim-uni-in-up">
                   <Link href="/pricing" className="footer-nav__link btn-anim">
-                    <span className="btn-caption">Pricing</span>
+                    <span className="btn-caption">Services</span>
                   </Link>
                 </li>
                 <li className="footer-nav__item anim-uni-in-up">
                   <Link href="/portfolio" className="footer-nav__link btn-anim">
-                    <span className="btn-caption">Portfolio</span>
+                    <span className="btn-caption">Work</span>
                   </Link>
                 </li>
                 <li className="footer-nav__item anim-uni-in-up">
