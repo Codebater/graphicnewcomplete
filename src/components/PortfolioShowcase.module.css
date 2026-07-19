@@ -83,6 +83,37 @@
   background: color-mix(in srgb, var(--t-bright, #1d1712) 10%, transparent);
 }
 
+/* ---- frost outside the frame ----
+   Four plain backdrop-filter bands around the frame's rect (top/bottom/
+   left/right). No mask — masked backdrop-filter can silently fail on some
+   mobile browsers. Band vars mirror the .frame dims exactly (keep them in
+   sync, incl. the ≤1023px block). Square corner notches are invisible:
+   only flat page background lives there. */
+.frost {
+  --fx: calc((100% - min(90vw, 1480px)) / 2);
+  --fy: calc((100% - min(74vh, 860px)) / 2);
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+}
+.frost i {
+  position: absolute;
+  display: block;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+.frost i:nth-child(1) { left: 0; right: 0; top: 0; height: var(--fy); }
+.frost i:nth-child(2) { left: 0; right: 0; bottom: 0; height: var(--fy); }
+.frost i:nth-child(3) { left: 0; width: var(--fx); top: var(--fy); bottom: var(--fy); }
+.frost i:nth-child(4) { right: 0; width: var(--fx); top: var(--fy); bottom: var(--fy); }
+@media (max-width: 1023px) {
+  .frost {
+    --fx: 3vw;
+    --fy: calc((100% - min(56dvh, 520px)) / 2);
+  }
+}
+
 /* ---- names (straight list; JS shifts every name so the active one sits
    at the frame middle — the container is NEVER transformed and carries no
    CSS transform, so nothing can fight the per-name writes) ---- */

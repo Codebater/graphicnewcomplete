@@ -337,6 +337,14 @@ export default function PortfolioShowcase({ projects }: { projects: ProjectListI
           </div>
         </div>
 
+        {/* frost: everything OUTSIDE the frame is blurred — four plain
+            backdrop-filter bands around the box (no mask, so it can't
+            silently fail on mobile). Purely additive; covers/cards/names
+            untouched. */}
+        <div className={styles.frost} aria-hidden="true">
+          <i /><i /><i /><i />
+        </div>
+
         {/* names — the reference's stacked list, active follows the scroll
             and always sits at the frame middle. Wrap-around ghosts (the last
             projects above the first, the first below the last — WITHOUT
