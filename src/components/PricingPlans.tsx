@@ -44,7 +44,7 @@ type Plan = {
 // The flagship one-slot offer (card 01). 96 hours = 72h + a 24h polish day.
 // (The internal plan/slot key stays 'launch-72h' — invisible to users.)
 const LAUNCH = {
-  num: '01',
+  num: '03',
   icon: 'ph-rocket-launch',
   title: '🚀 Launch My Business',
   metric: 'Go live in 96 hours.',
@@ -107,42 +107,6 @@ const RETAINERS: Retainer[] = [
 const PLANS: Plan[] = [
   {
     num: '02',
-    icon: 'ph-shopping-bag',
-    title: '🛒 Sell Products Online',
-    metric: 'Start selling online in one week.',
-    description: 'A complete store that takes payments from day one — up to 50 products loaded for you.',
-    features: [
-      'Complete store, ready to sell',
-      'Up to 50 products loaded for you',
-      'Payments & shipping configured',
-      'Mobile-first storefront that converts',
-      'Launch training — you run it yourself',
-    ],
-    tools: 'Shopify · Stripe · Klaviyo',
-    price: '$1,650',
-    period: '/ one time',
-    action: { type: 'buy', key: 'shopify', label: 'Buy now' },
-  },
-  {
-    num: '03',
-    icon: 'ph-funnel',
-    title: '📈 Get More Leads',
-    metric: 'A lead engine working for you 24/7.',
-    description: 'A landing page and funnel that captures, qualifies and follows up — while you sleep.',
-    features: [
-      'High-converting landing page',
-      'Funnels that capture & qualify leads',
-      'Email & SMS follow-up automation',
-      'CRM set up — no lead gets lost',
-      'Tracking so you see what converts',
-    ],
-    tools: 'Next.js · CRM · Make',
-    price: '$1,100',
-    period: '/ one time',
-    action: { type: 'buy', key: 'lead-engine', label: 'Buy now' },
-  },
-  {
-    num: '04',
     icon: 'ph-robot',
     title: '🤖 Automate My Business',
     metric: 'Save 10+ hours of manual work every week.',
@@ -168,7 +132,43 @@ const PLANS: Plan[] = [
     action: { type: 'buy', key: 'automation', label: 'Buy now' },
   },
   {
+    num: '04',
+    icon: 'ph-shopping-bag',
+    title: '🛒 Sell Products Online',
+    metric: 'Start selling online in one week.',
+    description: 'A complete store that takes payments from day one — up to 50 products loaded for you.',
+    features: [
+      'Complete store, ready to sell',
+      'Up to 50 products loaded for you',
+      'Payments & shipping configured',
+      'Mobile-first storefront that converts',
+      'Launch training — you run it yourself',
+    ],
+    tools: 'Shopify · Stripe · Klaviyo',
+    price: '$1,650',
+    period: '/ one time',
+    action: { type: 'buy', key: 'shopify', label: 'Buy now' },
+  },
+  {
     num: '05',
+    icon: 'ph-funnel',
+    title: '📈 Get More Leads',
+    metric: 'A lead engine working for you 24/7.',
+    description: 'A landing page and funnel that captures, qualifies and follows up — while you sleep.',
+    features: [
+      'High-converting landing page',
+      'Funnels that capture & qualify leads',
+      'Email & SMS follow-up automation',
+      'CRM set up — no lead gets lost',
+      'Tracking so you see what converts',
+    ],
+    tools: 'Next.js · CRM · Make',
+    price: '$1,100',
+    period: '/ one time',
+    action: { type: 'buy', key: 'lead-engine', label: 'Buy now' },
+  },
+  {
+    num: '06',
     icon: 'ph-cube',
     title: '💼 Build My SaaS',
     metric: 'Launch your MVP in 6–10 weeks.',
@@ -187,7 +187,7 @@ const PLANS: Plan[] = [
     action: { type: 'contact', label: 'Get a quote' },
   },
   {
-    num: '06',
+    num: '07',
     icon: 'ph-buildings',
     title: '🏢 Enterprise Software',
     metric: 'Built for 100+ users and complex workflows.',
@@ -208,7 +208,7 @@ const PLANS: Plan[] = [
 ];
 
 export default function PricingPlans() {
-  const [retainer, setRetainer] = useState(0);
+  const [retainer, setRetainer] = useState(1);
   const [loadingKey, setLoadingKey] = useState<BuyKey | null>(null);
   const [errorKey, setErrorKey] = useState<BuyKey | null>(null);
   const [errorMsg, setErrorMsg] = useState<string>('');
@@ -270,6 +270,73 @@ export default function PricingPlans() {
   const active = RETAINERS[retainer];
   const launchOpen = slot === null || slot === 'available';
 
+  const renderPlan = (plan: Plan) => (
+          <article key={plan.num} className={`${styles.card} animate-card-3`}>
+            <div className={`${styles.metric} anim-uni-in-up`}>
+              <i className="ph-fill ph-lightning" aria-hidden="true" />
+              {plan.metric}
+            </div>
+
+            <div className={styles.top}>
+              <div className={styles.iconBox}>
+                <i className={`ph ${plan.icon}`} />
+              </div>
+              <div className={styles.num}>
+                <span className={styles.dot} aria-hidden="true" />
+                {plan.num}
+              </div>
+            </div>
+
+            <div className={styles.head}>
+              {plan.badge && <span className={styles.badge}>{plan.badge}</span>}
+              <h4 className={`${styles.title} anim-uni-in-up`}>{plan.title}</h4>
+            </div>
+            <p className={`${styles.desc} anim-uni-in-up`}>{plan.description}</p>
+
+            <ul className={`mxd-check-list ${styles.features}`}>
+              {plan.features.map((f) => (
+                <li key={f} className="anim-uni-in-up">
+                  <i className="ph ph-check" />
+                  <span>{f}</span>
+                </li>
+              ))}
+            </ul>
+            <p className={`${styles.tools} anim-uni-in-up`}>Tools we use: {plan.tools}</p>
+
+            <div className={styles.footer}>
+              <div className={`${styles.priceRow} anim-uni-in-up`}>
+                <span className={styles.price}>{plan.price}</span>
+                <span className={styles.period}>{plan.period}</span>
+              </div>
+
+              {plan.action.type === 'buy' ? (
+                <>
+                  <button
+                    type="button"
+                    className="btn btn-anim btn-default btn-outline btn-fullwidth slide-right-up anim-uni-in-up"
+                    onClick={() => buy((plan.action as { key: BuyKey }).key)}
+                    disabled={loadingKey === plan.action.key}
+                  >
+                    <span className="btn-caption">
+                      {loadingKey === plan.action.key ? 'Redirecting…' : plan.action.label}
+                    </span>
+                    <i className="ph-bold ph-arrow-up-right" />
+                  </button>
+                  {errorKey === plan.action.key && <p className={styles.error}>{errorMsg}</p>}
+                </>
+              ) : (
+                <Link
+                  className="btn btn-anim btn-default btn-outline btn-fullwidth slide-right-up anim-uni-in-up"
+                  href="/contact"
+                >
+                  <span className="btn-caption">{plan.action.label}</span>
+                  <i className="ph-bold ph-arrow-up-right" />
+                </Link>
+              )}
+            </div>
+          </article>
+  );
+
   return (
     <div className={`${styles.wrap} loading__fade`}>
       {notice && (
@@ -290,7 +357,76 @@ export default function PricingPlans() {
       )}
 
       <div className={styles.grid}>
-        {/* Card 01 — 🚀 Launch My Business: ONE slot, booked live */}
+        {/* Card 01 — Get Found / ongoing care with Running / Found toggle */}
+        <article className={`${styles.card} animate-card-3`}>
+          <div className={`${styles.metric} anim-uni-in-up`}>
+            <i className="ph-fill ph-lightning" aria-hidden="true" />
+            {active.metric}
+          </div>
+
+          <div className={`${styles.toggle} anim-uni-in-up`} role="tablist" aria-label="Choose a monthly plan">
+            {RETAINERS.map((r, i) => (
+              <button
+                key={r.key}
+                type="button"
+                role="tab"
+                aria-selected={retainer === i}
+                className={`${styles.toggleBtn} ${retainer === i ? styles.toggleBtnActive : ''}`}
+                onClick={() => setRetainer(i)}
+              >
+                {r.toggleLabel}
+              </button>
+            ))}
+          </div>
+
+          <div className={styles.top}>
+            <div className={styles.iconBox}>
+              <i className={`ph ${active.icon}`} />
+            </div>
+            <div className={styles.num}>
+              <span className={styles.dot} aria-hidden="true" />
+              01
+            </div>
+          </div>
+
+          <div className={styles.head}>
+            <h4 className={`${styles.title} anim-uni-in-up`}>{active.title}</h4>
+          </div>
+          <p className={`${styles.desc} anim-uni-in-up`}>{active.description}</p>
+
+          <ul className={`mxd-check-list ${styles.features}`}>
+            {active.features.map((f) => (
+              <li key={f} className="anim-uni-in-up">
+                <i className="ph ph-check" />
+                <span>{f}</span>
+              </li>
+            ))}
+          </ul>
+          <p className={`${styles.tools} anim-uni-in-up`}>Tools we use: {active.tools}</p>
+
+          <div className={styles.footer}>
+            <div className={`${styles.priceRow} anim-uni-in-up`}>
+              <span className={styles.price}>{active.price}</span>
+              <span className={styles.period}>{active.period}</span>
+            </div>
+            <button
+              type="button"
+              className="btn btn-anim btn-default btn-outline btn-fullwidth slide-right-up anim-uni-in-up"
+              onClick={() => buy(active.key)}
+              disabled={loadingKey === active.key}
+            >
+              <span className="btn-caption">
+                {loadingKey === active.key ? 'Redirecting…' : active.buyLabel}
+              </span>
+              <i className="ph-bold ph-arrow-up-right" />
+            </button>
+            {errorKey === active.key && <p className={styles.error}>{errorMsg}</p>}
+          </div>
+        </article>
+
+        {/* Card 02 — Automate My Business */}
+        {renderPlan(PLANS[0])}
+        {/* Card 03 — 🚀 Launch My Business: ONE slot, booked live */}
         <article className={`${styles.card} ${styles.cardHero} animate-card-3`}>
           <div className={`${styles.metric} anim-uni-in-up`}>
             <i className="ph-fill ph-lightning" aria-hidden="true" />
@@ -379,140 +515,9 @@ export default function PricingPlans() {
           </div>
         </article>
 
-        {/* Cards 02–06 — outcomes */}
-        {PLANS.map((plan) => (
-          <article key={plan.num} className={`${styles.card} animate-card-3`}>
-            <div className={`${styles.metric} anim-uni-in-up`}>
-              <i className="ph-fill ph-lightning" aria-hidden="true" />
-              {plan.metric}
-            </div>
+        {/* Cards 04-07 — outcomes */}
+        {PLANS.slice(1).map(renderPlan)}
 
-            <div className={styles.top}>
-              <div className={styles.iconBox}>
-                <i className={`ph ${plan.icon}`} />
-              </div>
-              <div className={styles.num}>
-                <span className={styles.dot} aria-hidden="true" />
-                {plan.num}
-              </div>
-            </div>
-
-            <div className={styles.head}>
-              {plan.badge && <span className={styles.badge}>{plan.badge}</span>}
-              <h4 className={`${styles.title} anim-uni-in-up`}>{plan.title}</h4>
-            </div>
-            <p className={`${styles.desc} anim-uni-in-up`}>{plan.description}</p>
-
-            <ul className={`mxd-check-list ${styles.features}`}>
-              {plan.features.map((f) => (
-                <li key={f} className="anim-uni-in-up">
-                  <i className="ph ph-check" />
-                  <span>{f}</span>
-                </li>
-              ))}
-            </ul>
-            <p className={`${styles.tools} anim-uni-in-up`}>Tools we use: {plan.tools}</p>
-
-            <div className={styles.footer}>
-              <div className={`${styles.priceRow} anim-uni-in-up`}>
-                <span className={styles.price}>{plan.price}</span>
-                <span className={styles.period}>{plan.period}</span>
-              </div>
-
-              {plan.action.type === 'buy' ? (
-                <>
-                  <button
-                    type="button"
-                    className="btn btn-anim btn-default btn-outline btn-fullwidth slide-right-up anim-uni-in-up"
-                    onClick={() => buy((plan.action as { key: BuyKey }).key)}
-                    disabled={loadingKey === plan.action.key}
-                  >
-                    <span className="btn-caption">
-                      {loadingKey === plan.action.key ? 'Redirecting…' : plan.action.label}
-                    </span>
-                    <i className="ph-bold ph-arrow-up-right" />
-                  </button>
-                  {errorKey === plan.action.key && <p className={styles.error}>{errorMsg}</p>}
-                </>
-              ) : (
-                <Link
-                  className="btn btn-anim btn-default btn-outline btn-fullwidth slide-right-up anim-uni-in-up"
-                  href="/contact"
-                >
-                  <span className="btn-caption">{plan.action.label}</span>
-                  <i className="ph-bold ph-arrow-up-right" />
-                </Link>
-              )}
-            </div>
-          </article>
-        ))}
-
-        {/* Card 07 — ongoing care with Running / Found toggle */}
-        <article className={`${styles.card} animate-card-3`}>
-          <div className={`${styles.metric} anim-uni-in-up`}>
-            <i className="ph-fill ph-lightning" aria-hidden="true" />
-            {active.metric}
-          </div>
-
-          <div className={`${styles.toggle} anim-uni-in-up`} role="tablist" aria-label="Choose a monthly plan">
-            {RETAINERS.map((r, i) => (
-              <button
-                key={r.key}
-                type="button"
-                role="tab"
-                aria-selected={retainer === i}
-                className={`${styles.toggleBtn} ${retainer === i ? styles.toggleBtnActive : ''}`}
-                onClick={() => setRetainer(i)}
-              >
-                {r.toggleLabel}
-              </button>
-            ))}
-          </div>
-
-          <div className={styles.top}>
-            <div className={styles.iconBox}>
-              <i className={`ph ${active.icon}`} />
-            </div>
-            <div className={styles.num}>
-              <span className={styles.dot} aria-hidden="true" />
-              07
-            </div>
-          </div>
-
-          <div className={styles.head}>
-            <h4 className={`${styles.title} anim-uni-in-up`}>{active.title}</h4>
-          </div>
-          <p className={`${styles.desc} anim-uni-in-up`}>{active.description}</p>
-
-          <ul className={`mxd-check-list ${styles.features}`}>
-            {active.features.map((f) => (
-              <li key={f} className="anim-uni-in-up">
-                <i className="ph ph-check" />
-                <span>{f}</span>
-              </li>
-            ))}
-          </ul>
-          <p className={`${styles.tools} anim-uni-in-up`}>Tools we use: {active.tools}</p>
-
-          <div className={styles.footer}>
-            <div className={`${styles.priceRow} anim-uni-in-up`}>
-              <span className={styles.price}>{active.price}</span>
-              <span className={styles.period}>{active.period}</span>
-            </div>
-            <button
-              type="button"
-              className="btn btn-anim btn-default btn-outline btn-fullwidth slide-right-up anim-uni-in-up"
-              onClick={() => buy(active.key)}
-              disabled={loadingKey === active.key}
-            >
-              <span className="btn-caption">
-                {loadingKey === active.key ? 'Redirecting…' : active.buyLabel}
-              </span>
-              <i className="ph-bold ph-arrow-up-right" />
-            </button>
-            {errorKey === active.key && <p className={styles.error}>{errorMsg}</p>}
-          </div>
-        </article>
       </div>
     </div>
   );
