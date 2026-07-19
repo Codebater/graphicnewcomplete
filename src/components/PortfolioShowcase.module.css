@@ -83,16 +83,18 @@
   background: color-mix(in srgb, var(--t-bright, #1d1712) 10%, transparent);
 }
 
-/* ---- names ---- */
+/* ---- names (wheel: JS owns the transforms — list shifts so the active
+   name is centred, each name bows onto the arc) ---- */
 .names {
   position: absolute;
   left: clamp(1.6rem, 13vw, 16rem);
   top: 50%;
-  transform: translateY(-50%);
+  transform: translateY(-50%);   /* pre-JS fallback only */
   z-index: 3;
   display: flex;
   flex-direction: column;
   gap: 0.35em;
+  will-change: transform;
 }
 .name {
   font-family: var(--_font-accent, 'Funnel Display', sans-serif);
@@ -102,12 +104,14 @@
   letter-spacing: -0.01em;
   color: var(--muted);
   text-decoration: none;
-  transition: color 0.45s ease, transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+  /* colour only — a transform transition would smear the scrub-driven
+     wheel writes (the active scale is folded into the JS transform) */
+  transition: color 0.45s ease;
   transform-origin: left center;
+  will-change: transform;
 }
 .nameActive {
   color: var(--ink);
-  transform: scale(1.06);
 }
 :global(.no-touch) .name:hover { color: var(--ink); }
 
