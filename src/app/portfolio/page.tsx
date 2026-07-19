@@ -1,8 +1,36 @@
 import Link from 'next/link';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-import DynamicPortfolio from '@/components/DynamicPortfolio';
+import PortfolioShowcase from '@/components/PortfolioShowcase';
 import Loader from '@/components/Loader';
+import { supabase } from '@/lib/supabase';
+import { ProjectListItem } from '@/components/ProjectsList';
+
+// Fresh projects at most every minute (same ISR policy as home)
+export const revalidate = 60;
+
+async function getProjects(): Promise<ProjectListItem[]> {
+  try {
+    const { data, error } = await supabase
+      .from('projects')
+      .select('id, title, services, client, featured_image, featured_video')
+      .eq('is_published', true)
+      .order('sort_order', { ascending: true })
+      .order('created_at', { ascending: false })
+      .limit(12);
+    if (error) throw error;
+    return (data || []).map((p) => ({
+      id: p.id,
+      title: p.title,
+      subtitle: p.services || p.client || '',
+      image: p.featured_image || undefined,
+      video: p.featured_video || undefined,
+    }));
+  } catch (e) {
+    console.error('Portfolio projects fetch failed:', e);
+    return [];
+  }
+}
 
 export const metadata = {
   title: 'Portfolio - GRAPHIQ STUDIO LLC - Our Creative Projects',
@@ -17,7 +45,8 @@ export const metadata = {
   },
 };
 
-export default function Portfolio() {
+export default async function Portfolio() {
+  const projects = await getProjects();
   return (
     <>
       {/* Loader */}
@@ -28,33 +57,8 @@ export default function Portfolio() {
       {/* Page Content */}
       <main id="mxd-page-content" className="mxd-page-content inner-page-content">
 
-        {/* Section - Projects Masonry & Headline #01 */}
-        <div className="mxd-section mxd-section-inner-headline grid-headline padding-default">
-          <div className="mxd-container grid-l-container">
-
-            {/* Block - Projects Masonry #01 with Section Title */}
-            <div className="mxd-block loading-wrap">
-              <div className="mxd-projects-masonry loading__item">
-                <div className="container-fluid p-0">
-      
-                  {/* Portfolio Gallery */}
-                  <DynamicPortfolio />
-                  {/* Portfolio Gallery End */}
-      
-                  {/* Portfolio Link */}
-                  <div className="mxd-projects-masonry__btngroup anim-uni-in-up">
-                  
-                  </div>
-                  {/* Portfolio Link End */}
-                  
-                </div>
-              </div>
-            </div>
-            {/* Block - Projects Masonry #01 with Section Title End */}
-
-          </div>
-        </div>
-        {/* Section - Projects Masonry & Headline #01 End */}
+        {/* Editorial list showcase — names left, image rail right, fixed frame */}
+        <PortfolioShowcase projects={projects} />
 
 
 

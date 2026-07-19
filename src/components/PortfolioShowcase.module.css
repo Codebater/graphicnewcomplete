@@ -1,0 +1,148 @@
+/* ===== Portfolio showcase — names left, image rail right, fixed frame ===== */
+.root {
+  --ink: var(--t-bright, #1d1712);
+  --muted: color-mix(in srgb, var(--t-bright, #1d1712) 24%, transparent);
+  position: relative;
+  height: var(--pfh, 500vh);
+  color: var(--ink);
+}
+
+.pin {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  min-height: 560px;
+  overflow: hidden;
+}
+
+/* ---- image rail (behind the frame, clipped by the pin) ---- */
+.railViewport {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+.rail {
+  position: absolute;
+  left: 52%;
+  top: 0;
+  width: clamp(300px, 34vw, 520px);
+  display: flex;
+  flex-direction: column;
+  gap: 6vh;
+  will-change: transform;
+}
+.card {
+  display: block;
+  height: 58vh;
+  overflow: hidden;
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--t-bright, #1d1712) 6%, transparent);
+  opacity: 0.55;
+  filter: saturate(0.85);
+  transition: opacity 0.5s ease, filter 0.5s ease;
+}
+.cardActive {
+  opacity: 1;
+  filter: none;
+}
+.card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.noMedia {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: color-mix(in srgb, var(--t-bright, #1d1712) 10%, transparent);
+}
+
+/* ---- names ---- */
+.names {
+  position: absolute;
+  left: clamp(1.6rem, 13vw, 16rem);
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35em;
+}
+.name {
+  font-family: var(--_font-accent, 'Funnel Display', sans-serif);
+  font-weight: 600;
+  font-size: clamp(1.5rem, 2.1vw, 2.1rem);
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+  color: var(--muted);
+  text-decoration: none;
+  transition: color 0.45s ease, transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+  transform-origin: left center;
+}
+.nameActive {
+  color: var(--ink);
+  transform: scale(1.06);
+}
+:global(.no-touch) .name:hover { color: var(--ink); }
+
+/* ---- fixed rounded frame + micro labels ---- */
+.frame {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: min(90vw, 1480px);
+  height: min(74vh, 860px);
+  border: 1.5px solid var(--ink);
+  border-radius: 26px;
+  z-index: 4;
+  pointer-events: none;
+}
+.side {
+  position: absolute;
+  left: 0.5rem;
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  font-family: var(--_font-default, sans-serif);
+  font-size: 0.55rem;
+  letter-spacing: 0.3em;
+  color: var(--muted);
+}
+.sideTop { top: 1.6rem; }
+.sideMid { top: 50%; translate: 0 -50%; }
+.sideBot { bottom: 1.6rem; }
+.counter {
+  position: absolute;
+  right: 1.4rem;
+  bottom: 1rem;
+  font-family: var(--_font-default, sans-serif);
+  font-size: 0.62rem;
+  letter-spacing: 0.24em;
+  color: var(--muted);
+}
+
+/* ---- mobile / tablet ---- */
+@media (max-width: 1023px) {
+  .pin { height: 100dvh; min-height: 0; }
+  .rail {
+    left: 46%;
+    width: min(52vw, 340px);
+  }
+  .card { height: 46vh; }
+  .names {
+    left: clamp(1.2rem, 6vw, 3rem);
+    max-width: 40vw;
+  }
+  .name { font-size: clamp(1.05rem, 4.4vw, 1.5rem); }
+  .frame {
+    width: 94vw;
+    height: 80vh;
+    height: 80dvh;
+    border-radius: 18px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .name, .card { transition-duration: 0.15s; }
+}
