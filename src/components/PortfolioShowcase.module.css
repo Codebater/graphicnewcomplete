@@ -60,14 +60,13 @@
   display: grid;
   grid-template-columns: repeat(8, 1fr);
   grid-template-rows: repeat(5, 1fr);
-  gap: 2px;
+  gap: 0;   /* seamless mosaic — no media peeking through */
   pointer-events: none;
   contain: layout paint;
 }
 .card { position: relative; }
 .card :global(.pfTileCover) i {
   display: block;
-  border-radius: 2px;
   opacity: 1;
   transition: opacity 0.06s steps(2, end);
 }
