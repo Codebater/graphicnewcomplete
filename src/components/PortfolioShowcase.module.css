@@ -92,15 +92,46 @@
 /* ---- names (straight list; JS shifts every name so the active one sits
    at the frame middle — the container is NEVER transformed and carries no
    CSS transform, so nothing can fight the per-name writes) ---- */
+/* visibility band: names fade out just inside the frame's top/bottom edges
+   (the user's red lines) — a gradient MASK on this full-pin wrapper, whose
+   stops mirror the .frame height vars (keep in sync incl. ≤1023px). Plain
+   masks on content are mobile-safe (SelectedWork's listMask) — it was only
+   backdrop-filter that died on phones. */
+.namesClip {
+  --ft: calc((100% - min(74vh, 860px)) / 2);   /* frame top offset in .pin */
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;   /* full-pin overlay must not block card clicks */
+  mask-image: linear-gradient(
+    180deg,
+    transparent calc(var(--ft) + 2.4rem),
+    #000 calc(var(--ft) + 5.6rem),
+    #000 calc(100% - var(--ft) - 5.6rem),
+    transparent calc(100% - var(--ft) - 2.4rem)
+  );
+  -webkit-mask-image: linear-gradient(
+    180deg,
+    transparent calc(var(--ft) + 2.4rem),
+    #000 calc(var(--ft) + 5.6rem),
+    #000 calc(100% - var(--ft) - 5.6rem),
+    transparent calc(100% - var(--ft) - 2.4rem)
+  );
+}
+@media (max-width: 1023px) {
+  .namesClip {
+    --ft: calc((100% - min(56dvh, 520px)) / 2);
+  }
+}
 .names {
   position: absolute;
   left: clamp(1.6rem, 13vw, 16rem);
   top: 50%;
-  z-index: 3;
   display: flex;
   flex-direction: column;
   gap: 0.35em;
 }
+.name { pointer-events: auto; }
 .name {
   font-family: var(--_font-accent, 'Funnel Display', sans-serif);
   font-weight: 700;

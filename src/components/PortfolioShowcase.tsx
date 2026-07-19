@@ -352,6 +352,7 @@ export default function PortfolioShowcase({ projects }: { projects: ProjectListI
             projects above the first, the first below the last — WITHOUT
             data-name, so the shift math only sees the real names) keep the
             box filled above and below. */}
+        <div className={styles.namesClip}>
         <nav ref={namesRef} className={styles.names} aria-label="Projects">
           {projects.slice(-2).map((p) => (
             <Link
@@ -386,6 +387,7 @@ export default function PortfolioShowcase({ projects }: { projects: ProjectListI
             </Link>
           ))}
         </nav>
+        </div>
 
         {/* fixed rounded frame + rotated micro-labels */}
         <div ref={frameRef} className={styles.frame} aria-hidden="true">
