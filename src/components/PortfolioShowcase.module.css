@@ -83,6 +83,52 @@
   background: color-mix(in srgb, var(--t-bright, #1d1712) 10%, transparent);
 }
 
+/* ---- frost outside the frame ----
+   One overlay above the rail (z2) with a MASK that keeps it only in the
+   four bands around the frame's rect — the box interior stays sharp, the
+   card bleed above/below gets frosted. Band sizes mirror the .frame dims
+   exactly (keep them in sync). */
+.frost {
+  --fx: calc((100% - min(90vw, 1480px)) / 2);
+  --fy: calc((100% - min(74vh, 860px)) / 2);
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  mask-image:
+    linear-gradient(#000, #000),
+    linear-gradient(#000, #000),
+    linear-gradient(#000, #000),
+    linear-gradient(#000, #000);
+  mask-position: 0 0, 0 100%, 0 50%, 100% 50%;
+  mask-size:
+    100% var(--fy),
+    100% var(--fy),
+    var(--fx) calc(100% - 2 * var(--fy)),
+    var(--fx) calc(100% - 2 * var(--fy));
+  mask-repeat: no-repeat;
+  -webkit-mask-image:
+    linear-gradient(#000, #000),
+    linear-gradient(#000, #000),
+    linear-gradient(#000, #000),
+    linear-gradient(#000, #000);
+  -webkit-mask-position: 0 0, 0 100%, 0 50%, 100% 50%;
+  -webkit-mask-size:
+    100% var(--fy),
+    100% var(--fy),
+    var(--fx) calc(100% - 2 * var(--fy)),
+    var(--fx) calc(100% - 2 * var(--fy));
+  -webkit-mask-repeat: no-repeat;
+}
+@media (max-width: 1023px) {
+  .frost {
+    --fx: 3vw;
+    --fy: calc((100% - min(56dvh, 520px)) / 2);
+  }
+}
+
 /* ---- names (wheel: JS owns ALL transforms, applied per name — the
    container itself is NEVER transformed, so its top anchor can't be
    fought by a CSS fallback) ---- */

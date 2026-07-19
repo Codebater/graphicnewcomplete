@@ -118,14 +118,14 @@ export default function PortfolioShowcase({ projects }: { projects: ProjectListI
         // every rail child (incl. wrap-around ghosts) cached with its static
         // centre in rail coordinates — the per-frame zoom needs NO rect reads
         let cardCache: { el: HTMLElement; c: number; s: number }[] = [];
-        // name wheel: a true rotating fan. Every name (incl. wrap-around
-        // ghosts) sits on a circle whose hub is left of the spine — placed
-        // at its circle point, rotated radially (~18°/row, so the visible
-        // fan spans ~90°), fading out past ~2.5 rows. The active name rides
-        // the rightmost point of the circle at the frame's vertical middle.
+        // name wheel: every name (incl. wrap-around ghosts) travels a circle
+        // whose hub is left of the spine — the text itself stays STRAIGHT
+        // (no rotation; the radial tilt was tried and rolled back as "too
+        // much"), fading out past ~2.5 rows. The active name rides the
+        // rightmost point of the circle at the frame's vertical middle.
         // ALL transforms live on the names themselves — the container is
         // never transformed, so no CSS fallback can fight the wheel.
-        let nameCache: { el: HTMLElement; c: number; x: number; y: number; s: number; r: number; o: number }[] = [];
+        let nameCache: { el: HTMLElement; c: number; x: number; y: number; s: number; o: number }[] = [];
         let realNames: typeof nameCache = [];
         let rowUnit = 1;
         const measure = () => {
@@ -146,7 +146,7 @@ export default function PortfolioShowcase({ projects }: { projects: ProjectListI
           if (namesEl) {
             nameCache = Array.from(namesEl.children).map((el) => {
               const h = el as HTMLElement;
-              return { el: h, c: h.offsetTop + h.offsetHeight / 2, x: NaN, y: NaN, s: NaN, r: NaN, o: NaN };
+              return { el: h, c: h.offsetTop + h.offsetHeight / 2, x: NaN, y: NaN, s: NaN, o: NaN };
             });
             // only the real names (data-name) anchor the wheel's position —
             // ghosts ride the same circle but never define it
@@ -181,8 +181,8 @@ export default function PortfolioShowcase({ projects }: { projects: ProjectListI
             }
           }
           // name wheel (outside the rail-y gate — fully deduped per name):
-          // place every name on the circle, rotate it radially, fade it out
-          // as it turns past the visible fan
+          // place every name on the circle (text stays straight) and fade
+          // it out as it travels past the visible fan
           if (nameCache.length && realNames.length && vpH) {
             const i0 = Math.min(N - 1, Math.floor(f));
             const i1 = Math.min(N - 1, i0 + 1);
@@ -194,16 +194,14 @@ export default function PortfolioShowcase({ projects }: { projects: ProjectListI
               const phi = d * 0.32; // ~18.3° per row → ~90° visible fan
               const x = Math.round(R * (Math.cos(phi) - 1) * 2) / 2;
               const y = Math.round((R * Math.sin(phi) - n.c) * 2) / 2;
-              const rot = Math.round(phi * (180 / Math.PI) * 10) / 10;
               const sc = Math.round((1 + Math.max(0, 1 - ad) * 0.06) * 200) / 200;
               const o = Math.round(Math.min(1, Math.max(0, (2.8 - ad) / 0.6)) * 100) / 100;
-              if (x !== n.x || y !== n.y || sc !== n.s || rot !== n.r || o !== n.o) {
+              if (x !== n.x || y !== n.y || sc !== n.s || o !== n.o) {
                 n.x = x;
                 n.y = y;
                 n.s = sc;
-                n.r = rot;
                 n.o = o;
-                gsap.set(n.el, { x, y, rotation: rot, scale: sc, opacity: o });
+                gsap.set(n.el, { x, y, scale: sc, opacity: o });
               }
             }
           }
@@ -363,6 +361,10 @@ export default function PortfolioShowcase({ projects }: { projects: ProjectListI
             })}
           </div>
         </div>
+
+        {/* frost: everything OUTSIDE the frame is blurred (masked hole the
+            size of the frame keeps the box interior sharp) */}
+        <div className={styles.frost} aria-hidden="true" />
 
         {/* names — the rotating wheel. Wrap-around ghosts (the last projects
             above the first, the first below the last — WITHOUT data-name, so
