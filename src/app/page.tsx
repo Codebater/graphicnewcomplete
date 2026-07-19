@@ -487,29 +487,6 @@ export default async function Home() {
           </div>
         </div>
 
-        {/* Partners Section */}
-        <div className="mxd-section padding-pre-title">
-          <div className="mxd-container grid-container">
-            <div className="mxd-block">
-              <div className="mxd-partners-cards">
-                <div className="container-fluid p-0">
-                  <div className="row g-0">
-                    {['mozilla', 'envato', 'behance', 'dribbble', 'codeninja', 'udemy', 'angular', 'ghostgaming'].map((brand, index) => (
-                      <div key={brand} className="col-12 col-md-6 col-xl-3 mxd-partners-cards__item mxd-grid-item animate-card-4">
-                        <a className="mxd-partners-cards__inner" href="#0">
-                          <div className="mxd-partners-cards__logo">
-                            <Image src={`/img/brands/${brand}.svg`} alt="Partner Logo" width={120} height={60} />
-                          </div>
-                        </a>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
         {/* CTA Section */}
         <div className="mxd-section overflow-hidden">
           <div className="mxd-container">
