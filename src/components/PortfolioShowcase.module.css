@@ -123,21 +123,26 @@
 /* ---- mobile / tablet ---- */
 @media (max-width: 1023px) {
   .pin { height: 100dvh; min-height: 0; }
+  /* rail ends exactly at the frame's right border (frame spans 3vw..97vw);
+     images bleed past the frame's top/bottom like the reference, never
+     past its right edge */
   .rail {
-    left: 50%;
-    width: 58vw;
-    gap: 12px;
+    left: auto;
+    right: 3vw;
+    width: 44vw;
+    gap: 10px;
   }
   .names {
-    left: clamp(1.2rem, 7vw, 3rem);
+    left: clamp(1.4rem, 8vw, 3rem);
     max-width: 44vw;
   }
-  .name { font-size: clamp(1.1rem, 4.8vw, 1.6rem); }
+  .name { font-size: clamp(1.7rem, 6vw, 2.4rem); }
+  /* the reference outline is a shorter, boxier rectangle — not a tall
+     portrait frame */
   .frame {
     width: 94vw;
-    height: 80vh;
-    height: 80dvh;
-    border-radius: 18px;
+    height: min(56dvh, 520px);
+    border-radius: 20px;
   }
 }
 
