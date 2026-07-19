@@ -149,8 +149,9 @@ html body {
   background: var(--base-opp);
 }
 .pixel-g-logo__tile--accent {
-  /* fallback only — the component inlines the aurora colour per path step */
-  background: #ddf160;
+  /* monochrome: the traveling pixel is the page base — a punched-out tile
+     wandering the G (white-on-black in light theme, black-on-white in dark) */
+  background: var(--base);
   transform: scale(1.12);
 }
 

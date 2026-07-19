@@ -22,16 +22,6 @@ const PATH: Array<[number, number]> = [
 
 const START_STEP = 8; // [4,3] — the accent tile position in the artwork
 
-// aurora ramp (the tile-wipe colour language): the traveling pixel takes its
-// hue from its position on the G — blue left, violet top, magenta/ember along
-// the bottom and right. Same 215°→390° long-way ramp as the wipes.
-const AURORA = PATH.map(([r, c]) => {
-  const xf = c / 4;
-  const dy = r / 4 - 0.5;
-  const hue = (215 + xf * 175 - dy * 35 + 360) % 360;
-  return `hsl(${hue.toFixed(0)} 88% 56%)`;
-});
-
 export default function PixelGLogo() {
   const [step, setStep] = useState(START_STEP);
 
@@ -57,7 +47,6 @@ export default function PixelGLogo() {
                 (on ? ' pixel-g-logo__tile--on' : '') +
                 (accent ? ' pixel-g-logo__tile--accent' : '')
               }
-              style={accent ? { background: AURORA[step] } : undefined}
             />
           );
         })
