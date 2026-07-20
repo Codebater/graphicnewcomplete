@@ -97,9 +97,10 @@ export default function RadialMenu() {
         ))}
       </nav>
 
-      {/* the head on its band — the strip + circular notch are punched
-          THROUGH the menu card (mask on the hamburger base), so the page
-          shows through behind the ball */}
+      {/* the head on the cloud — the see-through strip + notch are punched
+          THROUGH the menu card (mask on the hamburger base), and the strip's
+          bottom edge is a cloud bank: the lower card piece IS the cloud the
+          ball sits on */}
       <div className="rm-band menu-fade-in" aria-hidden="true">
         <span className="rm-ball">
           {/* eslint-disable-next-line @next/next/no-img-element */}

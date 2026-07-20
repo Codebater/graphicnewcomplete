@@ -719,23 +719,29 @@ html body {
 :root[color-scheme='light'] .mxd-nav__hamburger.is-flipping .hamburger__base {
   background-color: #a9624b;
 }
-/* the band + circular notch are PUNCHED THROUGH the card: full mask
-   minus (band rect + plate circle), all measured from the card bottom */
+/* the see-through strip + head arch are PUNCHED THROUGH the card, and
+   the cloud lobes are painted BACK on top of the subtraction — so the
+   lower card piece is a cloud bank the ball sits on, and the arch halo
+   around the head can never eat the cloud under it.
+   Layers (top→bottom): lobes(add) / full(subtract) / strip / arch. */
 .mxd-menu__contain .hamburger__base {
   mask-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 340 30' preserveAspectRatio='none'%3E%3Cg fill='black'%3E%3Cellipse cx='18' cy='34' rx='42' ry='18'/%3E%3Cellipse cx='70' cy='32' rx='38' ry='21'/%3E%3Cellipse cx='120' cy='31' rx='36' ry='24'/%3E%3Cellipse cx='170' cy='31' rx='44' ry='27'/%3E%3Cellipse cx='220' cy='31' rx='36' ry='24'/%3E%3Cellipse cx='270' cy='32' rx='38' ry='20'/%3E%3Cellipse cx='322' cy='34' rx='42' ry='17'/%3E%3C/g%3E%3C/svg%3E"),
     linear-gradient(#000 0 0),
     linear-gradient(#000 0 0),
     radial-gradient(closest-side, #000 99%, transparent 100%);
   mask-size:
+    100% calc(var(--rmb) * 0.3),
     100% 100%,
-    100% calc(var(--rmb) * 0.33),
+    100% calc(var(--rmb) * 0.81),
     calc(var(--rmb) * 0.82) calc(var(--rmb) * 0.82);
   mask-position:
+    0 calc(100% - var(--rm-soc-h) - var(--rmb) * 0.04),
     0 0,
-    0 calc(100% - var(--rm-soc-h) - var(--rmb) * 0.335),
-    50% calc(100% - var(--rm-soc-h) - var(--rmb) * 0.09);
+    0 calc(100% - var(--rm-soc-h) - var(--rmb) * 0.04),
+    50% calc(100% - var(--rm-soc-h) - var(--rmb) * 0.27);
   mask-repeat: no-repeat;
-  mask-composite: subtract, add, add;
+  mask-composite: add, subtract, add, add;
 }
 .mxd-nav__hamburger.nav-open .hamburger__line::before {
   background-color: #f3ead9;
@@ -823,7 +829,8 @@ html body {
 .rm-ball {
   position: absolute;
   left: 50%;
-  top: 50%;
+  /* raised off centre so the ball rests on the cloud apex (sinks ~5% in) */
+  top: 32%;
   /* the head fills the punched notch (circle is 0.82×rmb) — slightly
      larger so the gentle float never exposes a crescent of card behind */
   width: calc(var(--rmb) * 0.86);
