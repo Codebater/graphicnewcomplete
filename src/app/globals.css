@@ -824,7 +824,9 @@ html body {
   position: absolute;
   left: 50%;
   top: 50%;
-  width: calc(var(--rmb) * 0.62);
+  /* the head fills the punched notch (circle is 0.82×rmb) — slightly
+     larger so the gentle float never exposes a crescent of card behind */
+  width: calc(var(--rmb) * 0.86);
   /* the centring transform stays STATIC — animating it on this wrapper
      misrendered in some compositors (ball drew ~55% low); the float lives
      on the inner img instead */
@@ -832,8 +834,8 @@ html body {
   filter: drop-shadow(0 12px 14px rgba(0, 0, 0, 0.38));
 }
 @keyframes rm-float {
-  from { transform: translateY(-2.5%); }
-  to { transform: translateY(2.5%); }
+  from { transform: translateY(-1%); }
+  to { transform: translateY(1%); }
 }
 .rm-ball img {
   display: block;
