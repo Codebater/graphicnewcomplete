@@ -721,27 +721,44 @@ html body {
 }
 /* the see-through strip + head arch are PUNCHED THROUGH the card, and
    the cloud lobes are painted BACK on top of the subtraction — so the
-   lower card piece is a cloud bank the ball sits on, and the arch halo
-   around the head can never eat the cloud under it.
-   Layers (top→bottom): lobes(add) / full(subtract) / strip / arch. */
+   lower card piece is a cloud bank the ball sits on. BENTO inner edges:
+   four corner-nibble layers (square minus quarter-disc, fixed CSS px so
+   they stay circular) round the upper piece's bottom corners and the
+   cloud piece's top corners where they meet the card sides; the lobes
+   clear the outer ~9% of the width so the corners sit on a flat base.
+   Layers (top→bottom): lobes(add) / full(subtract) / strip / arch /
+   4 nibbles (all add = part of the punched air). */
 .mxd-menu__contain .hamburger__base {
+  --rm-bento: calc(var(--_radius-l) * 0.63);
   mask-image:
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 340 30' preserveAspectRatio='none'%3E%3Cg fill='black'%3E%3Cellipse cx='18' cy='34' rx='42' ry='18'/%3E%3Cellipse cx='70' cy='32' rx='38' ry='21'/%3E%3Cellipse cx='120' cy='31' rx='36' ry='24'/%3E%3Cellipse cx='170' cy='31' rx='44' ry='27'/%3E%3Cellipse cx='220' cy='31' rx='36' ry='24'/%3E%3Cellipse cx='270' cy='32' rx='38' ry='20'/%3E%3Cellipse cx='322' cy='34' rx='42' ry='17'/%3E%3C/g%3E%3C/svg%3E"),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 340 30' preserveAspectRatio='none'%3E%3Cg fill='black'%3E%3Cellipse cx='62' cy='33' rx='34' ry='18'/%3E%3Cellipse cx='110' cy='31' rx='36' ry='24'/%3E%3Cellipse cx='170' cy='31' rx='44' ry='27'/%3E%3Cellipse cx='230' cy='31' rx='36' ry='24'/%3E%3Cellipse cx='278' cy='33' rx='32' ry='18'/%3E%3C/g%3E%3C/svg%3E"),
     linear-gradient(#000 0 0),
     linear-gradient(#000 0 0),
-    radial-gradient(closest-side, #000 99%, transparent 100%);
+    radial-gradient(closest-side, #000 99%, transparent 100%),
+    radial-gradient(circle at 100% 0, transparent 0 var(--rm-bento), #000 calc(var(--rm-bento) + 0.5px)),
+    radial-gradient(circle at 0 0, transparent 0 var(--rm-bento), #000 calc(var(--rm-bento) + 0.5px)),
+    radial-gradient(circle at 100% 100%, transparent 0 var(--rm-bento), #000 calc(var(--rm-bento) + 0.5px)),
+    radial-gradient(circle at 0 100%, transparent 0 var(--rm-bento), #000 calc(var(--rm-bento) + 0.5px));
   mask-size:
     100% calc(var(--rmb) * 0.3),
     100% 100%,
     100% calc(var(--rmb) * 0.81),
-    calc(var(--rmb) * 0.82) calc(var(--rmb) * 0.82);
+    calc(var(--rmb) * 0.82) calc(var(--rmb) * 0.82),
+    var(--rm-bento) var(--rm-bento),
+    var(--rm-bento) var(--rm-bento),
+    var(--rm-bento) var(--rm-bento),
+    var(--rm-bento) var(--rm-bento);
   mask-position:
     0 calc(100% - var(--rm-soc-h) - var(--rmb) * 0.04),
     0 0,
     0 calc(100% - var(--rm-soc-h) - var(--rmb) * 0.04),
-    50% calc(100% - var(--rm-soc-h) - var(--rmb) * 0.27);
+    50% calc(100% - var(--rm-soc-h) - var(--rmb) * 0.27),
+    0 calc(100% - var(--rm-soc-h) - var(--rmb) * 0.85),
+    100% calc(100% - var(--rm-soc-h) - var(--rmb) * 0.85),
+    0 calc(100% - var(--rm-soc-h) - var(--rmb) * 0.04 + var(--rm-bento)),
+    100% calc(100% - var(--rm-soc-h) - var(--rmb) * 0.04 + var(--rm-bento));
   mask-repeat: no-repeat;
-  mask-composite: add, subtract, add, add;
+  mask-composite: add, subtract, add, add, add, add, add, add;
 }
 .mxd-nav__hamburger.nav-open .hamburger__line::before {
   background-color: #f3ead9;
