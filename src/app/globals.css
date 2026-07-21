@@ -1215,6 +1215,16 @@ html body {
   .mxd-hero-02-marquee .marquee__image { width: 10.3rem !important; height: 10.3rem !important; }
   .mxd-hero-02-marquee .marquee__item.item-regular { gap: 4.25rem !important; }
 }
+/* ride the text through the EYES: the line was anchored at the wrapper's
+   -18% head pin, the star-hole centroid line sits at 15.1% of the image
+   height — lift by the difference, (0.18 − 0.151) × 1040/830 = 0.0363 of
+   --hiw (measured to ±0.1px in-pane). Uses position/top, NOT transform:
+   the loading tween owns the line's transform. The lens strip re-measures
+   the line rect, so the icons in the eyes rise in lockstep. */
+.mxd-hero-02-marquee .mxd-hero-02-marquee__line {
+  position: relative;
+  top: calc(var(--hiw) * -0.0363);
+}
 .mxd-hero-02-marquee__image {
   /* !important: /css/main.css loads AFTER globals and sets 50rem/42rem.
      Sized so the HEAD (52.5% of image width) matches the old ball, with the
