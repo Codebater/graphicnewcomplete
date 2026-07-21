@@ -1013,6 +1013,12 @@ html body {
   height: 4rem;
 }
 .mxd-header__controls .mxd-color-switcher i { font-size: 2.1rem; }
+/* main.css keeps min-height: 46px on the hamburger's container — taller
+   than the tightened 4rem chip, so the burger centred 3px BELOW the other
+   header icons (visible on fresh load). Collapse it so every chip shares
+   one line at any width. (Compound selector: main.css loads after globals,
+   a bare class ties and loses.) */
+.mxd-nav__wrap .mxd-nav__contain { min-height: 0; }
 @media only screen and (min-width: 768px) {
   .mxd-header__logo .mxd-logo { gap: 1rem; }
   .mxd-header__logo .mxd-logo__image { width: 4.2rem; }
