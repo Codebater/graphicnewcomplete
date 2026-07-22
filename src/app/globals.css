@@ -874,6 +874,21 @@ html body {
 /* eye windows BEHIND the ball: page-coloured backing + drifting icons,
    theme-aware via the same vars as the hero lens (var(--base) backing,
    var(--t-bright)/var(--accent) icons) */
+/* the WebGL sphere draws the same artwork in true 3D — it overlays the
+   img (which keeps the layout box, hidden once the first frame lands)
+   and inherits the float + stencil role */
+.rm-ball canvas.rm-ball__gl {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  z-index: 2;
+  animation: rm-float 6.5s ease-in-out infinite alternate;
+  cursor: grab;
+  touch-action: none;
+}
+.rm-ball canvas.rm-ball__gl:active { cursor: grabbing; }
 .rm-eye {
   position: absolute;
   overflow: hidden;
@@ -962,7 +977,7 @@ html body {
 .no-touch .rm-social:hover i { color: var(--rm-copper); transform: scale(1.12); }
 
 @media (prefers-reduced-motion: reduce) {
-  .rm-ball img, .rm-eye__strip, .rm-social { animation: none; }
+  .rm-ball img, .rm-ball canvas.rm-ball__gl, .rm-eye__strip, .rm-social { animation: none; }
 }
 /* desktop (>=1200): same installation menu, tuned — centred content
    column, grander band, bigger type/icons */
