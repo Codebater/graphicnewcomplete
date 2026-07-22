@@ -83,25 +83,25 @@ void main() {
   float cy = cos(uAng.x), sy = sin(uAng.x);
   q = vec3(cy * q.x - sy * q.z, q.y, sy * q.x + cy * q.z);
 
-  // front hemisphere: the photographed artwork, planar-projected
-  vec2 xy = q.z < 0.0 ? normalize(q.xy) : q.xy;
-  vec2 uv = vec2(0.50125, 0.4975) + vec2(xy.x, -xy.y) * 0.445;
-  vec4 face = texture2D(uTex, uv);
-
-  // back hemisphere: procedural glossy black, lit in VIEW space (the
-  // studio light stays put while the ball spins — matches the photo's
-  // top sheen language)
+  // ONE glossy black material for the whole sphere, lit in VIEW space —
+  // front and back identical, the studio light stays put while it spins
   float spec = pow(max(dot(n, normalize(vec3(0.25, 0.8, 0.55))), 0.0), 48.0);
+  float glow = pow(max(dot(n, normalize(vec3(0.2, 0.75, 0.62))), 0.0), 8.0);
   float spec2 = pow(max(dot(n, normalize(vec3(-0.45, -0.15, 0.6))), 0.0), 26.0);
   float fres = pow(1.0 - n.z, 2.6);
-  vec3 backCol = vec3(0.043, 0.041, 0.04)
+  vec3 col = vec3(0.043, 0.041, 0.04)
     + vec3(0.85, 0.85, 0.84) * spec
+    + vec3(0.05, 0.05, 0.05) * glow
     + vec3(0.10, 0.10, 0.10) * spec2
     + vec3(0.085, 0.082, 0.08) * fres;
-  vec4 back = vec4(backCol, 1.0);
 
-  vec4 col = mix(back, face, smoothstep(0.0, 0.14, q.z));
-  gl_FragColor = vec4(col.rgb, col.a * aa);
+  // the star eyes are cut from the artwork's ALPHA only — they live on
+  // the surface and rotate with the ball; rim stays solid via the seam mix
+  vec2 xy = q.z < 0.0 ? normalize(q.xy) : q.xy;
+  vec2 uv = vec2(0.50125, 0.4975) + vec2(xy.x, -xy.y) * 0.445;
+  float holes = texture2D(uTex, uv).a;
+  float a = mix(1.0, holes, smoothstep(0.0, 0.1, q.z));
+  gl_FragColor = vec4(col, a * aa);
 }`;
 
 function useBall3D(
