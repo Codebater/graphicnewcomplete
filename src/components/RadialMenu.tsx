@@ -77,15 +77,30 @@ void main() {
   float r = sqrt(r2);
   float aa = 1.0 - smoothstep(1.0 - 3.0 / uPx, 1.0, r);
   if (aa <= 0.0) { gl_FragColor = vec4(0.0); return; }
-  vec3 q = vec3(vP, sqrt(max(1.0 - r2, 0.0)));
+  vec3 n = vec3(vP, sqrt(max(1.0 - r2, 0.0)));   // view-space normal
   float cp = cos(uAng.y), sp = sin(uAng.y);
-  q = vec3(q.x, cp * q.y + sp * q.z, -sp * q.y + cp * q.z);
+  vec3 q = vec3(n.x, cp * n.y + sp * n.z, -sp * n.y + cp * n.z);
   float cy = cos(uAng.x), sy = sin(uAng.x);
   q = vec3(cy * q.x - sy * q.z, q.y, sy * q.x + cy * q.z);
+
+  // front hemisphere: the photographed artwork, planar-projected
   vec2 xy = q.z < 0.0 ? normalize(q.xy) : q.xy;
-  // ball in the 400x400 asset: centre (0.50125, 0.4975), radius 0.445
   vec2 uv = vec2(0.50125, 0.4975) + vec2(xy.x, -xy.y) * 0.445;
-  vec4 col = texture2D(uTex, uv);
+  vec4 face = texture2D(uTex, uv);
+
+  // back hemisphere: procedural glossy black, lit in VIEW space (the
+  // studio light stays put while the ball spins — matches the photo's
+  // top sheen language)
+  float spec = pow(max(dot(n, normalize(vec3(0.25, 0.8, 0.55))), 0.0), 48.0);
+  float spec2 = pow(max(dot(n, normalize(vec3(-0.45, -0.15, 0.6))), 0.0), 26.0);
+  float fres = pow(1.0 - n.z, 2.6);
+  vec3 backCol = vec3(0.043, 0.041, 0.04)
+    + vec3(0.85, 0.85, 0.84) * spec
+    + vec3(0.10, 0.10, 0.10) * spec2
+    + vec3(0.085, 0.082, 0.08) * fres;
+  vec4 back = vec4(backCol, 1.0);
+
+  vec4 col = mix(back, face, smoothstep(0.0, 0.14, q.z));
   gl_FragColor = vec4(col.rgb, col.a * aa);
 }`;
 
@@ -104,6 +119,7 @@ function useBall3D(
     let dead = false, inited = false, shown = false, raf = 0;
     let yaw = 0, pitch = 0, tYaw = 0, tPitch = 0;
     let dragging = false, lastX = 0, lastY = 0;
+    let vel = 0, spinning = false, yawBase = 0, lastT = 0;
     let texReady = false;
     let gl: WebGLRenderingContext | null = null;
     let uAng: WebGLUniformLocation | null = null;
@@ -116,17 +132,25 @@ function useBall3D(
     texImg.src = '/porthomeimages/menu-ball.webp';
 
     const onDown = (e: PointerEvent) => {
-      dragging = true;
+      dragging = true; spinning = false;
+      tYaw = yaw; vel = 0;
       lastX = e.clientX; lastY = e.clientY;
       cv.setPointerCapture(e.pointerId);
     };
     const onMove = (e: PointerEvent) => {
       if (!dragging) return;
-      tYaw = Math.max(-0.55, Math.min(0.55, tYaw + (e.clientX - lastX) * 0.008));
+      const d = (e.clientX - lastX) * 0.009;
+      tYaw += d;                       // yaw is FREE — full spins allowed
+      vel = d;
       tPitch = Math.max(-0.35, Math.min(0.35, tPitch + (e.clientY - lastY) * 0.008));
       lastX = e.clientX; lastY = e.clientY;
     };
-    const onUp = () => { dragging = false; };
+    const onUp = () => {
+      dragging = false;
+      vel = Math.max(-0.3, Math.min(0.3, vel * 1.4));
+      spinning = Math.abs(vel) > 0.01;
+      if (!spinning) yawBase = Math.round(yaw / (Math.PI * 2)) * Math.PI * 2;
+    };
     const onLost = (e: Event) => {
       e.preventDefault();
       dead = true;
@@ -187,13 +211,28 @@ function useBall3D(
         if (!initGL()) { dead = true; return; }   // img fallback stays
       }
       if (!gl || !texReady) return;
-      const t = (performance.now() - t0) / 1000;
+      const now = performance.now();
+      const t = (now - t0) / 1000;
+      // dt-normalised physics (frames of 60Hz) — identical feel on 120Hz
+      const dt = lastT ? Math.min((now - lastT) / 16.667, 3) : 1;
+      lastT = now;
+      if (dragging) {
+        yaw += (tYaw - yaw) * (1 - Math.pow(0.65, dt));
+      } else if (spinning) {
+        yaw += vel * dt;              // flick momentum, then settle to face
+        vel *= Math.pow(0.945, dt);
+        if (Math.abs(vel) < 0.004) {
+          spinning = false;
+          yawBase = Math.round(yaw / (Math.PI * 2)) * Math.PI * 2;
+        }
+      } else {
+        tYaw = yawBase + (reduced ? 0 : 0.26 * Math.sin(t * 0.55));
+        yaw += (tYaw - yaw) * (1 - Math.pow(0.9, dt));
+      }
       if (!dragging) {
-        tYaw = reduced ? 0 : 0.26 * Math.sin(t * 0.55);
         tPitch = reduced ? 0 : 0.10 * Math.sin(t * 0.8 + 1.3) - 0.02;
       }
-      yaw += (tYaw - yaw) * 0.1;
-      pitch += (tPitch - pitch) * 0.1;
+      pitch += (tPitch - pitch) * (1 - Math.pow(0.9, dt));
       const rect = cv.getBoundingClientRect();
       const dpr = Math.min(window.devicePixelRatio || 1, 2);
       const w = Math.max(2, Math.round(rect.width * dpr));
