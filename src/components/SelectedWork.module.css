@@ -305,7 +305,14 @@
   opacity: 0;
 }
 .wipe .wipeDark {
-  animation: sw-tile-in 1ms steps(1, end) both;
+  /* linear, NOT steps(1, end): a finished 1ms animation can report a
+     progress of 0.9999999999999991 (float), and steps(1, end) maps
+     anything under 1.0 to the FIRST keyframe — fill:forwards then froze
+     those tiles at opacity 0 for the whole wipe. It hit every tile whose
+     delay landed on an inexact float, i.e. a dashed column of squares
+     permanently missing from the mosaic. Linear is still a binary pop at
+     1ms but degrades to ~1 instead of 0. */
+  animation: sw-tile-in 1ms linear both;
 }
 @keyframes sw-tile-in { from { opacity: 0; } to { opacity: 1; } }
 @keyframes sw-layer-out { from { opacity: 1; } to { opacity: 0; } }
