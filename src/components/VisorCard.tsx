@@ -38,26 +38,13 @@ const HEART = ['.##.##.', '#######', '#######', '.#####.', '..###..', '...#...']
 const STAR = ['...#...', '..###..', '#######', '.#####.', '..###..', '.#...#.'];
 
 const CONFIGS: Record<'andrej' | 'asad' | 'anon', PersonConfig> = {
-  // Design lead: G, designer's cursor, pen nib, eye, bolt, heart, star
+  // Design lead — the real studio portrait, shown plain (no lens projection)
   andrej: {
     photo: '/king/andrej-visor.webp',
-    mask: '/king/andrej-visor-mask.png',
-    aspect: '1086 / 1448',
+    aspect: '640 / 800',
     alt: 'Andrej — Design Lead',
     name: 'ANDREJ',
     sub: 'DESIGN LEAD',
-    // lens band measured from the photo: x 27.3%→77.6%, centerline y 38.6%,
-    // real downward tilt 3.2° to camera-right
-    band: { left: '27.3%', top: '33.2%', width: '50.3%', height: '10.4%', tilt: 3.2 },
-    icons: [
-      G,
-      ['#......', '##.....', '###....', '####...', '#####..', '######.', '###....', '#.#....'], // cursor
-      ['..###..', '.#####.', '.#####.', '..###..', '..#.#..', '...#...'], // pen nib
-      EYE,
-      BOLT,
-      HEART,
-      STAR,
-    ],
   },
   // Dev lead — the real studio portrait, shown plain (no lens projection)
   asad: {
