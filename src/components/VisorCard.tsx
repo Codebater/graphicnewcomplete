@@ -16,15 +16,18 @@ type Band = { left: string; top: string; width: string; height: string; tilt: nu
 
 type PersonConfig = {
   photo: string;
-  mask: string;
   /* the photo's exact aspect ratio — the parallax wrap uses it so the matte's
      percentage coordinates map 1:1 onto the image (no object-fit cropping) */
   aspect: string;
   alt: string;
   name: string;
   sub: string;
-  band: Band;
-  icons: string[][];
+  /* the lens projection is OPTIONAL: omit mask/band/icons and the card is
+     simply the portrait (the real team photos run plain — the marquee-through-
+     the-lens treatment stays on the Anonymous card) */
+  mask?: string;
+  band?: Band;
+  icons?: string[][];
 };
 
 // shared pixel bitmaps ('#' = filled cell)
@@ -56,26 +59,13 @@ const CONFIGS: Record<'andrej' | 'asad' | 'anon', PersonConfig> = {
       STAR,
     ],
   },
-  // Dev lead: G, code brackets, terminal prompt, eye, bolt, heart, star
+  // Dev lead — the real studio portrait, shown plain (no lens projection)
   asad: {
     photo: '/king/asad-visor.webp',
-    mask: '/king/asad-visor-mask.png',
-    aspect: '1122 / 1402',
+    aspect: '640 / 800',
     alt: 'Asad — Dev Lead',
     name: 'ASAD',
     sub: 'DEV LEAD',
-    // lens band measured from the photo: x 28.3%→74.9%, centerline y ~37.4%,
-    // essentially level (−0.8°)
-    band: { left: '28%', top: '32.1%', width: '47.5%', height: '10.5%', tilt: -0.8 },
-    icons: [
-      G,
-      ['..#.#..', '.#...#.', '#.....#', '.#...#.', '..#.#..'], // <> brackets
-      ['#.....', '.#....', '..#...', '.#....', '#..###'],      // >_ terminal
-      EYE,
-      BOLT,
-      HEART,
-      STAR,
-    ],
   },
   // The Anonymous — the hero smiley ball itself in a suit. The marquee runs
   // straight through BOTH star-shaped eye recesses (parametric star mattes
@@ -229,32 +219,35 @@ export default function VisorCard({
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img decoding="async" className={styles.portrait} src={cfg.photo} alt={cfg.alt} />
 
-              {/* the projection, clipped by the lens matte */}
-              <div
-                className={styles.visor}
-                aria-hidden="true"
-                style={{
-                  WebkitMaskImage: `url(${cfg.mask})`,
-                  maskImage: `url(${cfg.mask})`,
-                }}
-              >
+              {/* the projection, clipped by the lens matte — only for cards
+                  that define one */}
+              {cfg.mask && cfg.band && cfg.icons && (
                 <div
-                  className={styles.visorBand}
+                  className={styles.visor}
+                  aria-hidden="true"
                   style={{
-                    left: cfg.band.left,
-                    top: cfg.band.top,
-                    width: cfg.band.width,
-                    height: cfg.band.height,
-                    transform: `rotate(${cfg.band.tilt}deg)`,
+                    WebkitMaskImage: `url(${cfg.mask})`,
+                    maskImage: `url(${cfg.mask})`,
                   }}
                 >
-                  <div className={styles.visorStrip}>
-                    <IconSet icons={cfg.icons} />
-                    <IconSet icons={cfg.icons} />
+                  <div
+                    className={styles.visorBand}
+                    style={{
+                      left: cfg.band.left,
+                      top: cfg.band.top,
+                      width: cfg.band.width,
+                      height: cfg.band.height,
+                      transform: `rotate(${cfg.band.tilt}deg)`,
+                    }}
+                  >
+                    <div className={styles.visorStrip}>
+                      <IconSet icons={cfg.icons} />
+                      <IconSet icons={cfg.icons} />
+                    </div>
                   </div>
+                  <div className={styles.visorSheen} />
                 </div>
-                <div className={styles.visorSheen} />
-              </div>
+              )}
             </div>
 
             <div className={styles.shine} />
