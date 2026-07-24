@@ -874,12 +874,21 @@ html body {
 /* eye windows BEHIND the ball: page-coloured backing + drifting icons,
    theme-aware via the same vars as the hero lens (var(--base) backing,
    var(--t-bright)/var(--accent) icons) */
-.rm-eye {
+/* the WebGL sphere draws the same artwork in true 3D — it overlays the
+   img (which keeps the layout box, hidden once the first frame lands)
+   and inherits the float + stencil role */
+.rm-ball canvas.rm-ball__gl {
   position: absolute;
-  overflow: hidden;
-  z-index: 1;
-  background: var(--base);
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  z-index: 2;
+  animation: rm-float 6.5s ease-in-out infinite alternate;
+  cursor: grab;
+  touch-action: none;
 }
+.rm-ball canvas.rm-ball__gl:active { cursor: grabbing; }
 /* dark theme: soft backlight so the black sphere separates from the dark
    page showing through the notch */
 :root[color-scheme='dark'] .rm-ball::before {
@@ -890,38 +899,11 @@ html body {
   width: 145%;
   height: 145%;
   transform: translate(-50%, -50%);
-  background: radial-gradient(circle, rgba(243, 234, 217, 0.15) 18%, rgba(221, 241, 96, 0.05) 42%, transparent 66%);
+  /* a RING, not a disc: the star cutouts are open now, so a filled glow
+     would read as a milky backing inside the eyes */
+  background: radial-gradient(circle, transparent 30%, rgba(243, 234, 217, 0.13) 40%, rgba(221, 241, 96, 0.05) 50%, transparent 68%);
   z-index: 0;
 }
-.rm-eye--left { left: 16.4%; top: 27.6%; width: 31%; height: 30.3%; }
-.rm-eye--right { left: 56.4%; top: 27.6%; width: 30.4%; height: 30.5%; }
-.rm-eye__strip {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  display: flex;
-  align-items: center;
-  width: max-content;
-  color: var(--t-bright);
-  animation: rm-drift 12s linear infinite;
-}
-@keyframes rm-drift {
-  to { transform: translateX(-50%); }
-}
-.rm-eye__icon:nth-child(2n) { color: var(--accent); }
-.rm-eye__icon {
-  display: flex;
-  /* trailing margin instead of flex gap: the strip's -50% wrap point is
-     then EXACTLY one set period — no half-gap hop at the loop seam */
-  margin-right: calc(var(--rmb) * 0.05);
-}
-.rm-eye__icon svg {
-  display: block;
-  height: calc(var(--rmb) * 0.072);
-  width: auto;
-}
-
 /* ---- socials: three columns ---- */
 .rm-socials {
   position: absolute;
@@ -962,7 +944,7 @@ html body {
 .no-touch .rm-social:hover i { color: var(--rm-copper); transform: scale(1.12); }
 
 @media (prefers-reduced-motion: reduce) {
-  .rm-ball img, .rm-eye__strip, .rm-social { animation: none; }
+  .rm-ball img, .rm-ball canvas.rm-ball__gl, .rm-social { animation: none; }
 }
 /* desktop (>=1200): same installation menu, tuned — centred content
    column, grander band, bigger type/icons */
