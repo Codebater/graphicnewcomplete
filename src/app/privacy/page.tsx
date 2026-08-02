@@ -26,7 +26,7 @@ const HEADLINE_ICON = (
   </svg>
 );
 
-const LAST_UPDATED = 'July 7, 2026';
+const LAST_UPDATED = 'July 24, 2026';
 
 // The site's bare <h2> is a 7rem display headline — way too large for a
 // sub-heading inside body copy, so override it down to article-heading size.
@@ -169,6 +169,29 @@ export default function Privacy() {
                       offered by the platform, opt out of interest-based advertising through your device&apos;s
                       ad settings, or contact us to ask what data we hold about a leaderboard entry and have it
                       removed.
+                    </p>
+
+                    <h2 style={sectionHeadingStyle}>Use of AI</h2>
+                    <p className="t-bright" style={{ marginBottom: '1rem' }}>
+                      We use AI tools in how we build and run our work. Internally, GRAPHIQ uses AI
+                      assistants to help design, write, and review code and to prepare and commit
+                      deployments — it lets us ship, improve, and fix things faster. This work is
+                      always directed and reviewed by a person; AI is a tool in our workflow, not
+                      something that makes decisions about you or processes your personal data on its
+                      own.
+                    </p>
+                    <p className="t-bright" style={{ marginBottom: '1rem' }}>
+                      Some of our products offer AI features to users directly — most notably{' '}
+                      <a href="https://www.fregio.ai/" target="_blank" rel="noopener noreferrer">Fregio</a>,
+                      whose AI agents design, build, review, and deploy WordPress sites. Those features
+                      are part of the product and are governed by that product&apos;s own terms and
+                      privacy policy on its own site.
+                    </p>
+                    <p className="t-bright" style={{ marginBottom: '1.5rem' }}>
+                      We do not feed the information you give us — the content of messages you send us,
+                      or leaderboard entries — into AI systems to train third-party models. If the way
+                      we use AI changes in a way that affects your data, we&apos;ll update this section
+                      and the date above.
                     </p>
 
                     <h2 style={sectionHeadingStyle}>Ownership &amp; intellectual property</h2>
