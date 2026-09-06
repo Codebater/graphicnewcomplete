@@ -2,7 +2,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-import ContactConsultationFlow from '@/components/ContactConsultationFlow';
+import TymeslotBooking from '@/components/TymeslotBooking';
 import '@/styles/step-form.css';
 
 export const metadata = {
@@ -90,7 +90,7 @@ export default function Contact() {
                   <div className="col-12 col-xl-10">
                     <div className="mxd-block__content contact">
                       <div className="mxd-block__inner-form loading__fade">
-                        <ContactConsultationFlow />
+                        <TymeslotBooking />
                       </div>
                     </div>
                   </div>
